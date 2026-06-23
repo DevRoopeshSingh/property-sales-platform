@@ -34,7 +34,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
   return (
     <article className={cn("card group relative", className)}>
       {/* Image */}
-      <div className="relative h-52 overflow-hidden bg-[var(--color-surface-3)]">
+      <div className="relative h-64 overflow-hidden bg-[var(--color-surface-3)]">
         {primaryImage ? (
           <Image
             src={primaryImage.url}
@@ -57,7 +57,12 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
           {property.featured && (
             <span className="badge badge-blue text-xs">⭐ Featured</span>
           )}
-          <span className={cn("badge text-xs", possessionBadge.class)}>
+          {property.reraNumber && (
+            <span className="badge bg-white text-slate-800 text-[10px] uppercase font-bold tracking-wider shadow-sm border border-slate-100">
+              ✓ RERA
+            </span>
+          )}
+          <span className={cn("badge text-xs shadow-sm", possessionBadge.class)}>
             {possessionBadge.text}
           </span>
         </div>
@@ -89,12 +94,19 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        {/* Price */}
-        <div className="price-tag mb-1">{property.priceLabel}</div>
+      <div className="p-4 flex flex-col h-full">
+        <div className="flex justify-between items-start mb-2">
+          {/* Price */}
+          <div className="price-tag">{property.priceLabel}</div>
+          {property.builderName && (
+            <div className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider bg-slate-50 px-2 py-1 rounded-md border border-slate-100 max-w-[100px] truncate" title={property.builderName}>
+              By {property.builderName}
+            </div>
+          )}
+        </div>
 
         {/* Title */}
-        <h3 className="font-bold text-[var(--color-text-primary)] text-base leading-snug mb-2 line-clamp-2 group-hover:text-[var(--color-brand-600)] transition-colors">
+        <h3 className="font-bold text-[var(--color-text-primary)] text-[15px] sm:text-base leading-snug mb-2 line-clamp-2 group-hover:text-[var(--color-brand-600)] transition-colors">
           {property.title}
         </h3>
 

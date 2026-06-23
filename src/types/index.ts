@@ -145,6 +145,9 @@ export interface PropertyCardData {
   possession: Possession;
   images: PropertyImage[];
   createdAt: Date;
+  projectName?: string | null;
+  builderName?: string | null;
+  reraNumber?: string | null;
 }
 
 export interface PropertyDetail extends PropertyCardData {
