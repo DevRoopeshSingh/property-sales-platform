@@ -7,7 +7,7 @@ export async function deleteImagesFromStorage(keys: string[]) {
 
   // We need the service role key to reliably delete images via server actions
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "";
 
   if (!supabaseUrl || !supabaseServiceRoleKey) {
     console.warn("Supabase credentials not found. Skipping image deletion.");
@@ -43,7 +43,7 @@ export async function uploadImageToStorage(formData: FormData) {
     }
 
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || "";
 
     if (!supabaseUrl || !supabaseServiceRoleKey) {
       return { success: false, error: "Storage credentials missing" };
