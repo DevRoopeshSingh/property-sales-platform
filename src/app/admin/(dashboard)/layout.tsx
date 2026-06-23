@@ -2,6 +2,7 @@ import { Building2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
+import { MobileSidebarToggle } from "@/components/admin/MobileSidebarToggle";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,7 +44,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {/* Mobile Header (minimal) */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:hidden">
-           <div className="font-bold text-lg text-slate-900">PropConnect</div>
+           <div className="flex items-center gap-3">
+             <MobileSidebarToggle />
+             <div className="font-bold text-lg text-slate-900">PropConnect</div>
+           </div>
            <form
              action={async () => {
                "use server";

@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
 import { revalidatePath } from "next/cache";
+import { deleteImagesFromStorage } from "./storage-actions";
 
 // Generate a URL-friendly slug
 function generateSlug(title: string) {
@@ -82,7 +83,20 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
   try {
     const validatedData = propertySchema.parse(data);
 
-    // Delete existing images and recreate them (simplest approach for full sync)
+    // Find existing images to compare
+    const existingImages = await prisma.propertyImage.findMany({
+      where: { propertyId: id }
+    });
+    const existingKeys = existingImages.map(img => img.key);
+    const newKeys = validatedData.images.map(img => img.key);
+    const keysToDelete = existingKeys.filter(key => !newKeys.includes(key));
+
+    // Delete removed images from Supabase storage
+    if (keysToDelete.length > 0) {
+      await deleteImagesFromStorage(keysToDelete);
+    }
+
+    // Delete existing images from DB and recreate them (simplest approach for full sync)
     await prisma.propertyImage.deleteMany({
       where: { propertyId: id },
     });
@@ -151,6 +165,16 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
 
 export async function deleteProperty(id: string) {
   try {
+    // Find existing images to delete from storage
+    const existingImages = await prisma.propertyImage.findMany({
+      where: { propertyId: id }
+    });
+    const keysToDelete = existingImages.map(img => img.key);
+    
+    if (keysToDelete.length > 0) {
+      await deleteImagesFromStorage(keysToDelete);
+    }
+
     await prisma.property.delete({
       where: { id },
     });

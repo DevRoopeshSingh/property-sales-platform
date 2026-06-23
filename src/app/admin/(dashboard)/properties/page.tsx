@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Plus, Edit, Trash2, Home, CheckCircle2, Clock } from "lucide-react";
-import { deleteProperty } from "./actions";
+import { Plus, Edit, Home, CheckCircle2, Clock } from "lucide-react";
+import { DeletePropertyButton } from "@/components/admin/DeletePropertyButton";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export default async function PropertiesPage() {
   const properties = await prisma.property.findMany({
@@ -29,18 +30,16 @@ export default async function PropertiesPage() {
 
       <div className="card overflow-hidden">
         {properties.length === 0 ? (
-          <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-[var(--color-surface-2)] rounded-full flex items-center justify-center mx-auto mb-4">
-              <Home className="text-[var(--color-text-muted)]" size={32} />
-            </div>
-            <h3 className="text-lg font-bold text-[var(--color-text-primary)]">No properties found</h3>
-            <p className="text-[var(--color-text-secondary)] mt-2 mb-6">
-              You haven&apos;t added any properties yet. Create your first listing to get started.
-            </p>
-            <Link href="/admin/properties/new" className="btn btn-primary">
-              Create Property
-            </Link>
-          </div>
+          <EmptyState
+            icon={<Home size={32} />}
+            title="No properties found"
+            description="You haven't added any properties yet. Create your first listing to get started."
+            action={
+              <Link href="/admin/properties/new" className="btn btn-primary">
+                Create Property
+              </Link>
+            }
+          />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -103,20 +102,7 @@ export default async function PropertiesPage() {
                         >
                           <Edit size={18} />
                         </Link>
-                        <form action={async () => {
-                          "use server";
-                          await deleteProperty(property.id);
-                        }}>
-                          <button 
-                            type="submit"
-                            className="p-2 text-[var(--color-text-secondary)] hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                            onClick={(e) => {
-                              if(!confirm("Are you sure you want to delete this property?")) e.preventDefault();
-                            }}
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </form>
+                        <DeletePropertyButton propertyId={property.id} />
                       </div>
                     </td>
                   </tr>

@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
 import { createProperty, updateProperty } from "@/app/admin/(dashboard)/properties/actions";
 import { ImageUploader } from "./ImageUploader";
@@ -62,12 +63,15 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
 
       if (!result.success) {
         setServerError(result.error || "Something went wrong.");
+        toast.error(result.error || "Failed to save property");
       } else {
+        toast.success(propertyId ? "Property updated successfully!" : "Property created successfully!");
         router.push("/admin/properties");
         router.refresh();
       }
     } catch {
       setServerError("An unexpected error occurred.");
+      toast.error("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);
     }

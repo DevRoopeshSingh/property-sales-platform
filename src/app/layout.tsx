@@ -24,6 +24,7 @@ export const metadata: Metadata = {
 
 import LayoutWrapper from "@/components/public/LayoutWrapper";
 import NavigationProgressBar from "@/components/ui/loaders/NavigationProgressBar";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -34,6 +35,7 @@ export default function RootLayout({
     <html lang="en" data-scroll-behavior="smooth">
       <body suppressHydrationWarning>
         <NavigationProgressBar />
+        <Toaster richColors position="top-center" />
         <LayoutWrapper>
           <main>{children}</main>
         </LayoutWrapper>

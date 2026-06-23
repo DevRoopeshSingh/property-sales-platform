@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "sonner";
+import { deleteImagesFromStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
 
 export interface PropertyImageInput {
   url: string;
@@ -80,7 +82,9 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
       onChange(newImages);
     } catch (err: unknown) {
       console.error("Error uploading image:", err);
-      setError((err as Error).message || "Failed to upload image. Make sure the 'properties' bucket exists and is public.");
+      const errorMessage = (err as Error).message || "Failed to upload image. Make sure the 'properties' bucket exists and is public.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {
@@ -92,8 +96,13 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
   const handleRemove = async (indexToRemove: number) => {
     const imageToRemove = value[indexToRemove];
     
-    // Optional: Delete from Supabase immediately, or just remove from UI
-    // await supabase.storage.from("properties").remove([imageToRemove.key]);
+    // Delete from Supabase immediately to prevent orphaned files
+    const res = await deleteImagesFromStorage([imageToRemove.key]);
+    if (!res.success) {
+      toast.error("Failed to delete image from storage.");
+    } else {
+      toast.success("Image deleted");
+    }
 
     const newImages = value.filter((_, idx) => idx !== indexToRemove);
     
