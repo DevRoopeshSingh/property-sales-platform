@@ -96,9 +96,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   // In production: fetch from DB by slug
-  if (slug !== DEMO_PROPERTY.slug) {
-    return { title: "Property Not Found" };
-  }
+  // Temporarily returning demo property for all static links
   return {
     title: DEMO_PROPERTY.metaTitle ?? DEMO_PROPERTY.title,
     description: DEMO_PROPERTY.metaDescription ?? DEMO_PROPERTY.description.slice(0, 160),
@@ -113,7 +111,8 @@ export default async function PropertyDetailPage({
   const { slug } = await params;
 
   // In production: const property = await getProperty(slug);
-  const property = slug === DEMO_PROPERTY.slug ? DEMO_PROPERTY : null;
+  // Temporarily returning demo property for all static links
+  const property = { ...DEMO_PROPERTY, slug };
   if (!property) notFound();
 
   const waLink = generateWhatsAppLink({
