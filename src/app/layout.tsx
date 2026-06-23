@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 };
 
 import LayoutWrapper from "@/components/public/LayoutWrapper";
+import NavigationProgressBar from "@/components/ui/loaders/NavigationProgressBar";
 
 export default function RootLayout({
   children,
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body suppressHydrationWarning>
+        <NavigationProgressBar />
         <LayoutWrapper>
           <main>{children}</main>
         </LayoutWrapper>

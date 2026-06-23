@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
+import ImageWithSkeleton from "@/components/ui/loaders/ImageWithSkeleton";
 import { notFound } from "next/navigation";
 import {
   MapPin, BedDouble, Maximize2, Building2, CalendarCheck,
@@ -178,9 +178,9 @@ export default async function PropertyDetailPage({
                 <div className="relative">
                   <div className="grid grid-cols-4 grid-rows-2 gap-1.5 h-72 md:h-96">
                     {/* Primary (large) */}
-                    <div className="col-span-4 md:col-span-3 row-span-2 relative">
+                    <div className="col-span-4 md:col-span-3 row-span-2 relative bg-[var(--color-surface-3)]">
                       {property.images[0] && (
-                        <Image
+                        <ImageWithSkeleton
                           src={property.images[0].url}
                           alt={property.images[0].altText ?? property.title}
                           fill
@@ -192,8 +192,8 @@ export default async function PropertyDetailPage({
                     </div>
                     {/* Thumbnails */}
                     {property.images.slice(1, 3).map((img, i) => (
-                      <div key={img.id} className="hidden md:block relative col-span-1 row-span-1">
-                        <Image
+                      <div key={img.id} className="hidden md:block relative col-span-1 row-span-1 bg-[var(--color-surface-3)]">
+                        <ImageWithSkeleton
                           src={img.url}
                           alt={img.altText ?? `Photo ${i + 2}`}
                           fill

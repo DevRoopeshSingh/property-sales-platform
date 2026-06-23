@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import ImageWithSkeleton from "@/components/ui/loaders/ImageWithSkeleton";
 import { MapPin, Maximize2, BedDouble, Building2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
@@ -35,7 +35,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
       {/* Image */}
       <div className="relative h-64 overflow-hidden bg-[var(--color-surface-3)]">
         {primaryImage ? (
-          <Image
+          <ImageWithSkeleton
             src={primaryImage.url}
             alt={primaryImage.altText ?? property.title}
             fill
