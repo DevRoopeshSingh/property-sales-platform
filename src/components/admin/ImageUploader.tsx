@@ -23,8 +23,16 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
   const fileInputRef = useRef<HTMLInputElement>(null);
   const supabase = createClient();
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent) => {
+    let files: FileList | null = null;
+    if ('dataTransfer' in e) {
+        files = e.dataTransfer.files;
+    } else {
+        files = e.target.files;
+    }
+    
     if (!files || files.length === 0) return;
 
     if (value.length + files.length > maxImages) {
@@ -47,7 +55,7 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
         const filePath = `${fileName}`;
 
         // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("properties")
           .upload(filePath, file, {
             cacheControl: "3600",
@@ -70,9 +78,9 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
       }
 
       onChange(newImages);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error uploading image:", err);
-      setError(err.message || "Failed to upload image. Make sure the 'properties' bucket exists and is public.");
+      setError((err as Error).message || "Failed to upload image. Make sure the 'properties' bucket exists and is public.");
     } finally {
       setIsUploading(false);
       if (fileInputRef.current) {

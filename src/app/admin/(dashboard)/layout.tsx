@@ -60,6 +60,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Mobile Header (minimal) */}
         <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 md:hidden">
            <div className="font-bold text-lg text-slate-900">PropConnect</div>
+           <form
+             action={async () => {
+               "use server";
+               await signOut({ redirectTo: "/admin/login" });
+             }}
+           >
+             <button type="submit" className="text-sm text-red-600 font-medium">
+               Sign Out
+             </button>
+           </form>
         </header>
 
         <div className="flex-1 overflow-auto p-4 md:p-8">

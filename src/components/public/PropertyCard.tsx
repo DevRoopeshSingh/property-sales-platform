@@ -9,7 +9,6 @@ import {
   PropertyCardData,
   LOCALITY_LABELS,
   PROPERTY_SUB_TYPE_LABELS,
-  POSSESSION_LABELS,
 } from "@/types";
 
 interface PropertyCardProps {

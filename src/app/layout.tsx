@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navbar from "@/components/public/Navbar";
-import Footer from "@/components/public/Footer";
+
 
 export const metadata: Metadata = {
   title: {
@@ -23,6 +22,8 @@ export const metadata: Metadata = {
   },
 };
 
+import LayoutWrapper from "@/components/public/LayoutWrapper";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -31,9 +32,9 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body suppressHydrationWarning>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LayoutWrapper>
+          <main>{children}</main>
+        </LayoutWrapper>
       </body>
     </html>
   );

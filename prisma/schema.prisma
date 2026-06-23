@@ -188,3 +188,9 @@ model AdminUser {
   password  String
   createdAt DateTime @default(now())
 }
+
+model Setting {
+  key       String   @id
+  value     String   @db.Text
+  updatedAt DateTime @updatedAt
+}

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import { generateWhatsAppLink } from "@/lib/whatsapp";

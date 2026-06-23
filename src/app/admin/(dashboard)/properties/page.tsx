@@ -19,7 +19,7 @@ export default async function PropertiesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Properties</h1>
-          <p className="text-[var(--color-text-secondary)] mt-1">Manage your property listings</p>
+          <p className="text-[var(--color-text-secondary)] mt-1">Manage your platform&apos;s real estate listings.</p>
         </div>
         <Link href="/admin/properties/new" className="btn btn-primary flex items-center gap-2">
           <Plus size={18} />
@@ -35,7 +35,7 @@ export default async function PropertiesPage() {
             </div>
             <h3 className="text-lg font-bold text-[var(--color-text-primary)]">No properties found</h3>
             <p className="text-[var(--color-text-secondary)] mt-2 mb-6">
-              You haven't added any properties yet. Create your first listing to get started.
+              You haven&apos;t added any properties yet. Create your first listing to get started.
             </p>
             <Link href="/admin/properties/new" className="btn btn-primary">
               Create Property

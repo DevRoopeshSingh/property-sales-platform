@@ -10,7 +10,7 @@ import { createProperty, updateProperty } from "@/app/admin/(dashboard)/properti
 import { ImageUploader } from "./ImageUploader";
 
 interface PropertyFormProps {
-  initialData?: any; // The property data if editing
+  initialData?: Record<string, unknown>; // The property data if editing
   propertyId?: string;
 }
 
@@ -38,12 +38,15 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
     price: Number(initialData.price),
   } : defaultValues;
 
+
+
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
   } = useForm<PropertyFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(propertySchema) as any,
     defaultValues: mappedInitialData,
   });
@@ -63,7 +66,7 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
         router.push("/admin/properties");
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setServerError("An unexpected error occurred.");
     } finally {
       setIsSubmitting(false);

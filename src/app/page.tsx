@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Search, MapPin, TrendingUp, Shield, Star, ChevronRight, Building2, IndianRupee, Key, CheckCircle, MessageSquare, Award } from "lucide-react";
+import { Search, MapPin, TrendingUp, Shield, Star, ChevronRight, IndianRupee, Key, CheckCircle, MessageSquare, Award } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import { generateWhatsAppLink } from "@/lib/whatsapp";

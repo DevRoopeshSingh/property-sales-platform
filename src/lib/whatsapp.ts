@@ -13,7 +13,6 @@ export function generateWhatsAppLink({
   phone,
   propertyTitle,
   propertyId,
-  source = "website",
 }: WhatsAppLinkParams = {}): string {
   const whatsappNumber =
     phone ?? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";

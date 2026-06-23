@@ -1,6 +1,7 @@
 "use client";
 
 import { Phone } from "lucide-react";
+import Link from "next/link";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 
 interface StickyContactBarProps {
@@ -41,13 +42,13 @@ export default function StickyContactBar({ propertyTitle, propertyId }: StickyCo
         </svg>
         WhatsApp
       </a>
-      <a
+      <Link
         href="/properties"
         className="btn btn-primary flex-1 text-xs sm:text-sm py-2.5 shadow-[0_4px_14px_rgba(26,111,232,0.3)]"
         aria-label="View Properties"
       >
         View All
-      </a>
+      </Link>
     </div>
   );
 }
