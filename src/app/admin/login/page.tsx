@@ -1,12 +1,45 @@
-import type { Metadata } from "next";
-import { Building2 } from "lucide-react";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Admin Login — PropConnect",
-  robots: { index: false, follow: false },
-};
+import { useState } from "react";
+import { Building2 } from "lucide-react";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
+  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (res?.error) {
+        setError("Invalid email or password");
+      } else {
+        router.push(callbackUrl);
+        router.refresh();
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
@@ -48,7 +81,13 @@ export default function AdminLoginPage() {
             Sign in to manage your property listings and leads.
           </p>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+                {error}
+              </div>
+            )}
+            
             <div>
               <label
                 htmlFor="admin-email"
@@ -64,6 +103,9 @@ export default function AdminLoginPage() {
                 placeholder="admin@propconnect.in"
                 className="input"
                 required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
@@ -82,15 +124,23 @@ export default function AdminLoginPage() {
                 placeholder="••••••••"
                 className="input"
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
 
             <button
               type="submit"
               id="admin-login-submit"
-              className="btn btn-primary w-full py-3"
+              className="btn btn-primary w-full py-3 flex justify-center items-center"
+              disabled={isLoading}
             >
-              Sign In to Admin Panel
+              {isLoading ? (
+                <span className="inline-block animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+              ) : (
+                "Sign In to Admin Panel"
+              )}
             </button>
           </form>
 
