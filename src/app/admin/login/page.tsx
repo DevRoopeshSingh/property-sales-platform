@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Building2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/admin/dashboard";
@@ -41,6 +41,86 @@ export default function AdminLoginPage() {
   };
 
   return (
+    <div className="card p-8">
+      <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-1">
+        Welcome back
+      </h1>
+      <p className="text-sm text-[var(--color-text-secondary)] mb-6">
+        Sign in to manage your property listings and leads.
+      </p>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {error && (
+          <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
+            {error}
+          </div>
+        )}
+        
+        <div>
+          <label
+            htmlFor="admin-email"
+            className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5"
+          >
+            Email Address
+          </label>
+          <input
+            id="admin-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="admin@propconnect.in"
+            className="input"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="admin-password"
+            className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5"
+          >
+            Password
+          </label>
+          <input
+            id="admin-password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            placeholder="••••••••"
+            className="input"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            disabled={isLoading}
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="admin-login-submit"
+          className="btn btn-primary w-full py-3 flex justify-center items-center"
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <span className="inline-block animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+          ) : (
+            "Sign In to Admin Panel"
+          )}
+        </button>
+      </form>
+
+      <div className="mt-6 p-3 rounded-lg text-xs text-center" style={{ background: "var(--color-surface-2)", color: "var(--color-text-muted)" }}>
+        🔒 This area is restricted to authorized administrators only.
+      </div>
+    </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
     <div
       className="min-h-screen flex items-center justify-center p-4"
       style={{ background: "var(--color-text-primary)" }}
@@ -72,82 +152,14 @@ export default function AdminLoginPage() {
           </p>
         </div>
 
-        {/* Login Card */}
-        <div className="card p-8">
-          <h1 className="text-xl font-bold text-[var(--color-text-primary)] mb-1">
-            Welcome back
-          </h1>
-          <p className="text-sm text-[var(--color-text-secondary)] mb-6">
-            Sign in to manage your property listings and leads.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100">
-                {error}
-              </div>
-            )}
-            
-            <div>
-              <label
-                htmlFor="admin-email"
-                className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5"
-              >
-                Email Address
-              </label>
-              <input
-                id="admin-email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder="admin@propconnect.in"
-                className="input"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="admin-password"
-                className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5"
-              >
-                Password
-              </label>
-              <input
-                id="admin-password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="••••••••"
-                className="input"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-
-            <button
-              type="submit"
-              id="admin-login-submit"
-              className="btn btn-primary w-full py-3 flex justify-center items-center"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <span className="inline-block animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-              ) : (
-                "Sign In to Admin Panel"
-              )}
-            </button>
-          </form>
-
-          <div className="mt-6 p-3 rounded-lg text-xs text-center" style={{ background: "var(--color-surface-2)", color: "var(--color-text-muted)" }}>
-            🔒 This area is restricted to authorized administrators only.
+        {/* Login Card inside Suspense */}
+        <Suspense fallback={
+          <div className="card p-8 flex justify-center items-center">
+            <span className="inline-block animate-spin w-8 h-8 border-4 border-[var(--color-brand-600)] border-t-transparent rounded-full" />
           </div>
-        </div>
+        }>
+          <LoginForm />
+        </Suspense>
       </div>
     </div>
   );
