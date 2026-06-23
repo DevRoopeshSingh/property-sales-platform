@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
-import { deleteImagesFromStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
+import { deleteImagesFromStorage, uploadImageToStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
 
 export interface PropertyImageInput {
   url: string;
@@ -56,24 +56,20 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
         const fileName = `${Math.random().toString(36).substring(2, 15)}-${Date.now()}.${fileExt}`;
         const filePath = `${fileName}`;
 
-        // Upload to Supabase Storage
-        const { error: uploadError } = await supabase.storage
-          .from("properties")
-          .upload(filePath, file, {
-            cacheControl: "3600",
-            upsert: false,
-          });
+        // Upload to Supabase Storage via Server Action to bypass RLS
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("filePath", filePath);
 
-        if (uploadError) throw uploadError;
+        const uploadResult = await uploadImageToStorage(formData);
 
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from("properties")
-          .getPublicUrl(filePath);
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || "Failed to upload image");
+        }
 
         newImages.push({
-          url: publicUrl,
-          key: filePath,
+          url: uploadResult.publicUrl as string,
+          key: uploadResult.key as string,
           altText: file.name,
           isPrimary: newImages.length === 0, // First image is primary by default
         });
