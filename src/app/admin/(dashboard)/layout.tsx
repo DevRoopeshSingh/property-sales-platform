@@ -1,6 +1,7 @@
-import { Building2, LayoutDashboard, Home, Users, Settings, LogOut } from "lucide-react";
+import { Building2, LogOut } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/auth";
+import { AdminNav } from "@/components/admin/AdminNav";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,24 +19,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </div>
 
-        <nav className="flex-1 py-6 px-4 space-y-2">
-          <Link href="/admin/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-lg bg-blue-600/10 text-blue-400 font-medium transition-colors">
-            <LayoutDashboard size={20} />
-            Dashboard
-          </Link>
-          <Link href="/admin/properties" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
-            <Home size={20} />
-            Properties
-          </Link>
-          <Link href="/admin/leads" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
-            <Users size={20} />
-            Leads
-          </Link>
-          <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 text-slate-300 hover:text-white transition-colors">
-            <Settings size={20} />
-            Settings
-          </Link>
-        </nav>
+        <AdminNav />
 
         <div className="p-4 border-t border-slate-800">
           <form
