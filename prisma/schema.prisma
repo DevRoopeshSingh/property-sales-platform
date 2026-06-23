@@ -1,0 +1,188 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────
+
+enum PropertyType {
+  RESIDENTIAL
+  COMMERCIAL
+}
+
+enum PropertySubType {
+  // Residential
+  APARTMENT
+  VILLA
+  INDEPENDENT_HOUSE
+  ROW_HOUSE
+  PLOT
+  // Commercial
+  SHOP
+  OFFICE
+  SHOWROOM
+}
+
+enum PropertyStatus {
+  DRAFT
+  ACTIVE
+  SOLD
+  ARCHIVED
+}
+
+enum Possession {
+  READY_TO_MOVE
+  UNDER_CONSTRUCTION
+  NEW_LAUNCH
+}
+
+enum LeadSource {
+  WHATSAPP
+  CALL
+  FORM
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  SITE_VISIT_SCHEDULED
+  CONVERTED
+  LOST
+}
+
+enum Locality {
+  MUMBAI
+  NAVI_MUMBAI
+  THANE
+  MIRA_ROAD
+  BHAYANDAR
+  NAIGAON
+  VASAI
+  NALASOPARA
+  VIRAR
+}
+
+// ─────────────────────────────────────────
+// MODELS
+// ─────────────────────────────────────────
+
+model Property {
+  id          String          @id @default(cuid())
+  title       String
+  slug        String          @unique
+  description String          @db.Text
+  type        PropertyType
+  subType     PropertySubType
+  status      PropertyStatus  @default(DRAFT)
+  featured    Boolean         @default(false)
+
+  // Pricing
+  price           BigInt
+  priceLabel      String
+  priceNegotiable Boolean @default(false)
+
+  // Specs
+  bhk        Int?
+  area       Int
+  carpetArea Int?
+  floor      Int?
+  totalFloors Int?
+
+  // Location
+  locality      Locality
+  address       String
+  landmark      String?
+  latitude      Float?
+  longitude     Float?
+  googleMapsUrl String?
+
+  // Details
+  possession     Possession
+  possessionDate String?
+  reraNumber     String?
+  projectName    String?
+  builderName    String?
+
+  // Amenities stored as string array
+  amenities String[]
+
+  // Media
+  images PropertyImage[]
+
+  // Relations
+  leads Lead[]
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([locality])
+  @@index([type])
+  @@index([status])
+  @@index([featured])
+  @@index([slug])
+}
+
+model PropertyImage {
+  id         String   @id @default(cuid())
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  url        String
+  key        String
+  altText    String?
+  order      Int      @default(0)
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([propertyId])
+}
+
+model Lead {
+  id    String @id @default(cuid())
+  name  String
+  phone String
+  email String?
+  message String? @db.Text
+  source  LeadSource
+  status  LeadStatus @default(NEW)
+
+  // Property association (optional)
+  propertyId    String?
+  property      Property? @relation(fields: [propertyId], references: [id])
+  propertyTitle String?
+
+  // UTM tracking
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  ipAddress   String?
+  userAgent   String?
+
+  // Admin notes
+  adminNotes   String?  @db.Text
+  followUpDate DateTime?
+  contactedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([source])
+  @@index([createdAt])
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  createdAt DateTime @default(now())
+}
