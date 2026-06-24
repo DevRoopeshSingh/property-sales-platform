@@ -7,10 +7,10 @@ import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { LOCALITY_LABELS, type Locality } from "@/types";
 
 export const metadata: Metadata = {
-  title: "PropConnect — Premium Properties in Mumbai",
+  title: "PropConnect — Premium Properties all over India",
   description:
-    "Discover premium residential and commercial properties across Mumbai, Navi Mumbai, Thane, Vasai-Virar. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
-  keywords: "property in mumbai, luxury flats mumbai, zero brokerage, verified properties, new launch projects",
+    "Discover premium residential and commercial properties all over India. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
+  keywords: "property in india, luxury flats, zero brokerage, verified properties, new launch projects",
 };
 
 const CATEGORIES = [
@@ -215,18 +215,18 @@ export default function HomePage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-6 animate-fade-up bg-white/10 text-white backdrop-blur-md border border-white/20">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              Mumbai&apos;s Premium Property Platform
+              India&apos;s Premium Property Platform
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
-              Find Your Perfect
+              Find Your Perfect Property
               <span className="block mt-1 text-blue-400">
-                Home in Mumbai
+                 all over India
               </span>
             </h1>
 
             <p className="text-lg text-slate-300 mb-10 max-w-xl animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              Explore hand-picked, RERA-verified properties across Mumbai, Thane, Navi Mumbai, and Vasai-Virar. Zero brokerage on new launch projects.
+              Explore hand-picked, RERA-verified properties all over India. Zero brokerage on new launch projects.
             </p>
 
             {/* Advanced Search Bar */}
@@ -291,7 +291,7 @@ export default function HomePage() {
         <div className="container-main flex flex-wrap items-center justify-between gap-4 text-sm font-medium text-slate-300">
           <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> 100% RERA Verified</div>
           <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Zero Hidden Brokerage</div>
-          <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Direct Builder Deals</div>
+          <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Best Price Guaranteed</div>
           <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Dedicated Local Experts</div>
         </div>
       </div>
