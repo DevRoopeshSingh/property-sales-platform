@@ -1,11 +1,29 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
-import { Plus, Edit, Home, CheckCircle2, Clock } from "lucide-react";
+import { Prisma } from "@prisma/client";
+import { Plus, Edit, Home, CheckCircle2, Clock, MapPin } from "lucide-react";
 import { DeletePropertyButton } from "@/components/admin/DeletePropertyButton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { PropertyFilters } from "@/components/admin/PropertyFilters";
 
-export default async function PropertiesPage() {
+export default async function PropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ type?: string; locality?: string }>;
+}) {
+  const params = await searchParams;
+  const typeFilter = params?.type;
+  const localityFilter = params?.locality;
+
+  const whereClause: Prisma.PropertyWhereInput = {};
+  if (typeFilter) {
+    whereClause.type = typeFilter as Prisma.PropertyWhereInput["type"];
+  }
+  if (localityFilter) {
+    whereClause.locality = localityFilter as Prisma.PropertyWhereInput["locality"];
+  }
   const properties = await prisma.property.findMany({
+    where: whereClause,
     orderBy: { createdAt: "desc" },
     include: {
       images: {
@@ -27,6 +45,8 @@ export default async function PropertiesPage() {
           Add Property
         </Link>
       </div>
+
+      <PropertyFilters />
 
       <div className="card overflow-hidden">
         {properties.length === 0 ? (
@@ -73,13 +93,24 @@ export default async function PropertiesPage() {
                         </div>
                         <div>
                           <p className="font-semibold text-[var(--color-text-primary)] line-clamp-1">{property.title}</p>
-                          <p className="text-xs text-[var(--color-text-secondary)] mt-1">{property.locality}</p>
+                          <span className="inline-flex items-center gap-1 mt-1.5 px-2 py-0.5 rounded text-xs font-medium bg-[var(--color-surface-2)] text-[var(--color-text-secondary)] border border-[var(--color-border)]">
+                            <MapPin size={12} />
+                            {property.locality}
+                          </span>
                         </div>
                       </div>
                     </td>
-                    <td className="p-4 text-sm text-[var(--color-text-secondary)]">
-                      {property.type} <br/>
-                      <span className="text-xs opacity-75">{property.subType}</span>
+                    <td className="p-4">
+                      <div className="flex flex-col items-start gap-1.5">
+                        <span className="inline-flex px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-xs font-medium border border-indigo-100">
+                          {property.type}
+                        </span>
+                        {property.subType && (
+                          <span className="inline-flex px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-medium uppercase tracking-wide border border-slate-200">
+                            {property.subType}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 text-sm font-medium text-[var(--color-text-primary)]">
                       ₹ {property.priceLabel}

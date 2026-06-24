@@ -24,7 +24,7 @@ export const propertySchema = z.object({
 
   // Specs
   bhk: z.coerce.number().nullable().optional(),
-  area: z.coerce.number().min(1, "Area must be greater than 0"),
+  area: z.coerce.number().nullable().optional(),
   carpetArea: z.coerce.number().nullable().optional(),
   floor: z.coerce.number().nullable().optional(),
   totalFloors: z.coerce.number().nullable().optional(),

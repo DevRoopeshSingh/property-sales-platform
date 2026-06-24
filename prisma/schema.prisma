@@ -90,7 +90,7 @@ model Property {
 
   // Specs
   bhk        Int?
-  area       Int
+  area       Int?
   carpetArea Int?
   floor      Int?
   totalFloors Int?

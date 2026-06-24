@@ -202,7 +202,7 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Area (Sq.Ft) *</label>
+            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Area (Sq.Ft)</label>
             <input 
               type="number" 
               {...register("area")} 
