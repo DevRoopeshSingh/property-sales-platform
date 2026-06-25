@@ -16,11 +16,11 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
   const [settings, setSettings] = useState<Record<string, string>>({
     // Defaults to prevent undefined controlled inputs
     siteName: initialSettings.siteName || "PropConnect",
-    supportEmail: initialSettings.supportEmail || "support@propconnect.in",
-    supportPhone: initialSettings.supportPhone || "+91 9876543210",
+    supportEmail: initialSettings.supportEmail || "enquiry@thepropconnect.in",
+    supportPhone: initialSettings.supportPhone || "+91 9833378400",
     defaultCity: initialSettings.defaultCity || "MUMBAI",
     
-    waNumber: initialSettings.waNumber || "919820098200",
+    waNumber: initialSettings.waNumber || "919833378400",
     waDefaultMsg: initialSettings.waDefaultMsg || "Hi, I am interested in property listings.",
     leadFollowUpHours: initialSettings.leadFollowUpHours || "24",
     
@@ -155,7 +155,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">WhatsApp Number (with country code)</label>
-                  <input type="text" className="input" placeholder="919876543210" value={settings.waNumber} onChange={(e) => handleChange("waNumber", e.target.value)} />
+                  <input type="text" className="input" placeholder="919833378400" value={settings.waNumber} onChange={(e) => handleChange("waNumber", e.target.value)} />
                   <p className="text-xs text-slate-500 mt-1">Number where customer WhatsApp messages are sent.</p>
                 </div>
                 <div>

@@ -123,7 +123,7 @@ export default function Footer() {
                   className="text-sm transition-colors hover:text-white"
                   style={{ color: "rgba(255,255,255,0.65)" }}
                 >
-                  {process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "info@propconnect.in"}
+                  {process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "enquiry@thepropconnect.in"}
                 </a>
               </li>
               <li className="flex items-start gap-3">

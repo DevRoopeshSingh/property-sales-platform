@@ -190,7 +190,7 @@ export default async function PropertyDetailPage({
                         <Maximize2 size={16} className="text-[var(--color-brand-500)]" />
                         <span className="font-bold text-[var(--color-text-primary)]">{property.area.toLocaleString()} sq ft</span>
                       </div>
-                      <span className="text-xs text-[var(--color-text-muted)]">Built-up Area</span>
+                      <span className="text-xs text-[var(--color-text-muted)]">Carpet Area</span>
                     </div>
                   )}
                   {property.floor && (

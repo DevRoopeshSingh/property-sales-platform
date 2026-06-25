@@ -79,7 +79,7 @@ export default async function ContactPage() {
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Email</p>
                   <a href={`mailto:${settings.supportEmail || process.env.NEXT_PUBLIC_CONTACT_EMAIL}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
-                    {settings.supportEmail || process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@propconnect.in"}
+                    {settings.supportEmail || process.env.NEXT_PUBLIC_CONTACT_EMAIL || "enquiry@thepropconnect.in"}
                   </a>
                 </div>
               </div>

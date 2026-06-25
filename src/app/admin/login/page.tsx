@@ -68,7 +68,7 @@ function LoginForm() {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="admin@propconnect.in"
+            placeholder="admin@thepropconnect.in"
             className="input"
             required
             value={email}
