@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   keywords: "property in india, luxury flats, zero brokerage, verified properties, new launch projects",
 };
 
+export const revalidate = 60;
+
 const CATEGORIES = [
   { label: "Apartments", icon: "🏢", href: "/properties?subType=APARTMENT", count: "200+" },
   { label: "Villas", icon: "🏡", href: "/properties?subType=VILLA", count: "50+" },

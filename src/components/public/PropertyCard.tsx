@@ -56,6 +56,11 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          {property.isDistressed && (
+            <span className="badge bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider shadow-sm border border-red-700">
+              Distressed Property
+            </span>
+          )}
           {property.featured && (
             <span className="badge badge-blue text-xs">⭐ Featured</span>
           )}

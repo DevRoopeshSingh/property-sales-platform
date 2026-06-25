@@ -155,6 +155,7 @@ export interface PropertyCardData {
   subType: PropertySubType;
   status: PropertyStatus;
   featured: boolean;
+  isDistressed: boolean;
   price: number;
   priceLabel: string;
   bhk: number | null;
@@ -182,6 +183,7 @@ export interface PropertyDetail extends PropertyCardData {
   reraNumber: string | null;
   projectName: string | null;
   builderName: string | null;
+  duesPending: string | null;
   amenities: string[];
   metaTitle: string | null;
   metaDescription: string | null;

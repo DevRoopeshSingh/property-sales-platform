@@ -16,6 +16,8 @@ export const propertySchema = z.object({
   ]),
   status: z.enum(["DRAFT", "ACTIVE", "SOLD", "ARCHIVED"]).default("DRAFT"),
   featured: z.boolean().default(false),
+  isDistressed: z.boolean().default(false),
+  duesPending: z.string().nullable().optional(),
 
   // Pricing
   price: z.coerce.number().min(0, "Price must be a positive number"),

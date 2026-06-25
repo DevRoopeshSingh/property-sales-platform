@@ -32,6 +32,8 @@ export async function createProperty(data: PropertyFormValues) {
         subType: validatedData.subType,
         status: validatedData.status,
         featured: validatedData.featured,
+        isDistressed: validatedData.isDistressed,
+        duesPending: validatedData.duesPending,
         
         price: BigInt(validatedData.price),
         priceLabel: validatedData.priceLabel,
@@ -117,6 +119,8 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
         subType: validatedData.subType,
         status: validatedData.status,
         featured: validatedData.featured,
+        isDistressed: validatedData.isDistressed,
+        duesPending: validatedData.duesPending,
         
         price: BigInt(validatedData.price),
         priceLabel: validatedData.priceLabel,

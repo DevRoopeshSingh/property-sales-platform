@@ -183,6 +183,9 @@ export default async function PropertyDetailPage({
               {/* Title & Badges */}
               <div className="card p-5 mb-5">
                 <div className="flex flex-wrap gap-2 mb-3">
+                  {property.isDistressed && (
+                    <span className="badge bg-red-600 text-white border-red-700">Distressed Property</span>
+                  )}
                   <span className="badge badge-blue">{PROPERTY_SUB_TYPE_LABELS[property.subType]}</span>
                   <span className={`badge ${property.possession === "READY_TO_MOVE" ? "badge-green" : property.possession === "NEW_LAUNCH" ? "badge-blue" : "badge-amber"}`}>
                     {POSSESSION_LABELS[property.possession]}
@@ -276,16 +279,23 @@ export default async function PropertyDetailPage({
                   {property.address}
                   {property.landmark && ` · Landmark: ${property.landmark}`}
                 </p>
-                <div className="rounded-xl overflow-hidden h-48 bg-[var(--color-surface-3)] flex items-center justify-center">
-                  <a
-                    href={property.googleMapsUrl ?? `https://maps.google.com/?q=${encodeURIComponent(property.address)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-outline"
-                  >
-                    <MapPin size={16} />
-                    View on Google Maps
-                  </a>
+                <div className="rounded-xl overflow-hidden h-64 bg-[var(--color-surface-3)]">
+                  {property.googleMapsUrl?.includes('<iframe') ? (
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: property.googleMapsUrl }} 
+                      className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full" 
+                    />
+                  ) : (
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      loading="lazy"
+                      allowFullScreen
+                      referrerPolicy="no-referrer-when-downgrade"
+                      src={property.googleMapsUrl?.includes('embed') ? property.googleMapsUrl : `https://maps.google.com/maps?q=${encodeURIComponent(property.address)}&t=&z=14&ie=UTF8&iwloc=&output=embed`}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -304,6 +314,12 @@ export default async function PropertyDetailPage({
                       ₹{Math.round(Number(property.price) / property.carpetArea).toLocaleString("en-IN")}/sq ft
                       · Carpet: {property.carpetArea} sq ft
                     </p>
+                  )}
+                  {property.duesPending && (
+                    <div className="mt-3 p-3 bg-red-50 border border-red-100 rounded-lg">
+                      <p className="text-xs font-bold text-red-800 mb-1">Dues Pending</p>
+                      <p className="text-xs text-red-600">{property.duesPending}</p>
+                    </div>
                   )}
                 </div>
 

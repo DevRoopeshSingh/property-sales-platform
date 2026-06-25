@@ -87,6 +87,8 @@ model Property {
   subType     PropertySubType
   status      PropertyStatus  @default(DRAFT)
   featured    Boolean         @default(false)
+  isDistressed Boolean        @default(false)
+  duesPending  String?
 
   // Pricing
   price           BigInt
