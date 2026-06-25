@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { Users, Phone, Calendar } from "lucide-react";
 import LeadActions from "@/components/admin/LeadActions";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { getSettings } from "@/app/admin/(dashboard)/settings/actions";
 
 const STATUS_COLORS: Record<string, string> = {
   NEW: "bg-blue-100 text-blue-700",
@@ -22,6 +23,8 @@ export default async function LeadsPage() {
     include: { property: { select: { title: true, slug: true } } },
     orderBy: { createdAt: "desc" },
   });
+  
+  const settings = await getSettings().catch(() => ({} as Record<string, string>));
 
   const counts = {
     total: leads.length,
@@ -88,6 +91,7 @@ export default async function LeadsPage() {
                   const waLink = generateWhatsAppLink({
                     propertyTitle: lead.property?.title ?? lead.propertyTitle ?? undefined,
                     source: "admin-leads",
+                    settings,
                   });
                   const callLink = `tel:${lead.phone}`;
 

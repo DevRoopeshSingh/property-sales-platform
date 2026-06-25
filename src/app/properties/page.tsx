@@ -4,7 +4,9 @@ import { SlidersHorizontal, X } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import SortSelect from "@/components/public/SortSelect";
+import MobileFiltersDrawer from "@/components/public/MobileFiltersDrawer";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import { prisma } from "@/lib/prisma";
 import {
   LOCALITY_LABELS,
@@ -93,7 +95,8 @@ export default async function PropertiesPage({
     price: Number(p.price),
   })) as unknown as PropertyCardData[];
 
-  const waLink = generateWhatsAppLink({ source: "listing-empty-state" });
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
+  const waLink = generateWhatsAppLink({ source: "listing-empty-state", settings });
 
   // Helper to build filter URL
   function buildUrl(key: string, value: string, toggle = true): string {
@@ -157,6 +160,144 @@ export default async function PropertiesPage({
         </div>
 
         <div className="container-main py-6">
+          {/* ── Mobile Filters Trigger ── */}
+          <div className="lg:hidden mb-6">
+            <MobileFiltersDrawer activeFilterCount={activeFilterCount}>
+              <div className="space-y-6">
+                {/* Locality */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
+                    Locality
+                  </h3>
+                  <div className="space-y-2">
+                    {LOCALITIES_FILTER.map(([key, label]) => (
+                      <Link
+                        key={key}
+                        href={buildUrl("locality", key)}
+                        className="flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <span
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            localities.includes(key)
+                              ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
+                          }`}
+                        >
+                          {localities.includes(key) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`text-sm transition-colors ${localities.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
+                          {label}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="divider" />
+
+                {/* Property Type */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
+                    Property Type
+                  </h3>
+                  <div className="space-y-2">
+                    {SUB_TYPES_FILTER.map(([key, label]) => (
+                      <Link
+                        key={key}
+                        href={buildUrl("subType", key)}
+                        className="flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <span
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            subTypes.includes(key)
+                              ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
+                          }`}
+                        >
+                          {subTypes.includes(key) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`text-sm transition-colors ${subTypes.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
+                          {label}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="divider" />
+
+                {/* BHK */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
+                    BHK
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {[...BHK_OPTIONS, "4+"].map((bhk) => {
+                      const val = String(bhk);
+                      const active = bhks.includes(Number(bhk));
+                      return (
+                        <Link
+                          key={val}
+                          href={buildUrl("bhk", val)}
+                          className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors ${
+                            active
+                              ? "bg-[var(--color-brand-600)] text-white border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] hover:border-[var(--color-brand-400)] hover:bg-[var(--color-brand-50)] hover:text-[var(--color-brand-700)]"
+                          }`}
+                        >
+                          {val} BHK
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="divider" />
+
+                {/* Possession */}
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
+                    Possession
+                  </h3>
+                  <div className="space-y-2">
+                    {POSSESSION_FILTER.map(([key, label]) => (
+                      <Link
+                        key={key}
+                        href={buildUrl("possession", key)}
+                        className="flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <span
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            possessions.includes(key)
+                              ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
+                          }`}
+                        >
+                          {possessions.includes(key) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`text-sm transition-colors ${possessions.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
+                          {label}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </MobileFiltersDrawer>
+          </div>
+
           <div className="flex gap-6">
             {/* ── Filters Sidebar (desktop) ── */}
             <aside className="hidden lg:block w-64 shrink-0">

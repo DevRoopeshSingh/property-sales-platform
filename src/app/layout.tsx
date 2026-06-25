@@ -25,20 +25,27 @@ export const metadata: Metadata = {
 import LayoutWrapper from "@/components/public/LayoutWrapper";
 import NavigationProgressBar from "@/components/ui/loaders/NavigationProgressBar";
 import { Toaster } from "sonner";
+import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
+import { SettingsProvider } from "@/contexts/SettingsContext";
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fetch global settings once per request to pass into context
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
+
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body suppressHydrationWarning>
-        <NavigationProgressBar />
-        <Toaster richColors position="top-center" />
-        <LayoutWrapper>
-          <main>{children}</main>
-        </LayoutWrapper>
+        <SettingsProvider settings={settings}>
+          <NavigationProgressBar />
+          <Toaster richColors position="top-center" />
+          <LayoutWrapper>
+            <main>{children}</main>
+          </LayoutWrapper>
+        </SettingsProvider>
       </body>
     </html>
   );

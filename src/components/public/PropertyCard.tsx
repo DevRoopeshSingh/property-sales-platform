@@ -5,6 +5,7 @@ import ImageWithSkeleton from "@/components/ui/loaders/ImageWithSkeleton";
 import { MapPin, Maximize2, BedDouble, Building2, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { useSettings } from "@/contexts/SettingsContext";
 import {
   PropertyCardData,
   LOCALITY_LABELS,
@@ -18,10 +19,12 @@ interface PropertyCardProps {
 
 export default function PropertyCard({ property, className }: PropertyCardProps) {
   const primaryImage = property.images.find((img) => img.isPrimary) ?? property.images[0];
+  const settings = useSettings();
   const whatsappLink = generateWhatsAppLink({
     propertyTitle: property.title,
     propertyId: property.id,
     source: "listing-card",
+    settings,
   });
 
   const possessionBadge = {

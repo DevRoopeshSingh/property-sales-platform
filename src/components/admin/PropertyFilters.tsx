@@ -3,18 +3,10 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 
+import { LOCALITY_LABELS } from "@/types";
+
 const PROPERTY_TYPES = ["RESIDENTIAL", "COMMERCIAL"];
-const LOCALITIES = [
-  "MUMBAI",
-  "NAVI_MUMBAI",
-  "THANE",
-  "MIRA_ROAD",
-  "BHAYANDAR",
-  "NAIGAON",
-  "VASAI",
-  "NALASOPARA",
-  "VIRAR"
-];
+const LOCALITIES = Object.keys(LOCALITY_LABELS);
 
 export function PropertyFilters() {
   const router = useRouter();
@@ -71,7 +63,7 @@ export function PropertyFilters() {
         >
           <option value="">All Locations</option>
           {LOCALITIES.map(loc => (
-            <option key={loc} value={loc}>{loc.replace(/_/g, " ")}</option>
+            <option key={loc} value={loc}>{LOCALITY_LABELS[loc as keyof typeof LOCALITY_LABELS]}</option>
           ))}
         </select>
       </div>

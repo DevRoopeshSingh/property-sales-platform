@@ -8,6 +8,10 @@ export async function getSettings() {
   const session = await auth();
   if (!session) throw new Error("Unauthorized");
 
+  return getPublicSettings();
+}
+
+export async function getPublicSettings() {
   const settings = await prisma.setting.findMany();
   
   // Convert array of {key, value} to a key-value object

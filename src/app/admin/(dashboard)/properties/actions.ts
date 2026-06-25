@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
 import { revalidatePath } from "next/cache";
 import { deleteImagesFromStorage } from "./storage-actions";
+import { auth } from "@/auth";
 
 // Generate a URL-friendly slug
 function generateSlug(title: string) {
@@ -14,6 +15,9 @@ function generateSlug(title: string) {
 }
 
 export async function createProperty(data: PropertyFormValues) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
   try {
     const validatedData = propertySchema.parse(data);
 
@@ -80,6 +84,9 @@ export async function createProperty(data: PropertyFormValues) {
 }
 
 export async function updateProperty(id: string, data: PropertyFormValues) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
   try {
     const validatedData = propertySchema.parse(data);
 
@@ -164,6 +171,9 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
 }
 
 export async function deleteProperty(id: string) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
   try {
     // Find existing images to delete from storage
     const existingImages = await prisma.propertyImage.findMany({

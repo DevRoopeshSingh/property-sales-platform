@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
+import { LOCALITY_LABELS } from "@/types";
 import { createProperty, updateProperty } from "@/app/admin/(dashboard)/properties/actions";
 import { ImageUploader } from "./ImageUploader";
 
@@ -262,15 +263,9 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
           <div>
             <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Locality *</label>
             <select {...register("locality")} className="input w-full">
-              <option value="MUMBAI">Mumbai</option>
-              <option value="NAVI_MUMBAI">Navi Mumbai</option>
-              <option value="THANE">Thane</option>
-              <option value="MIRA_ROAD">Mira Road</option>
-              <option value="BHAYANDAR">Bhayandar</option>
-              <option value="NAIGAON">Naigaon</option>
-              <option value="VASAI">Vasai</option>
-              <option value="NALASOPARA">Nalasopara</option>
-              <option value="VIRAR">Virar</option>
+              {Object.entries(LOCALITY_LABELS).map(([key, label]) => (
+                <option key={key} value={key}>{label}</option>
+              ))}
             </select>
           </div>
 

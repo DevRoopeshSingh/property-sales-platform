@@ -1,8 +1,12 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
+import { auth } from "@/auth";
 
 export async function deleteImagesFromStorage(keys: string[]) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
   if (!keys || keys.length === 0) return { success: true };
 
   // We need the service role key to reliably delete images via server actions
@@ -34,6 +38,9 @@ export async function deleteImagesFromStorage(keys: string[]) {
 }
 
 export async function uploadImageToStorage(formData: FormData) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
   try {
     const file = formData.get("file") as File | null;
     const filePath = formData.get("filePath") as string | null;

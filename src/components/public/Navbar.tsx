@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const NAV_LINKS = [
   { label: "Properties", href: "/properties" },
@@ -38,6 +39,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const settings = useSettings();
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-[var(--color-border)] shadow-sm">
@@ -109,7 +111,7 @@ export default function Navbar() {
               {process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 98765 43210"}
             </a>
             <a
-              href={generateWhatsAppLink({ source: "navbar" })}
+              href={generateWhatsAppLink({ source: "navbar", settings })}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp text-sm px-4 py-2"
@@ -167,7 +169,7 @@ export default function Navbar() {
             )}
             <div className="divider" />
             <a
-              href={generateWhatsAppLink({ source: "mobile-nav" })}
+              href={generateWhatsAppLink({ source: "mobile-nav", settings })}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp w-full"

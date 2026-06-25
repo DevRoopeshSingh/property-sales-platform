@@ -3,6 +3,7 @@ import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import ContactForm from "@/components/public/ContactForm";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 
 export const metadata: Metadata = {
   title: "Contact Us — PropConnect",
@@ -10,7 +11,9 @@ export const metadata: Metadata = {
     "Get in touch with our property experts. Chat on WhatsApp, call us, or fill the inquiry form. Available 7 days a week for property consultations.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
+
   return (
     <>
       {/* Header */}
@@ -39,8 +42,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Phone</p>
-                  <a href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
-                    {process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 98765 43210"}
+                  <a href={`tel:${settings.supportPhone || process.env.NEXT_PUBLIC_CONTACT_PHONE}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
+                    {settings.supportPhone || process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91 98765 43210"}
                   </a>
                 </div>
               </div>
@@ -57,7 +60,7 @@ export default function ContactPage() {
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">WhatsApp</p>
                   <a
-                    href={generateWhatsAppLink({ source: "contact-page" })}
+                    href={generateWhatsAppLink({ source: "contact-page", settings })}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-green-600 hover:underline"
@@ -75,8 +78,8 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Email</p>
-                  <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
-                    {process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "info@propconnect.in"}
+                  <a href={`mailto:${settings.supportEmail || process.env.NEXT_PUBLIC_CONTACT_EMAIL}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
+                    {settings.supportEmail || process.env.NEXT_PUBLIC_CONTACT_EMAIL || "info@propconnect.in"}
                   </a>
                 </div>
               </div>
@@ -113,7 +116,7 @@ export default function ContactPage() {
 
             {/* WhatsApp primary CTA */}
             <a
-              href={generateWhatsAppLink({ source: "contact-page-cta" })}
+              href={generateWhatsAppLink({ source: "contact-page-cta", settings })}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp w-full py-3.5 text-base"

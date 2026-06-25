@@ -3,6 +3,7 @@ interface WhatsAppLinkParams {
   propertyTitle?: string;
   propertyId?: string;
   source?: string;
+  settings?: Record<string, string>; // Add settings object
 }
 
 /**
@@ -13,9 +14,10 @@ export function generateWhatsAppLink({
   phone,
   propertyTitle,
   propertyId,
+  settings,
 }: WhatsAppLinkParams = {}): string {
   const whatsappNumber =
-    phone ?? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
+    phone ?? settings?.waNumber ?? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
 
   let message: string;
 
@@ -23,7 +25,7 @@ export function generateWhatsAppLink({
     const shortId = propertyId.slice(-6).toUpperCase();
     message = `Hi, I'm interested in "${propertyTitle}" (ID: #${shortId}). Please share more details.`;
   } else {
-    message = "Hi, I'm looking for properties in Mumbai. Please help me.";
+    message = settings?.waDefaultMsg ?? "Hi, I'm looking for properties. Please help me.";
   }
 
   const encodedMessage = encodeURIComponent(message);

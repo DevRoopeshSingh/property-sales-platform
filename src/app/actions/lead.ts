@@ -3,8 +3,12 @@
 import { prisma } from "@/lib/prisma";
 import { leadFormSchema, type LeadFormValues } from "@/lib/validations/lead";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/auth";
 
 export async function updateLeadStatus(leadId: string, status: string) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
   const validStatuses = ["NEW", "CONTACTED", "SITE_VISIT_SCHEDULED", "CONVERTED", "LOST"];
   if (!validStatuses.includes(status)) return { success: false, error: "Invalid status" };
 

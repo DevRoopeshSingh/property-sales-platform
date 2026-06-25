@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Phone, Mail, MapPin } from "lucide-react";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const LOCALITIES = [
   { label: "Mumbai", href: "/localities/mumbai" },
@@ -22,6 +23,8 @@ const PROPERTY_TYPES = [
 ];
 
 export default function Footer() {
+  const settings = useSettings();
+
   return (
     <footer style={{ background: "var(--color-text-primary)", color: "white" }}>
       {/* Main Footer */}
@@ -40,12 +43,11 @@ export default function Footer() {
                 Prop<span style={{ color: "var(--color-brand-400)" }}>Connect</span>
               </span>
             </Link>
-            <p className="text-sm mb-5" style={{ color: "rgba(255,255,255,0.6)", lineHeight: "1.7" }}>
-              Your trusted partner for finding premium properties across the
-              Mumbai Metropolitan Region. WhatsApp us anytime!
-            </p>
+            <p className="text-slate-400 text-sm mb-6 max-w-xs leading-relaxed">
+            {settings.siteName || "PropConnect"} — Discover premium residential and commercial properties across {settings.defaultCity || "Mumbai"}. Connect directly with experts for a seamless experience.
+          </p>
             <a
-              href={generateWhatsAppLink({ source: "footer" })}
+              href={generateWhatsAppLink({ source: "footer", settings })}
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-whatsapp text-sm"

@@ -3,6 +3,7 @@
 import { Phone } from "lucide-react";
 import Link from "next/link";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface StickyContactBarProps {
   propertyTitle?: string;
@@ -10,12 +11,14 @@ interface StickyContactBarProps {
 }
 
 export default function StickyContactBar({ propertyTitle, propertyId }: StickyContactBarProps) {
+  const settings = useSettings();
   const waLink = generateWhatsAppLink({
     propertyTitle,
     propertyId,
     source: "sticky-bar",
+    settings,
   });
-  const callLink = generateCallLink();
+  const callLink = generateCallLink(settings?.supportPhone);
 
   return (
     <div className="sticky-wa-bar lg:hidden pb-[env(safe-area-inset-bottom)]" style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}>

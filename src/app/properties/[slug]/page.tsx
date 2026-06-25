@@ -10,6 +10,7 @@ import StickyContactBar from "@/components/public/StickyContactBar";
 import PropertyCard from "@/components/public/PropertyCard";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { prisma } from "@/lib/prisma";
+import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import type { PropertyCardData } from "@/types";
 import {
   LOCALITY_LABELS,
@@ -40,17 +41,27 @@ async function getSimilarProperties(locality: string, excludeId: string) {
 }
 
 
+export async function generateStaticParams() {
+  const properties = await prisma.property.findMany({
+    where: { status: "ACTIVE" },
+    select: { slug: true },
+  });
+  return properties.map((p) => ({ slug: p.slug }));
+}
+
 export async function generateMetadata({
+
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
   const property = await getProperty(slug);
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
   if (!property) return { title: "Property Not Found" };
   return {
-    title: property.metaTitle ?? `${property.title} | PropConnect`,
-    description: property.metaDescription ?? property.description.slice(0, 160),
+    title: property.metaTitle ?? `${property.title}${settings.seoDefaultTitleSuffix || " | PropConnect"}`,
+    description: property.metaDescription ?? (property.description.slice(0, 160) || settings.seoDefaultDescription),
     keywords: [
       `property in ${LOCALITY_LABELS[property.locality as Locality]?.toLowerCase()}`,
       property.bhk ? `${property.bhk} BHK` : "",
@@ -70,13 +81,15 @@ export default async function PropertyDetailPage({
   if (!property) notFound();
 
   const similarProperties = await getSimilarProperties(property.locality, property.id);
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
 
   const waLink = generateWhatsAppLink({
     propertyTitle: property.title,
     propertyId: property.id,
     source: "property-detail",
+    settings,
   });
-  const callLink = generateCallLink();
+  const callLink = generateCallLink(settings.supportPhone);
 
   const jsonLd = {
     "@context": "https://schema.org",

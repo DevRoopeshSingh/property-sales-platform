@@ -9,9 +9,10 @@ import {
   LOCALITY_LABELS,
   SLUG_TO_LOCALITY,
   type Locality,
-  type PropertySubType,
-  type Possession,
 } from "@/types";
+import { prisma } from "@/lib/prisma";
+import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
+import type { PropertyCardData } from "@/types";
 
 // Locality-specific SEO content
 const LOCALITY_CONTENT: Record<
@@ -105,26 +106,14 @@ const LOCALITY_CONTENT: Record<
 };
 
 // Demo properties for locality pages
-const DEMO_PROPERTIES = (locality: Locality) =>
-  Array.from({ length: 6 }, (_, i) => ({
-    id: `${locality}-${i}`,
-    title: `${i % 2 === 0 ? "2BHK" : "3BHK"} Apartment in ${LOCALITY_LABELS[locality]}`,
-    slug: `${locality.toLowerCase()}-property-${i + 1}`,
-    type: "RESIDENTIAL" as const,
-    subType: "APARTMENT" as PropertySubType,
-    status: "ACTIVE" as const,
-    featured: i === 0,
-    price: 4000000 + i * 500000,
-    priceLabel: `₹${40 + i * 5} Lakhs`,
-    bhk: i % 2 === 0 ? 2 : 3,
-    area: 750 + i * 100,
-    floor: i + 2,
-    locality,
-    address: `Sample Address, ${LOCALITY_LABELS[locality]}`,
-    possession: (i < 2 ? "READY_TO_MOVE" : i < 4 ? "UNDER_CONSTRUCTION" : "NEW_LAUNCH") as Possession,
-    images: [],
-    createdAt: new Date(),
-  }));
+async function getLocalityProperties(locality: Locality) {
+  const raws = await prisma.property.findMany({
+    where: { status: "ACTIVE", locality },
+    include: { images: { orderBy: { order: "asc" }, take: 1 } },
+    orderBy: { createdAt: "desc" },
+  });
+  return raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[];
+}
 
 export async function generateStaticParams() {
   return Object.keys(SLUG_TO_LOCALITY).map((slug) => ({ locality: slug }));
@@ -158,8 +147,9 @@ export default async function LocalityPage({
 
   const label = LOCALITY_LABELS[localityKey];
   const content = LOCALITY_CONTENT[localityKey];
-  const properties = DEMO_PROPERTIES(localityKey);
-  const waLink = generateWhatsAppLink({ source: `locality-${slug}` });
+  const properties = await getLocalityProperties(localityKey);
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
+  const waLink = generateWhatsAppLink({ source: `locality-${slug}`, settings });
 
   return (
     <>

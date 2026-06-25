@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Search, MapPin, TrendingUp, Shield, Star, ChevronRight, IndianRupee, Key, CheckCircle, MessageSquare, Award } from "lucide-react";
+import { MapPin, TrendingUp, Shield, Star, ChevronRight, IndianRupee, CheckCircle, MessageSquare, Award } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
+import HeroSearchClient from "@/components/public/HeroSearchClient";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import { LOCALITY_LABELS, type Locality, PropertyCardData } from "@/types";
 import { prisma } from "@/lib/prisma";
 
@@ -72,7 +74,8 @@ const CLOSED_DEALS = [
 ];
 
 export default async function HomePage() {
-  const waLink = generateWhatsAppLink({ source: "homepage-hero" });
+  const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
+  const waLink = generateWhatsAppLink({ source: "homepage-hero", settings });
 
   const rawProperties = await prisma.property.findMany({
     where: { status: "ACTIVE", featured: true },
@@ -129,43 +132,8 @@ export default async function HomePage() {
             </p>
 
             {/* Advanced Search Bar */}
-            <div className="glass-card p-3 flex flex-col sm:flex-row gap-3 max-w-4xl mb-8 animate-fade-up bg-white/10 backdrop-blur-xl border-white/20" style={{ animationDelay: "0.3s" }}>
-              <div className="flex items-center gap-2 flex-1 bg-white rounded-lg px-4 py-3">
-                <MapPin size={18} className="text-blue-600 shrink-0" />
-                <select className="flex-1 text-sm font-medium text-slate-800 bg-transparent outline-none cursor-pointer">
-                  <option value="">All Localities</option>
-                  {Object.entries(LOCALITY_LABELS).map(([key, label]) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex items-center gap-2 flex-1 bg-white rounded-lg px-4 py-3">
-                <IndianRupee size={18} className="text-blue-600 shrink-0" />
-                <select className="flex-1 text-sm font-medium text-slate-800 bg-transparent outline-none cursor-pointer">
-                  <option value="">Budget</option>
-                  <option value="0-50">Under 50 Lacs</option>
-                  <option value="50-100">50 Lacs - 1 Cr</option>
-                  <option value="100-200">1 Cr - 2 Cr</option>
-                  <option value="200+">Above 2 Cr</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2 flex-1 bg-white rounded-lg px-4 py-3">
-                <Key size={18} className="text-blue-600 shrink-0" />
-                <select className="flex-1 text-sm font-medium text-slate-800 bg-transparent outline-none cursor-pointer">
-                  <option value="">BHK</option>
-                  <option value="1">1 BHK</option>
-                  <option value="2">2 BHK</option>
-                  <option value="3">3 BHK</option>
-                  <option value="4+">4+ BHK</option>
-                </select>
-              </div>
-              <Link
-                href="/properties"
-                className="btn btn-primary px-8 shadow-lg py-3 sm:py-0"
-              >
-                <Search size={17} />
-                Search
-              </Link>
+            <div className="mb-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
+              <HeroSearchClient />
             </div>
 
             {/* CTA Buttons */}
@@ -378,7 +346,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href={generateWhatsAppLink({ source: "homepage-cta-banner" })}
+              href={waLink}
               target="_blank"
               rel="noopener noreferrer"
               className="btn bg-white text-blue-700 hover:bg-slate-50 px-10 py-4 text-base shadow-xl"
