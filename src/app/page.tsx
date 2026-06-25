@@ -4,7 +4,8 @@ import { Search, MapPin, TrendingUp, Shield, Star, ChevronRight, IndianRupee, Ke
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
-import { LOCALITY_LABELS, type Locality } from "@/types";
+import { LOCALITY_LABELS, type Locality, PropertyCardData } from "@/types";
+import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
   title: "PropConnect — Premium Properties all over India",
@@ -25,12 +26,12 @@ const CATEGORIES = [
 ];
 
 const LOCALITIES_SHOWCASE: { key: Locality; desc: string; priceRange: string }[] = [
-  { key: "VIRAR", desc: "Peaceful suburbs with excellent connectivity", priceRange: "₹25L–₹80L" },
-  { key: "VASAI", desc: "Affordable living with great infrastructure", priceRange: "₹30L–₹1.2Cr" },
-  { key: "NALASOPARA", desc: "Fast-growing locality with new developments", priceRange: "₹20L–₹75L" },
+  { key: "BANGALORE", desc: "IT capital with premium high-rise living", priceRange: "₹60L–₹3Cr" },
+  { key: "DELHI", desc: "Capital city with exclusive independent houses", priceRange: "₹80L–₹5Cr" },
+  { key: "PUNE", desc: "Emerging IT hub with excellent weather", priceRange: "₹45L–₹2Cr" },
   { key: "THANE", desc: "Prime urban destination with top amenities", priceRange: "₹60L–₹3Cr" },
-  { key: "NAVI_MUMBAI", desc: "Planned city with modern infrastructure", priceRange: "₹55L–₹2.5Cr" },
-  { key: "MIRA_ROAD", desc: "Emerging hotspot with great value", priceRange: "₹40L–₹1.5Cr" },
+  { key: "HYDERABAD", desc: "Fastest growing metropolis with modern infra", priceRange: "₹55L–₹2.5Cr" },
+  { key: "MUMBAI", desc: "The financial capital with luxury ocean views", priceRange: "₹1.5Cr–₹10Cr+" },
 ];
 
 const WHY_US = [
@@ -51,154 +52,52 @@ const WHY_US = [
   },
   {
     icon: <Award size={24} className="text-[var(--color-brand-600)]" />,
-    title: "Mumbai Specialists",
-    desc: "Hyperlocal experts covering 9 top localities across the MMR with deep market insights.",
+    title: "Nationwide Specialists",
+    desc: "Hyperlocal experts covering top localities across India with deep market insights.",
   },
 ];
 
-const DEMO_PROPERTIES = [
-  {
-    id: "demo-1",
-    title: "Lodha Amara - Premium 2BHK with Deck",
-    slug: "lodha-amara-thane-2bhk",
-    type: "RESIDENTIAL" as const,
-    subType: "APARTMENT" as const,
-    status: "ACTIVE" as const,
-    featured: true,
-    price: 11000000,
-    priceLabel: "₹1.10 Cr",
-    bhk: 2,
-    area: 750,
-    floor: 15,
-    locality: "THANE" as Locality,
-    address: "Kolshet Road, Thane West",
-    possession: "READY_TO_MOVE" as const,
-    builderName: "Lodha Group",
-    reraNumber: "P51700001001",
-    images: [{ id: "img1", url: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80", altText: "Living Room", order: 0, isPrimary: true }],
-    createdAt: new Date(),
-  },
-  {
-    id: "demo-2",
-    title: "Rustomjee Global City - 1BHK Smart Home",
-    slug: "rustomjee-global-city-virar",
-    type: "RESIDENTIAL" as const,
-    subType: "APARTMENT" as const,
-    status: "ACTIVE" as const,
-    featured: true,
-    price: 4500000,
-    priceLabel: "₹45 Lakhs",
-    bhk: 1,
-    area: 450,
-    floor: 8,
-    locality: "VIRAR" as Locality,
-    address: "Global City, Virar West",
-    possession: "READY_TO_MOVE" as const,
-    builderName: "Rustomjee",
-    reraNumber: "P99000001234",
-    images: [{ id: "img2", url: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80", altText: "Apartment interior", order: 0, isPrimary: true }],
-    createdAt: new Date(),
-  },
-  {
-    id: "demo-3",
-    title: "Godrej Origins - Luxury 3BHK Residences",
-    slug: "godrej-origins-vikhroli",
-    type: "RESIDENTIAL" as const,
-    subType: "APARTMENT" as const,
-    status: "ACTIVE" as const,
-    featured: true,
-    price: 35000000,
-    priceLabel: "₹3.50 Cr",
-    bhk: 3,
-    area: 1250,
-    floor: 22,
-    locality: "MUMBAI" as Locality,
-    address: "The Trees, Vikhroli",
-    possession: "UNDER_CONSTRUCTION" as const,
-    builderName: "Godrej Properties",
-    reraNumber: "P51800000123",
-    images: [{ id: "img3", url: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800&q=80", altText: "Luxury bedroom", order: 0, isPrimary: true }],
-    createdAt: new Date(),
-  },
-  {
-    id: "demo-4",
-    title: "Sunteck WestWorld - 2BHK Value Homes",
-    slug: "sunteck-westworld-naigaon",
-    type: "RESIDENTIAL" as const,
-    subType: "APARTMENT" as const,
-    status: "ACTIVE" as const,
-    featured: false,
-    price: 5500000,
-    priceLabel: "₹55 Lakhs",
-    bhk: 2,
-    area: 650,
-    floor: 5,
-    locality: "NAIGAON" as Locality,
-    address: "Naigaon East",
-    possession: "NEW_LAUNCH" as const,
-    builderName: "Sunteck Realty",
-    reraNumber: "P99000012345",
-    images: [{ id: "img4", url: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80", altText: "Exterior view", order: 0, isPrimary: true }],
-    createdAt: new Date(),
-  },
-  {
-    id: "demo-5",
-    title: "Evershine Global City Office Space",
-    slug: "evershine-commercial-vasai",
-    type: "COMMERCIAL" as const,
-    subType: "OFFICE" as const,
-    status: "ACTIVE" as const,
-    featured: false,
-    price: 8500000,
-    priceLabel: "₹85 Lakhs",
-    bhk: null,
-    area: 1000,
-    floor: 2,
-    locality: "VASAI" as Locality,
-    address: "Vasai East",
-    possession: "READY_TO_MOVE" as const,
-    builderName: "Evershine Group",
-    reraNumber: null,
-    images: [{ id: "img5", url: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", altText: "Office interior", order: 0, isPrimary: true }],
-    createdAt: new Date(),
-  },
-  {
-    id: "demo-6",
-    title: "JP North - Premium 1BHK",
-    slug: "jp-north-mira-road",
-    type: "RESIDENTIAL" as const,
-    subType: "APARTMENT" as const,
-    status: "ACTIVE" as const,
-    featured: false,
-    price: 7000000,
-    priceLabel: "₹70 Lakhs",
-    bhk: 1,
-    area: 500,
-    floor: 12,
-    locality: "MIRA_ROAD" as Locality,
-    address: "Mira Road East",
-    possession: "UNDER_CONSTRUCTION" as const,
-    builderName: "JP Infra",
-    reraNumber: "P51700004567",
-    images: [{ id: "img6", url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&q=80", altText: "Apartment", order: 0, isPrimary: true }],
-    createdAt: new Date(),
-  }
-];
+
 
 const TESTIMONIALS = [
-  { name: "Rahul D.", role: "First-time Buyer", content: "PropConnect made finding my first home in Thane incredibly easy. Their WhatsApp support was quick and they negotiated a great deal for me without any hidden fees.", rating: 5 },
+  { name: "Rahul D.", role: "First-time Buyer", content: "PropConnect made finding my first home in Bangalore incredibly easy. Their WhatsApp support was quick and they negotiated a great deal for me without any hidden fees.", rating: 5 },
   { name: "Sneha M.", role: "Investor", content: "I've bought two commercial properties through them. The fact that they deal directly with top builders and share authentic RERA verified details gives me immense peace of mind.", rating: 5 },
-  { name: "Vikram P.", role: "Upgrading Home", content: "Loved the seamless experience. Instead of dealing with 10 different brokers, I just chatted with one expert who curated the best 3BHKs in Mira Road for us.", rating: 5 }
+  { name: "Vikram P.", role: "Upgrading Home", content: "Loved the seamless experience. Instead of dealing with 10 different brokers, I just chatted with one expert who curated the best 3BHKs in Delhi for us.", rating: 5 }
 ];
 
 const CLOSED_DEALS = [
-  { title: "2BHK in Lodha Amara", location: "Thane", time: "2 days ago", amount: "₹1.15 Cr" },
-  { title: "Commercial Office", location: "Navi Mumbai", time: "1 week ago", amount: "₹2.4 Cr" },
-  { title: "1BHK in Rustomjee", location: "Virar", time: "2 weeks ago", amount: "₹42 Lakhs" },
+  { title: "3BHK in Prestige", location: "Bangalore", time: "2 days ago", amount: "₹1.85 Cr" },
+  { title: "Commercial Office", location: "Delhi", time: "1 week ago", amount: "₹2.4 Cr" },
+  { title: "2BHK in Lodha", location: "Pune", time: "2 weeks ago", amount: "₹82 Lakhs" },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
   const waLink = generateWhatsAppLink({ source: "homepage-hero" });
+
+  const rawProperties = await prisma.property.findMany({
+    where: { status: "ACTIVE", featured: true },
+    take: 6,
+    include: { images: true },
+    orderBy: { createdAt: "desc" },
+  });
+
+  let featuredProperties = rawProperties.map(p => ({
+    ...p,
+    price: Number(p.price),
+  })) as unknown as PropertyCardData[];
+
+  if (featuredProperties.length === 0) {
+    const backupProperties = await prisma.property.findMany({
+      where: { status: "ACTIVE" },
+      take: 6,
+      include: { images: true },
+      orderBy: { createdAt: "desc" },
+    });
+    featuredProperties = backupProperties.map(p => ({
+      ...p,
+      price: Number(p.price),
+    })) as unknown as PropertyCardData[];
+  }
 
   return (
     <>
@@ -316,7 +215,7 @@ export default function HomePage() {
           </div>
 
           <div className="property-grid">
-            {DEMO_PROPERTIES.slice(0, 6).map((property) => (
+            {featuredProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>

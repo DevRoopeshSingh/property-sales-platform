@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Phone, Mail, MapPin, Clock } from "lucide-react";
 import StickyContactBar from "@/components/public/StickyContactBar";
+import ContactForm from "@/components/public/ContactForm";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -135,101 +136,7 @@ export default function ContactPage() {
                 Fill in the form below and we&apos;ll get back to you within 30 minutes.
               </p>
 
-              <form className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                      Full Name *
-                    </label>
-                    <input
-                      id="name"
-                      type="text"
-                      placeholder="Rahul Sharma"
-                      className="input"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                      Phone Number *
-                    </label>
-                    <input
-                      id="phone"
-                      type="tel"
-                      placeholder="+91 98765 43210"
-                      className="input"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                    Email Address
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="rahul@email.com"
-                    className="input"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="property-type" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                      Property Interest
-                    </label>
-                    <select id="property-type" className="input cursor-pointer">
-                      <option value="">Select property type</option>
-                      <option>Apartment</option>
-                      <option>Villa</option>
-                      <option>Independent House</option>
-                      <option>Plot</option>
-                      <option>Office</option>
-                      <option>Shop</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="budget" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                      Budget Range
-                    </label>
-                    <select id="budget" className="input cursor-pointer">
-                      <option value="">Select budget</option>
-                      <option>Under ₹30 Lakhs</option>
-                      <option>₹30L – ₹60L</option>
-                      <option>₹60L – ₹1 Cr</option>
-                      <option>₹1 Cr – ₹2 Cr</option>
-                      <option>Above ₹2 Cr</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-[var(--color-text-primary)] mb-1.5">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    rows={4}
-                    placeholder="Tell us more about what you're looking for..."
-                    className="input resize-none"
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  id="contact-form-submit"
-                  className="btn btn-primary w-full py-3.5 text-base"
-                >
-                  Send Inquiry
-                </button>
-
-                <p className="text-xs text-center text-[var(--color-text-muted)]">
-                  By submitting, you agree to be contacted by our team.
-                  We respect your privacy and won&apos;t spam you.
-                </p>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </div>

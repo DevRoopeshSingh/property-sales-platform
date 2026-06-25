@@ -9,85 +9,36 @@ import {
 import StickyContactBar from "@/components/public/StickyContactBar";
 import PropertyCard from "@/components/public/PropertyCard";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
+import { prisma } from "@/lib/prisma";
+import type { PropertyCardData } from "@/types";
 import {
   LOCALITY_LABELS,
   PROPERTY_SUB_TYPE_LABELS,
   POSSESSION_LABELS,
   type Locality,
   type PropertySubType,
-  type Possession,
 } from "@/types";
 
-// Demo property detail data (will be replaced with DB lookup via Server Actions)
-const DEMO_PROPERTY = {
-  id: "demo-property-1",
-  title: "Spacious 2BHK Apartment in Virar West — Sunrise Heights",
-  slug: "property-1",
-  type: "RESIDENTIAL" as const,
-  subType: "APARTMENT" as PropertySubType,
-  status: "ACTIVE" as const,
-  featured: true,
-  price: 4500000,
-  priceLabel: "₹45 Lakhs",
-  priceNegotiable: true,
-  bhk: 2,
-  area: 850,
-  carpetArea: 720,
-  floor: 5,
-  totalFloors: 14,
-  locality: "VIRAR" as Locality,
-  address: "Sunrise Heights, Virar West, Mumbai - 401303",
-  landmark: "Near Virar Railway Station",
-  googleMapsUrl: "https://maps.google.com",
-  possession: "READY_TO_MOVE" as Possession,
-  possessionDate: null,
-  reraNumber: "P51700012345",
-  projectName: "Sunrise Heights",
-  builderName: "Sunrise Developers",
-  description: `Welcome to Sunrise Heights — a thoughtfully designed residential community in the heart of Virar West. This well-appointed 2BHK apartment offers the perfect blend of comfort, convenience, and connectivity.
 
-The apartment features a spacious living room with large windows that fill the space with natural light, a modern modular kitchen, two comfortable bedrooms with ample storage, and two well-designed bathrooms. The project is strategically located just 5 minutes from Virar Railway Station, ensuring seamless connectivity to Mumbai.
+async function getProperty(slug: string) {
+  const raw = await prisma.property.findUnique({
+    where: { slug },
+    include: { images: { orderBy: { order: "asc" } } },
+  });
+  if (!raw) return null;
+  return { ...raw, price: Number(raw.price) };
+}
 
-Sunrise Heights is a RERA-registered project with all approvals in place. The complex offers world-class amenities including a clubhouse, swimming pool, gym, children's play area, and 24/7 security — everything you need for a complete living experience.
+async function getSimilarProperties(locality: string, excludeId: string) {
+  const raws = await prisma.property.findMany({
+    where: { status: "ACTIVE", locality: locality as Locality, id: { not: excludeId } },
+    include: { images: { orderBy: { order: "asc" }, take: 1 } },
+    take: 3,
+    orderBy: { featured: "desc" },
+  });
+  return raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[];
+}
 
-Don't miss this opportunity to own your dream home in one of Virar's most sought-after residential projects.`,
-  amenities: [
-    "Covered Parking", "24/7 Security", "CCTV Surveillance", "Gym / Fitness Center",
-    "Swimming Pool", "Clubhouse", "Children's Play Area", "Garden / Landscaping",
-    "Lift / Elevator", "Power Backup", "Water Supply 24/7", "Intercom",
-    "Fire Safety", "Visitor Parking", "Jogging Track",
-  ],
-  images: [
-    { id: "1", url: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800", altText: "Living Room", order: 0, isPrimary: true },
-    { id: "2", url: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800", altText: "Bedroom", order: 1, isPrimary: false },
-    { id: "3", url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800", altText: "Kitchen", order: 2, isPrimary: false },
-    { id: "4", url: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?w=800", altText: "Bathroom", order: 3, isPrimary: false },
-  ],
-  metaTitle: "2BHK Apartment in Virar West | ₹45 Lakhs | PropConnect",
-  metaDescription: "Spacious 2BHK apartment in Virar West at ₹45 Lakhs. Ready to Move, RERA registered. Swimming Pool, Gym & Clubhouse. Contact us on WhatsApp.",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
-
-const SIMILAR_PROPERTIES = Array.from({ length: 3 }, (_, i) => ({
-  id: `similar-${i}`,
-  title: ["2BHK in Nalasopara East", "1BHK in Virar East", "3BHK in Vasai West"][i],
-  slug: `similar-${i + 1}`,
-  type: "RESIDENTIAL" as const,
-  subType: "APARTMENT" as PropertySubType,
-  status: "ACTIVE" as const,
-  featured: false,
-  price: [3800000, 2200000, 6500000][i],
-  priceLabel: ["₹38 L", "₹22 L", "₹65 L"][i],
-  bhk: [2, 1, 3][i],
-  area: [700, 450, 1100][i],
-  floor: [3, 6, 9][i],
-  locality: (["NALASOPARA", "VIRAR", "VASAI"] as Locality[])[i],
-  address: "Sample Address",
-  possession: "READY_TO_MOVE" as Possession,
-  images: [],
-  createdAt: new Date(),
-}));
 
 export async function generateMetadata({
   params,
@@ -95,11 +46,16 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  // In production: fetch from DB by slug
-  // Temporarily returning demo property for all static links
+  const property = await getProperty(slug);
+  if (!property) return { title: "Property Not Found" };
   return {
-    title: DEMO_PROPERTY.metaTitle ?? DEMO_PROPERTY.title,
-    description: DEMO_PROPERTY.metaDescription ?? DEMO_PROPERTY.description.slice(0, 160),
+    title: property.metaTitle ?? `${property.title} | PropConnect`,
+    description: property.metaDescription ?? property.description.slice(0, 160),
+    keywords: [
+      `property in ${LOCALITY_LABELS[property.locality as Locality]?.toLowerCase()}`,
+      property.bhk ? `${property.bhk} BHK` : "",
+      PROPERTY_SUB_TYPE_LABELS[property.subType as PropertySubType]?.toLowerCase(),
+    ].filter(Boolean),
   };
 }
 
@@ -110,10 +66,10 @@ export default async function PropertyDetailPage({
 }) {
   const { slug } = await params;
 
-  // In production: const property = await getProperty(slug);
-  // Temporarily returning demo property for all static links
-  const property = { ...DEMO_PROPERTY, slug };
+  const property = await getProperty(slug);
   if (!property) notFound();
+
+  const similarProperties = await getSimilarProperties(property.locality, property.id);
 
   const waLink = generateWhatsAppLink({
     propertyTitle: property.title,
@@ -247,13 +203,15 @@ export default async function PropertyDetailPage({
                       <span className="text-xs text-[var(--color-text-muted)]">Configuration</span>
                     </div>
                   )}
-                  <div className="text-center">
-                    <div className="flex items-center justify-center gap-1.5 mb-1">
-                      <Maximize2 size={16} className="text-[var(--color-brand-500)]" />
-                      <span className="font-bold text-[var(--color-text-primary)]">{property.area.toLocaleString()} sq ft</span>
+                  {property.area && (
+                    <div className="text-center">
+                      <div className="flex items-center justify-center gap-1.5 mb-1">
+                        <Maximize2 size={16} className="text-[var(--color-brand-500)]" />
+                        <span className="font-bold text-[var(--color-text-primary)]">{property.area.toLocaleString()} sq ft</span>
+                      </div>
+                      <span className="text-xs text-[var(--color-text-muted)]">Built-up Area</span>
                     </div>
-                    <span className="text-xs text-[var(--color-text-muted)]">Built-up Area</span>
-                  </div>
+                  )}
                   {property.floor && (
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1.5 mb-1">
@@ -399,9 +357,11 @@ export default async function PropertyDetailPage({
               Similar Properties
             </h2>
             <div className="property-grid">
-              {SIMILAR_PROPERTIES.map((p) => (
+              {similarProperties.length > 0 ? similarProperties.map((p) => (
                 <PropertyCard key={p.id} property={p} />
-              ))}
+              )) : (
+                <p className="text-sm text-[var(--color-text-muted)] col-span-3">No similar properties found in this area yet.</p>
+              )}
             </div>
           </section>
         </div>

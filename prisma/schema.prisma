@@ -67,6 +67,11 @@ enum Locality {
   VASAI
   NALASOPARA
   VIRAR
+  DELHI
+  BANGALORE
+  PUNE
+  HYDERABAD
+  CHENNAI
 }
 
 // ─────────────────────────────────────────

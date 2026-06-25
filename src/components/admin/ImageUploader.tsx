@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
+
 import { toast } from "sonner";
 import { deleteImagesFromStorage, uploadImageToStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
 
@@ -23,7 +23,7 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const supabase = createClient();
+
 
 
 

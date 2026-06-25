@@ -37,7 +37,12 @@ export type Locality =
   | "NAIGAON"
   | "VASAI"
   | "NALASOPARA"
-  | "VIRAR";
+  | "VIRAR"
+  | "DELHI"
+  | "BANGALORE"
+  | "PUNE"
+  | "HYDERABAD"
+  | "CHENNAI";
 
 // ─────────────────────────────────────────
 // Display label maps
@@ -53,6 +58,11 @@ export const LOCALITY_LABELS: Record<Locality, string> = {
   VASAI: "Vasai",
   NALASOPARA: "Nalasopara",
   VIRAR: "Virar",
+  DELHI: "Delhi",
+  BANGALORE: "Bangalore",
+  PUNE: "Pune",
+  HYDERABAD: "Hyderabad",
+  CHENNAI: "Chennai",
 };
 
 export const LOCALITY_SLUGS: Record<Locality, string> = {
@@ -65,6 +75,11 @@ export const LOCALITY_SLUGS: Record<Locality, string> = {
   VASAI: "vasai",
   NALASOPARA: "nalasopara",
   VIRAR: "virar",
+  DELHI: "delhi",
+  BANGALORE: "bangalore",
+  PUNE: "pune",
+  HYDERABAD: "hyderabad",
+  CHENNAI: "chennai",
 };
 
 export const SLUG_TO_LOCALITY: Record<string, Locality> = {
@@ -77,6 +92,11 @@ export const SLUG_TO_LOCALITY: Record<string, Locality> = {
   vasai: "VASAI",
   nalasopara: "NALASOPARA",
   virar: "VIRAR",
+  delhi: "DELHI",
+  bangalore: "BANGALORE",
+  pune: "PUNE",
+  hyderabad: "HYDERABAD",
+  chennai: "CHENNAI",
 };
 
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
@@ -138,7 +158,7 @@ export interface PropertyCardData {
   price: number;
   priceLabel: string;
   bhk: number | null;
-  area: number;
+  area: number | null;
   floor: number | null;
   locality: Locality;
   address: string;

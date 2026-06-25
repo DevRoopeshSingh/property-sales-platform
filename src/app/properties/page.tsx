@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SlidersHorizontal, X, Search } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
+import SortSelect from "@/components/public/SortSelect";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { prisma } from "@/lib/prisma";
 import {
   LOCALITY_LABELS,
   PROPERTY_SUB_TYPE_LABELS,
@@ -12,53 +14,117 @@ import {
   type PropertySubType,
   type Possession,
 } from "@/types";
+import { Prisma } from "@prisma/client";
+import { PropertyCardData } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Browse Properties — Mumbai Metropolitan Region",
+  title: "Browse Properties — All over India | PropConnect",
   description:
-    "Search and filter properties across Mumbai, Navi Mumbai, Thane, Vasai-Virar. Filter by BHK, budget, property type, and locality. Apartments, Villas, Plots & Commercial spaces.",
+    "Search and filter properties across India. Filter by BHK, budget, property type, and city. Apartments, Villas, Plots & Commercial spaces.",
 };
-
-// Placeholder data (will be replaced with DB query via Server Actions)
-const DEMO_PROPERTIES = Array.from({ length: 12 }, (_, i) => ({
-  id: `demo-${i}`,
-  title: [
-    "Spacious 2BHK Apartment in Virar West",
-    "Premium 3BHK Villa in Thane",
-    "Affordable 1BHK in Nalasopara East",
-    "Commercial Office Space in Navi Mumbai",
-    "Ready to Move 2BHK in Vasai",
-    "New Launch Row House in Mira Road",
-    "3BHK Independent House in Bhayandar",
-    "Studio Apartment in Mumbai Andheri",
-    "2BHK Flat near Naigaon Station",
-    "Shop Space in Virar Market",
-    "Luxury 4BHK Villa in Thane West",
-    "Plot in Vasai East",
-  ][i],
-  slug: `property-${i + 1}`,
-  type: (i < 9 ? "RESIDENTIAL" : "COMMERCIAL") as "RESIDENTIAL" | "COMMERCIAL",
-  subType: (["APARTMENT", "VILLA", "APARTMENT", "OFFICE", "APARTMENT", "ROW_HOUSE", "INDEPENDENT_HOUSE", "APARTMENT", "APARTMENT", "SHOP", "VILLA", "PLOT"] as PropertySubType[])[i],
-  status: "ACTIVE" as const,
-  featured: i < 3,
-  price: [4500000, 12000000, 2800000, 8000000, 5500000, 7500000, 9500000, 6500000, 3200000, 4000000, 18000000, 1500000][i],
-  priceLabel: ["₹45 L", "₹1.2 Cr", "₹28 L", "₹80 L", "₹55 L", "₹75 L", "₹95 L", "₹65 L", "₹32 L", "₹40 L", "₹1.8 Cr", "₹15 L"][i],
-  bhk: [2, 3, 1, null, 2, null, 3, 1, 2, null, 4, null][i],
-  area: [850, 1800, 500, 1200, 950, 1400, 1600, 600, 750, 800, 2500, 1000][i],
-  floor: [5, null, 3, 2, 8, null, null, 10, 4, 1, null, null][i],
-  locality: (["VIRAR", "THANE", "NALASOPARA", "NAVI_MUMBAI", "VASAI", "MIRA_ROAD", "BHAYANDAR", "MUMBAI", "NAIGAON", "VIRAR", "THANE", "VASAI"] as Locality[])[i],
-  address: "Sample Address",
-  possession: (["READY_TO_MOVE", "UNDER_CONSTRUCTION", "READY_TO_MOVE", "READY_TO_MOVE", "READY_TO_MOVE", "NEW_LAUNCH", "READY_TO_MOVE", "UNDER_CONSTRUCTION", "READY_TO_MOVE", "READY_TO_MOVE", "UNDER_CONSTRUCTION", "READY_TO_MOVE"] as Possession[])[i],
-  images: [],
-  createdAt: new Date(),
-}));
 
 const LOCALITIES_FILTER = Object.entries(LOCALITY_LABELS) as [Locality, string][];
 const SUB_TYPES_FILTER = Object.entries(PROPERTY_SUB_TYPE_LABELS) as [PropertySubType, string][];
 const BHK_OPTIONS = [1, 2, 3, 4];
 const POSSESSION_FILTER = Object.entries(POSSESSION_LABELS) as [Possession, string][];
 
-export default function PropertiesPage() {
+interface SearchParams {
+  locality?: string | string[];
+  subType?: string | string[];
+  bhk?: string | string[];
+  possession?: string | string[];
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+}
+
+function toArray(val?: string | string[]): string[] {
+  if (!val) return [];
+  return Array.isArray(val) ? val : [val];
+}
+
+export default async function PropertiesPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const params = await searchParams;
+
+  const localities = toArray(params.locality);
+  const subTypes = toArray(params.subType);
+  const bhks = toArray(params.bhk).map(Number).filter(Boolean);
+  const possessions = toArray(params.possession);
+  const minPrice = params.minPrice ? Number(params.minPrice) * 100000 : undefined;
+  const maxPrice = params.maxPrice ? Number(params.maxPrice) * 100000 : undefined;
+  const sort = params.sort ?? "newest";
+
+  const where: Prisma.PropertyWhereInput = {
+    status: "ACTIVE",
+    ...(localities.length > 0 && { locality: { in: localities as Locality[] } }),
+    ...(subTypes.length > 0 && { subType: { in: subTypes as PropertySubType[] } }),
+    ...(bhks.length > 0 && { bhk: { in: bhks } }),
+    ...(possessions.length > 0 && { possession: { in: possessions as Possession[] } }),
+    ...((minPrice !== undefined || maxPrice !== undefined) && {
+      price: {
+        ...(minPrice !== undefined && { gte: minPrice }),
+        ...(maxPrice !== undefined && { lte: maxPrice }),
+      },
+    }),
+  };
+
+  const orderBy: Prisma.PropertyOrderByWithRelationInput =
+    sort === "price_asc"
+      ? { price: "asc" }
+      : sort === "price_desc"
+      ? { price: "desc" }
+      : sort === "featured"
+      ? { featured: "desc" }
+      : { createdAt: "desc" };
+
+  const rawProperties = await prisma.property.findMany({
+    where,
+    orderBy,
+    include: { images: true },
+    take: 24,
+  });
+
+  const properties = rawProperties.map((p) => ({
+    ...p,
+    price: Number(p.price),
+  })) as unknown as PropertyCardData[];
+
+  const waLink = generateWhatsAppLink({ source: "listing-empty-state" });
+
+  // Helper to build filter URL
+  function buildUrl(key: string, value: string, toggle = true): string {
+    const sp = new URLSearchParams();
+    // Carry over all existing params
+    if (localities.length > 0) localities.forEach((v) => sp.append("locality", v));
+    if (subTypes.length > 0) subTypes.forEach((v) => sp.append("subType", v));
+    if (bhks.length > 0) bhks.forEach((v) => sp.append("bhk", String(v)));
+    if (possessions.length > 0) possessions.forEach((v) => sp.append("possession", v));
+    if (params.minPrice) sp.set("minPrice", params.minPrice);
+    if (params.maxPrice) sp.set("maxPrice", params.maxPrice);
+    if (sort !== "newest") sp.set("sort", sort);
+
+    if (toggle) {
+      const current = sp.getAll(key);
+      sp.delete(key);
+      if (current.includes(value)) {
+        current.filter((v) => v !== value).forEach((v) => sp.append(key, v));
+      } else {
+        [...current, value].forEach((v) => sp.append(key, v));
+      }
+    } else {
+      sp.set(key, value);
+    }
+    return `/properties?${sp.toString()}`;
+  }
+
+  const activeFilterCount =
+    localities.length + subTypes.length + bhks.length + possessions.length +
+    (minPrice !== undefined ? 1 : 0) + (maxPrice !== undefined ? 1 : 0);
+
   return (
     <>
       <div className="bg-[var(--color-surface-2)] min-h-screen">
@@ -73,19 +139,19 @@ export default function PropertiesPage() {
             <div className="flex items-center justify-between gap-4 flex-wrap">
               <div>
                 <h1 className="text-2xl font-extrabold text-[var(--color-text-primary)]">
-                  Properties in Mumbai Region
+                  Properties in India
                 </h1>
                 <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-                  Showing <strong>{DEMO_PROPERTIES.length}</strong> properties
+                  Showing <strong>{properties.length}</strong> properties
+                  {activeFilterCount > 0 && (
+                    <span className="ml-2 px-2 py-0.5 rounded-full bg-[var(--color-brand-100)] text-[var(--color-brand-700)] text-xs font-medium">
+                      {activeFilterCount} filter{activeFilterCount > 1 ? "s" : ""} active
+                    </span>
+                  )}
                 </p>
               </div>
               {/* Sort */}
-              <select className="input w-auto text-sm py-2 px-3 cursor-pointer">
-                <option value="newest">Newest First</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="featured">Featured First</option>
-              </select>
+              <SortSelect currentSort={sort} />
             </div>
           </div>
         </div>
@@ -100,9 +166,11 @@ export default function PropertiesPage() {
                     <SlidersHorizontal size={16} />
                     Filters
                   </h2>
-                  <button className="text-xs text-[var(--color-brand-600)] font-semibold hover:underline">
-                    Clear all
-                  </button>
+                  {activeFilterCount > 0 && (
+                    <Link href="/properties" className="text-xs text-[var(--color-brand-600)] font-semibold hover:underline">
+                      Clear all
+                    </Link>
+                  )}
                 </div>
 
                 {/* Locality */}
@@ -112,16 +180,28 @@ export default function PropertiesPage() {
                   </h3>
                   <div className="space-y-2">
                     {LOCALITIES_FILTER.map(([key, label]) => (
-                      <label key={key} className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          id={`locality-${key}`}
-                          className="w-4 h-4 rounded accent-[var(--color-brand-600)] cursor-pointer"
-                        />
-                        <span className="text-sm text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
+                      <Link
+                        key={key}
+                        href={buildUrl("locality", key)}
+                        className="flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <span
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            localities.includes(key)
+                              ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
+                          }`}
+                        >
+                          {localities.includes(key) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`text-sm transition-colors ${localities.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
                           {label}
                         </span>
-                      </label>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -135,16 +215,28 @@ export default function PropertiesPage() {
                   </h3>
                   <div className="space-y-2">
                     {SUB_TYPES_FILTER.map(([key, label]) => (
-                      <label key={key} className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          id={`subtype-${key}`}
-                          className="w-4 h-4 rounded accent-[var(--color-brand-600)] cursor-pointer"
-                        />
-                        <span className="text-sm text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
+                      <Link
+                        key={key}
+                        href={buildUrl("subType", key)}
+                        className="flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <span
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            subTypes.includes(key)
+                              ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
+                          }`}
+                        >
+                          {subTypes.includes(key) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`text-sm transition-colors ${subTypes.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
                           {label}
                         </span>
-                      </label>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -157,36 +249,23 @@ export default function PropertiesPage() {
                     BHK
                   </h3>
                   <div className="flex flex-wrap gap-2">
-                    {BHK_OPTIONS.map((bhk) => (
-                      <button
-                        key={bhk}
-                        className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[var(--color-border)] hover:border-[var(--color-brand-400)] hover:bg-[var(--color-brand-50)] hover:text-[var(--color-brand-700)] transition-colors"
-                      >
-                        {bhk} BHK
-                      </button>
-                    ))}
-                    <button className="px-3 py-1.5 text-sm font-medium rounded-lg border border-[var(--color-border)] hover:border-[var(--color-brand-400)] hover:bg-[var(--color-brand-50)] hover:text-[var(--color-brand-700)] transition-colors">
-                      4+ BHK
-                    </button>
-                  </div>
-                </div>
-
-                <div className="divider" />
-
-                {/* Budget */}
-                <div className="mb-5">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
-                    Budget
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-xs text-[var(--color-text-secondary)] mb-1 block">Min (₹ Lakhs)</label>
-                      <input type="number" placeholder="0" className="input text-sm py-2" />
-                    </div>
-                    <div>
-                      <label className="text-xs text-[var(--color-text-secondary)] mb-1 block">Max (₹ Lakhs)</label>
-                      <input type="number" placeholder="500" className="input text-sm py-2" />
-                    </div>
+                    {[...BHK_OPTIONS, "4+"].map((bhk) => {
+                      const val = String(bhk);
+                      const active = bhks.includes(Number(bhk));
+                      return (
+                        <Link
+                          key={val}
+                          href={buildUrl("bhk", val)}
+                          className={`px-3 py-1.5 text-sm font-medium rounded-lg border transition-colors ${
+                            active
+                              ? "bg-[var(--color-brand-600)] text-white border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] hover:border-[var(--color-brand-400)] hover:bg-[var(--color-brand-50)] hover:text-[var(--color-brand-700)]"
+                          }`}
+                        >
+                          {val} BHK
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -199,70 +278,68 @@ export default function PropertiesPage() {
                   </h3>
                   <div className="space-y-2">
                     {POSSESSION_FILTER.map(([key, label]) => (
-                      <label key={key} className="flex items-center gap-2.5 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          id={`possession-${key}`}
-                          className="w-4 h-4 rounded accent-[var(--color-brand-600)] cursor-pointer"
-                        />
-                        <span className="text-sm text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)] transition-colors">
+                      <Link
+                        key={key}
+                        href={buildUrl("possession", key)}
+                        className="flex items-center gap-2.5 cursor-pointer group"
+                      >
+                        <span
+                          className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                            possessions.includes(key)
+                              ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
+                              : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
+                          }`}
+                        >
+                          {possessions.includes(key) && (
+                            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className={`text-sm transition-colors ${possessions.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
                           {label}
                         </span>
-                      </label>
+                      </Link>
                     ))}
                   </div>
                 </div>
-
-                <button className="btn btn-primary w-full">
-                  <Search size={15} />
-                  Apply Filters
-                </button>
               </div>
             </aside>
 
             {/* ── Results Grid ── */}
             <div className="flex-1 min-w-0">
-              {/* Mobile filter bar */}
-              <div className="lg:hidden flex gap-3 mb-4 overflow-x-auto pb-2">
-                <button className="btn btn-outline text-sm py-2 whitespace-nowrap">
-                  <SlidersHorizontal size={14} /> All Filters
-                </button>
-                {["Mumbai", "2 BHK", "Ready to Move"].map((tag) => (
-                  <button
-                    key={tag}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[var(--color-brand-300)] bg-[var(--color-brand-50)] text-sm text-[var(--color-brand-700)] font-medium whitespace-nowrap"
-                  >
-                    {tag} <X size={12} />
-                  </button>
-                ))}
-              </div>
+              {/* Active filter chips */}
+              {activeFilterCount > 0 && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {localities.map((v) => (
+                    <Link key={v} href={buildUrl("locality", v)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-brand-300)] bg-[var(--color-brand-50)] text-sm text-[var(--color-brand-700)] font-medium">
+                      {LOCALITY_LABELS[v as Locality]} <X size={12} />
+                    </Link>
+                  ))}
+                  {subTypes.map((v) => (
+                    <Link key={v} href={buildUrl("subType", v)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-brand-300)] bg-[var(--color-brand-50)] text-sm text-[var(--color-brand-700)] font-medium">
+                      {PROPERTY_SUB_TYPE_LABELS[v as PropertySubType]} <X size={12} />
+                    </Link>
+                  ))}
+                  {bhks.map((v) => (
+                    <Link key={v} href={buildUrl("bhk", String(v))} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-brand-300)] bg-[var(--color-brand-50)] text-sm text-[var(--color-brand-700)] font-medium">
+                      {v} BHK <X size={12} />
+                    </Link>
+                  ))}
+                  {possessions.map((v) => (
+                    <Link key={v} href={buildUrl("possession", v)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[var(--color-brand-300)] bg-[var(--color-brand-50)] text-sm text-[var(--color-brand-700)] font-medium">
+                      {POSSESSION_LABELS[v as Possession]} <X size={12} />
+                    </Link>
+                  ))}
+                </div>
+              )}
 
-              {DEMO_PROPERTIES.length > 0 ? (
-                <>
-                  <div className="property-grid">
-                    {DEMO_PROPERTIES.map((property) => (
-                      <PropertyCard key={property.id} property={property} />
-                    ))}
-                  </div>
-
-                  {/* Pagination */}
-                  <div className="flex items-center justify-center gap-2 mt-8 pb-8">
-                    <button className="btn btn-ghost text-sm px-4 py-2" disabled>← Previous</button>
-                    {[1, 2, 3].map((page) => (
-                      <button
-                        key={page}
-                        className={`w-9 h-9 rounded-lg text-sm font-semibold transition-colors ${
-                          page === 1
-                            ? "bg-[var(--color-brand-600)] text-white"
-                            : "text-[var(--color-text-secondary)] hover:bg-[var(--color-surface-3)]"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                    <button className="btn btn-ghost text-sm px-4 py-2">Next →</button>
-                  </div>
-                </>
+              {properties.length > 0 ? (
+                <div className="property-grid">
+                  {properties.map((property) => (
+                    <PropertyCard key={property.id} property={property} />
+                  ))}
+                </div>
               ) : (
                 /* Empty State */
                 <div className="text-center py-20">
@@ -271,14 +348,19 @@ export default function PropertiesPage() {
                   <p className="text-[var(--color-text-secondary)] mb-6">
                     Try adjusting your filters or chat with us — we might have unlisted properties!
                   </p>
-                  <a
-                    href={generateWhatsAppLink({ source: "listing-empty-state" })}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-whatsapp"
-                  >
-                    💬 Ask on WhatsApp
-                  </a>
+                  <div className="flex gap-3 justify-center flex-wrap">
+                    <Link href="/properties" className="btn btn-outline">
+                      Clear Filters
+                    </Link>
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn btn-whatsapp"
+                    >
+                      💬 Ask on WhatsApp
+                    </a>
+                  </div>
                 </div>
               )}
             </div>

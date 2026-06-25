@@ -27,7 +27,7 @@ export function DeletePropertyButton({ propertyId }: DeletePropertyButtonProps) 
       } else {
         toast.error(result.error || "Failed to delete property");
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error("An unexpected error occurred");
     } finally {
       setIsDeleting(false);

@@ -123,10 +123,12 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
               <span>{property.bhk} BHK</span>
             </div>
           )}
-          <div className="flex items-center gap-1">
-            <Maximize2 size={14} className="text-[var(--color-brand-400)]" />
-            <span>{property.area.toLocaleString()} sq ft</span>
-          </div>
+          {property.area && (
+            <div className="flex items-center gap-1">
+              <Maximize2 size={14} className="text-[var(--color-brand-400)]" />
+              <span>{property.area.toLocaleString()} sq ft</span>
+            </div>
+          )}
           {property.floor && (
             <div className="flex items-center gap-1">
               <Building2 size={14} className="text-[var(--color-brand-400)]" />

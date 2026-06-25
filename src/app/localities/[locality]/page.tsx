@@ -72,6 +72,36 @@ const LOCALITY_CONTENT: Record<
     connectivity: "Mumbai is served by the Western, Central, and Harbour railway lines, BEST buses, and a growing Metro network.",
     highlights: ["Financial Capital", "Premium Addresses", "Metro Network", "World-Class Amenities"],
   },
+  DELHI: {
+    description: "The capital city offers a unique blend of historical charm and modern living, featuring exclusive independent houses and luxury apartments.",
+    priceRange: "₹80 Lakhs – ₹5+ Crores",
+    connectivity: "Excellent connectivity via the extensive Delhi Metro network, ring roads, and national highways.",
+    highlights: ["Capital City", "Extensive Metro", "Spacious Layouts", "Green Surroundings"],
+  },
+  BANGALORE: {
+    description: "Known as the Silicon Valley of India, Bangalore boasts premium high-rise living and lush green spaces.",
+    priceRange: "₹60 Lakhs – ₹3 Crores",
+    connectivity: "Well connected by Namma Metro, BMTC, and an expanding ring road network.",
+    highlights: ["IT Hub", "Pleasant Climate", "Premium High-Rises", "Cosmopolitan Culture"],
+  },
+  PUNE: {
+    description: "A fast-emerging IT hub with excellent weather, offering a great balance of work and life with affordable luxury.",
+    priceRange: "₹45 Lakhs – ₹2 Crores",
+    connectivity: "Connectivity through the upcoming Pune Metro and a strong local bus network.",
+    highlights: ["Educational Hub", "Emerging IT Hub", "Great Weather", "Affordable Luxury"],
+  },
+  HYDERABAD: {
+    description: "The fastest growing metropolis with modern infrastructure, famous for its IT corridors and rich heritage.",
+    priceRange: "₹55 Lakhs – ₹2.5 Crores",
+    connectivity: "Robust connectivity via Hyderabad Metro and Outer Ring Road.",
+    highlights: ["Modern Infrastructure", "IT Corridors", "Affordable High-End Living", "Rich Heritage"],
+  },
+  CHENNAI: {
+    description: "A major cultural and economic center offering coastal living and traditional neighborhoods with modern amenities.",
+    priceRange: "₹50 Lakhs – ₹3 Crores",
+    connectivity: "Served by Chennai Metro, MRTS, and an extensive local train and bus network.",
+    highlights: ["Cultural Hub", "Coastal Living", "Automobile Hub", "Excellent Education"],
+  },
 };
 
 // Demo properties for locality pages

@@ -1,5 +1,4 @@
 import { Building2, LogOut } from "lucide-react";
-import Link from "next/link";
 import { signOut } from "@/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { MobileSidebarToggle } from "@/components/admin/MobileSidebarToggle";
