@@ -2,9 +2,11 @@
 
 import { useState, useRef } from "react";
 import { Upload, X, Loader2 } from "lucide-react";
-
 import { toast } from "sonner";
 import { deleteImagesFromStorage, uploadImageToStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
+import { DndContext, closestCenter, DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { SortableContext, arrayMove, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 export interface PropertyImageInput {
   url: string;
@@ -19,13 +21,78 @@ interface ImageUploaderProps {
   maxImages?: number;
 }
 
+function SortableImageItem({ 
+  image, 
+  onSetPrimary, 
+  onRemove 
+}: { 
+  image: PropertyImageInput; 
+  onSetPrimary: () => void; 
+  onRemove: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: image.key });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={`relative aspect-video rounded-lg overflow-hidden border-2 ${
+        image.isPrimary ? "border-[var(--color-brand-500)]" : "border-transparent"
+      } group bg-[var(--color-surface-2)]`}
+    >
+      {/* Drag handle area */}
+      <div 
+        {...attributes} 
+        {...listeners} 
+        className="absolute inset-0 cursor-grab active:cursor-grabbing z-10 touch-none" 
+      />
+      
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={image.url}
+        alt={image.altText || "Property image"}
+        className="w-full h-full object-cover"
+      />
+      
+      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2 z-20 pointer-events-none group-hover:pointer-events-auto">
+        <div className="flex justify-between w-full">
+          {!image.isPrimary && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onSetPrimary(); }}
+              className="text-xs bg-white text-black px-2 py-1 rounded-sm font-medium hover:bg-gray-200 transition-colors"
+            >
+              Set Primary
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onRemove(); }}
+            className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors ml-auto"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      </div>
+      
+      {image.isPrimary && (
+        <div className="absolute bottom-0 left-0 right-0 bg-[var(--color-brand-500)] text-white text-[10px] text-center py-1 font-bold z-20">
+          PRIMARY IMAGE
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-
-
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent) => {
     let files: FileList | null = null;
@@ -111,12 +178,43 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
   };
 
   const setPrimary = (indexToSet: number) => {
-    const newImages = value.map((img, idx) => ({
+    // Physically move the selected image to index 0
+    const reordered = arrayMove(value, indexToSet, 0);
+    const newImages = reordered.map((img, idx) => ({
       ...img,
-      isPrimary: idx === indexToSet,
+      isPrimary: idx === 0,
     }));
     onChange(newImages);
   };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = value.findIndex((img) => img.key === active.id);
+    const newIndex = value.findIndex((img) => img.key === over.id);
+
+    let newImages = arrayMove(value, oldIndex, newIndex);
+    
+    // Re-evaluate primary if index 0 changed
+    newImages = newImages.map((img, idx) => ({
+      ...img,
+      isPrimary: idx === 0
+    }));
+
+    onChange(newImages);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5, // 5px movement required before drag starts, allows clicks to pass through
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   return (
     <div className="space-y-4">
@@ -128,50 +226,20 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
 
       {/* Image Grid */}
       {value.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {value.map((image, index) => (
-            <div
-              key={image.key}
-              className={`relative aspect-video rounded-lg overflow-hidden border-2 ${
-                image.isPrimary ? "border-[var(--color-brand-500)]" : "border-transparent"
-              } group bg-[var(--color-surface-2)]`}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={image.url}
-                alt={image.altText || "Property image"}
-                className="w-full h-full object-cover"
-              />
-              
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2">
-                <div className="flex justify-between w-full">
-                  {!image.isPrimary && (
-                    <button
-                      type="button"
-                      onClick={() => setPrimary(index)}
-                      className="text-xs bg-white text-black px-2 py-1 rounded-sm font-medium hover:bg-gray-200 transition-colors"
-                    >
-                      Set Primary
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(index)}
-                    className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors ml-auto"
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              </div>
-              
-              {image.isPrimary && (
-                <div className="absolute bottom-0 left-0 right-0 bg-[var(--color-brand-500)] text-white text-[10px] text-center py-1 font-bold">
-                  PRIMARY IMAGE
-                </div>
-              )}
+        <DndContext id="dnd-image-uploader" sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={value.map(v => v.key)} strategy={rectSortingStrategy}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {value.map((image, index) => (
+                <SortableImageItem 
+                  key={image.key}
+                  image={image}
+                  onSetPrimary={() => setPrimary(index)}
+                  onRemove={() => handleRemove(index)}
+                />
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
       )}
 
       {/* Upload Zone */}
@@ -222,3 +290,4 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
     </div>
   );
 }
+

@@ -77,6 +77,7 @@ export async function createProperty(data: PropertyFormValues) {
 
     revalidatePath("/admin/properties");
     revalidatePath("/properties");
+    revalidatePath("/");
 
     return { success: true, propertyId: property.id };
   } catch (error) {
@@ -166,6 +167,7 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
     revalidatePath(`/admin/properties/${id}/edit`);
     revalidatePath("/properties");
     revalidatePath(`/properties/${property.slug}`);
+    revalidatePath("/");
 
     return { success: true, propertyId: property.id };
   } catch (error) {
@@ -195,6 +197,7 @@ export async function deleteProperty(id: string) {
     
     revalidatePath("/admin/properties");
     revalidatePath("/properties");
+    revalidatePath("/");
     
     return { success: true };
   } catch (error) {

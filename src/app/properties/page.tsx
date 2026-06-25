@@ -86,7 +86,7 @@ export default async function PropertiesPage({
   const rawProperties = await prisma.property.findMany({
     where,
     orderBy,
-    include: { images: true },
+    include: { images: { orderBy: { order: "asc" } } },
     take: 24,
   });
 

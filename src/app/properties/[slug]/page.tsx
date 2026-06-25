@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import ImageWithSkeleton from "@/components/ui/loaders/ImageWithSkeleton";
+import PropertyGallery from "@/components/public/PropertyGallery";
 import { notFound } from "next/navigation";
 import {
   MapPin, BedDouble, Maximize2, Building2, CalendarCheck,
@@ -143,42 +143,7 @@ export default async function PropertyDetailPage({
             <div className="flex-1 min-w-0">
 
               {/* Image Gallery */}
-              <div className="card overflow-hidden mb-5">
-                <div className="relative">
-                  <div className="grid grid-cols-4 grid-rows-2 gap-1.5 h-72 md:h-96">
-                    {/* Primary (large) */}
-                    <div className="col-span-4 md:col-span-3 row-span-2 relative bg-[var(--color-surface-3)]">
-                      {property.images[0] && (
-                        <ImageWithSkeleton
-                          src={property.images[0].url}
-                          alt={property.images[0].altText ?? property.title}
-                          fill
-                          className="object-cover"
-                          priority
-                          sizes="(max-width: 768px) 100vw, 60vw"
-                        />
-                      )}
-                    </div>
-                    {/* Thumbnails */}
-                    {property.images.slice(1, 3).map((img, i) => (
-                      <div key={img.id} className="hidden md:block relative col-span-1 row-span-1 bg-[var(--color-surface-3)]">
-                        <ImageWithSkeleton
-                          src={img.url}
-                          alt={img.altText ?? `Photo ${i + 2}`}
-                          fill
-                          className="object-cover"
-                          sizes="20vw"
-                        />
-                        {i === 1 && property.images.length > 3 && (
-                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <span className="text-white font-bold text-lg">+{property.images.length - 3}</span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <PropertyGallery images={property.images} title={property.title} />
 
               {/* Title & Badges */}
               <div className="card p-5 mb-5">

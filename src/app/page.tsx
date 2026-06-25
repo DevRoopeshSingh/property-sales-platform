@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MapPin, TrendingUp, Shield, Star, ChevronRight, IndianRupee, CheckCircle, MessageSquare, Award } from "lucide-react";
+import { MapPin, TrendingUp, Shield, Star, ChevronRight, CheckCircle, MessageSquare, Award } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import HeroSearchClient from "@/components/public/HeroSearchClient";
@@ -44,11 +44,7 @@ const WHY_US = [
     title: "100% Verified Listings",
     desc: "Every property is RERA-checked and personally verified by our team before it goes live.",
   },
-  {
-    icon: <IndianRupee size={24} className="text-[var(--color-brand-600)]" />,
-    title: "Zero Hidden Brokerage",
-    desc: "We negotiate directly with builders to get you the best deals without any surprise fees.",
-  },
+
   {
     icon: <MessageSquare size={24} className="text-[var(--color-brand-600)]" />,
     title: "Instant WhatsApp Support",
@@ -82,7 +78,7 @@ export default async function HomePage() {
   const rawProperties = await prisma.property.findMany({
     where: { status: "ACTIVE", featured: true },
     take: 6,
-    include: { images: true },
+    include: { images: { orderBy: { order: "asc" } } },
     orderBy: { createdAt: "desc" },
   });
 
@@ -95,7 +91,7 @@ export default async function HomePage() {
     const backupProperties = await prisma.property.findMany({
       where: { status: "ACTIVE" },
       take: 6,
-      include: { images: true },
+      include: { images: { orderBy: { order: "asc" } } },
       orderBy: { createdAt: "desc" },
     });
     featuredProperties = backupProperties.map(p => ({
@@ -159,7 +155,6 @@ export default async function HomePage() {
       <div className="bg-slate-900 border-t border-slate-800 py-4 relative z-20 shadow-lg hidden md:block">
         <div className="container-main flex flex-wrap items-center justify-between gap-4 text-sm font-medium text-slate-300">
           <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> 100% RERA Verified</div>
-          <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Zero Hidden Brokerage</div>
           <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Best Price Guaranteed</div>
           <div className="flex items-center gap-2"><CheckCircle size={16} className="text-green-400" /> Dedicated Local Experts</div>
         </div>
@@ -206,7 +201,7 @@ export default async function HomePage() {
             <h2 className="section-heading text-slate-900">Your Trusted Property Partner</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {WHY_US.map((item) => (
               <div key={item.title} className="text-center p-8 rounded-2xl bg-slate-50 border border-slate-100 transition-all hover:-translate-y-1 hover:shadow-lg">
                 <div
