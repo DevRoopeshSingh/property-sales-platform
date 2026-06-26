@@ -24,6 +24,9 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
   },
+  verification: {
+    google: "R0m0UC17ICxh4cWO2XWUBycVZqN_5bkhQiZlg2eFXAc",
+  },
 };
 
 import LayoutWrapper from "@/components/public/LayoutWrapper";
