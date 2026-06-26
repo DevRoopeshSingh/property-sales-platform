@@ -54,10 +54,10 @@ export default async function RootLayout({
             <main>{children}</main>
           </LayoutWrapper>
         </SettingsProvider>
+        {process.env.NEXT_PUBLIC_GA4_ID && (
+          <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_ID} />
+        )}
       </body>
-      {process.env.NEXT_PUBLIC_GA4_ID && (
-        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_ID} />
-      )}
     </html>
   );
 }
