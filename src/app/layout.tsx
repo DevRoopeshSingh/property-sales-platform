@@ -34,6 +34,7 @@ import NavigationProgressBar from "@/components/ui/loaders/NavigationProgressBar
 import { Toaster } from "sonner";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 export default async function RootLayout({
   children,
@@ -54,6 +55,9 @@ export default async function RootLayout({
           </LayoutWrapper>
         </SettingsProvider>
       </body>
+      {process.env.NEXT_PUBLIC_GA4_ID && (
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_ID} />
+      )}
     </html>
   );
 }
