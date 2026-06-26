@@ -76,29 +76,19 @@ export default async function HomePage() {
   const waLink = generateWhatsAppLink({ source: "homepage-hero", settings });
 
   const rawProperties = await prisma.property.findMany({
-    where: { status: "ACTIVE", featured: true },
+    where: { status: "ACTIVE" },
     take: 6,
     include: { images: { orderBy: { order: "asc" } } },
-    orderBy: { createdAt: "desc" },
+    orderBy: [
+      { featured: "desc" },
+      { createdAt: "desc" }
+    ],
   });
 
   let featuredProperties = rawProperties.map(p => ({
     ...p,
     price: Number(p.price),
   })) as unknown as PropertyCardData[];
-
-  if (featuredProperties.length === 0) {
-    const backupProperties = await prisma.property.findMany({
-      where: { status: "ACTIVE" },
-      take: 6,
-      include: { images: { orderBy: { order: "asc" } } },
-      orderBy: { createdAt: "desc" },
-    });
-    featuredProperties = backupProperties.map(p => ({
-      ...p,
-      price: Number(p.price),
-    })) as unknown as PropertyCardData[];
-  }
 
   return (
     <>

@@ -48,12 +48,18 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm<PropertyFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(propertySchema) as any,
     defaultValues: mappedInitialData,
   });
+
+  const currentType = watch("type");
+  const currentSubType = watch("subType");
+  const isCommercial = currentType === "COMMERCIAL" || currentSubType === "OFFICE" || currentSubType === "SHOP" || currentSubType === "SHOWROOM";
+
 
   const onSubmit = async (data: PropertyFormValues) => {
     setIsSubmitting(true);
@@ -236,15 +242,17 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">BHK (Bedrooms)</label>
-            <input 
-              type="number" 
-              {...register("bhk")} 
-              placeholder="e.g. 3"
-              className="input w-full" 
-            />
-          </div>
+          {!isCommercial && (
+            <div>
+              <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">BHK (Bedrooms)</label>
+              <input 
+                type="number" 
+                {...register("bhk")} 
+                placeholder="e.g. 3"
+                className="input w-full" 
+              />
+            </div>
+          )}
 
           <div>
             <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Floor</label>
@@ -349,21 +357,27 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
           </div>
         </div>
 
-        {/* 4. Amenities */}
+        {/* 4. Amenities / Location Advantages */}
         <div className="card p-6">
           <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 border-b border-[var(--color-border)] pb-2">
-            4. Amenities
+            4. {isCommercial ? "Location Advantages" : "Amenities"}
           </h2>
           <Controller
             name="amenities"
             control={control}
             render={({ field }) => {
-              const AMENITY_OPTIONS = [
-                "Gym", "Swimming Pool", "Clubhouse", "24/7 Security", 
-                "Power Backup", "Car Parking", "Children's Play Area", 
-                "Jogging Track", "Intercom", "Lift", "Vaastu Compliant", 
-                "Rain Water Harvesting", "Gas Pipeline", "Park"
-              ];
+              const AMENITY_OPTIONS = isCommercial 
+                ? [
+                    "Near Metro", "Highway Access", "Business Hub", "High Footfall", 
+                    "Visitor Parking", "Power Backup", "24/7 Security", "Cafeteria / Food Court", 
+                    "Washrooms", "Lift", "Fire Safety", "Internet / Broadband"
+                  ]
+                : [
+                    "Gym", "Swimming Pool", "Clubhouse", "24/7 Security", 
+                    "Power Backup", "Car Parking", "Children's Play Area", 
+                    "Jogging Track", "Intercom", "Lift", "Vaastu Compliant", 
+                    "Rain Water Harvesting", "Gas Pipeline", "Park"
+                  ];
               
               const toggleAmenity = (amenity: string) => {
                 const current = field.value || [];

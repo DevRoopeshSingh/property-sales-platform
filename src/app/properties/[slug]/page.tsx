@@ -175,7 +175,7 @@ export default async function PropertyDetailPage({
 
                 {/* Key Specs Strip */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-t border-b border-[var(--color-border)]">
-                  {property.bhk && (
+                  {property.bhk && property.type !== "COMMERCIAL" && property.subType !== "OFFICE" && (
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <BedDouble size={16} className="text-[var(--color-brand-500)]" />
@@ -224,9 +224,11 @@ export default async function PropertyDetailPage({
                 </div>
               </div>
 
-              {/* Amenities */}
+              {/* Amenities / Location Advantages */}
               <div className="card p-5 mb-5">
-                <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">Amenities</h2>
+                <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">
+                  {(property.type === "COMMERCIAL" || property.subType === "OFFICE") ? "Location Advantages" : "Amenities"}
+                </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {property.amenities.map((amenity) => (
                     <div key={amenity} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">

@@ -27,12 +27,6 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
     settings,
   });
 
-  const possessionBadge = {
-    READY_TO_MOVE: { text: "Ready to Move", class: "badge-green" },
-    UNDER_CONSTRUCTION: { text: "Under Construction", class: "badge-amber" },
-    NEW_LAUNCH: { text: "New Launch", class: "badge-blue" },
-  }[property.possession];
-
   return (
     <article className={cn("card group relative", className)}>
       {/* Image */}
@@ -61,17 +55,6 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
               Distressed Property
             </span>
           )}
-          {property.featured && (
-            <span className="badge badge-blue text-xs">⭐ Featured</span>
-          )}
-          {property.reraNumber && (
-            <span className="badge bg-white text-slate-800 text-[10px] uppercase font-bold tracking-wider shadow-sm border border-slate-100">
-              ✓ RERA
-            </span>
-          )}
-          <span className={cn("badge text-xs shadow-sm", possessionBadge.class)}>
-            {possessionBadge.text}
-          </span>
         </div>
 
         {/* Type badge */}
@@ -125,7 +108,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
 
         {/* Specs */}
         <div className="flex items-center gap-4 text-sm text-[var(--color-text-secondary)] pb-4 border-b border-[var(--color-border)]">
-          {property.bhk && (
+          {property.bhk && property.type !== "COMMERCIAL" && property.subType !== "OFFICE" && (
             <div className="flex items-center gap-1">
               <BedDouble size={14} className="text-[var(--color-brand-400)]" />
               <span>{property.bhk} BHK</span>
@@ -146,13 +129,20 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
         </div>
 
         {/* CTA */}
-        <Link
-          href={`/properties/${property.slug}`}
-          className="flex items-center justify-between mt-3 text-sm font-semibold text-[var(--color-brand-600)] group-hover:gap-3 transition-all"
-        >
-          <span>View Details</span>
-          <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
-        </Link>
+        <div className="flex items-center justify-between mt-3">
+          {property.featured ? (
+            <span className="badge badge-blue text-[10px] uppercase tracking-wider shadow-sm">⭐ Featured</span>
+          ) : (
+            <div />
+          )}
+          <Link
+            href={`/properties/${property.slug}`}
+            className="flex items-center gap-1.5 text-sm font-semibold text-[var(--color-brand-600)] group-hover:gap-2.5 transition-all"
+          >
+            <span>View Details</span>
+            <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+          </Link>
+        </div>
       </div>
     </article>
   );
