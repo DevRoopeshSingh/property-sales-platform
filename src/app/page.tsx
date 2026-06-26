@@ -348,29 +348,38 @@ export default async function HomePage() {
       </section>
 
       {/* ── CTA Banner ── */}
-      <section className="relative py-20 bg-blue-600 overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")` }} />
-        
-        <div className="container-main relative z-10 text-center max-w-3xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">
-            Ready to find your dream property?
-          </h2>
-          <p className="text-lg text-blue-100 mb-10">
-            Our experts are available on WhatsApp to curate the best properties tailored to your needs. Zero brokerage on new launch projects.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href={waLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn bg-white text-blue-700 hover:bg-slate-50 px-10 py-4 text-base shadow-xl"
-            >
-              💬 Chat on WhatsApp
-            </a>
-            <Link href="/contact" className="btn border-white text-white hover:bg-white/10 px-10 py-4 text-base border-2">
-              Request a Callback
-            </Link>
+      <section className="py-12 lg:py-24 px-4 sm:px-6">
+        <div 
+          className="container-main relative rounded-[2rem] overflow-hidden py-20 lg:py-28 shadow-2xl"
+          style={{
+            backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80')",
+            backgroundSize: "cover",
+            backgroundPosition: "center"
+          }}
+        >
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-slate-900/75 sm:bg-slate-900/60" />
+          
+          <div className="relative z-10 text-center max-w-3xl mx-auto px-4">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6 leading-tight drop-shadow-sm">
+              Ready to find your dream property?
+            </h2>
+            <p className="text-lg text-slate-100 mb-10 font-medium drop-shadow-sm">
+              Our experts are available on WhatsApp to curate the best properties tailored to your needs. Zero brokerage on new launch projects.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <a
+                href={waLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn bg-white text-blue-700 hover:bg-slate-50 px-10 py-4 text-base shadow-xl font-bold transition-transform hover:scale-105"
+              >
+                💬 Chat on WhatsApp
+              </a>
+              <Link href="/contact" className="btn border-white text-white hover:bg-white/20 px-10 py-4 text-base border-2 font-bold backdrop-blur-sm transition-transform hover:scale-105">
+                Request a Callback
+              </Link>
+            </div>
           </div>
         </div>
       </section>
