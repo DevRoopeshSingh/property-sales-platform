@@ -23,6 +23,14 @@ export const metadata: Metadata = {
   title: "Browse Properties — All over India | PropConnect",
   description:
     "Search and filter properties across India. Filter by BHK, budget, property type, and city. Apartments, Villas, Plots & Commercial spaces.",
+  alternates: {
+    canonical: '/properties',
+  },
+  openGraph: {
+    title: "Browse Properties — All over India | PropConnect",
+    description: "Search and filter properties across India. Filter by BHK, budget, property type, and city.",
+    url: '/properties',
+  },
 };
 
 const LOCALITIES_FILTER = Object.entries(LOCALITY_LABELS) as [Locality, string][];

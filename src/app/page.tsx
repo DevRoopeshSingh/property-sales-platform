@@ -14,6 +14,14 @@ export const metadata: Metadata = {
   description:
     "Discover premium residential and commercial properties all over India. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
   keywords: "property in india, luxury flats, zero brokerage, verified properties, new launch projects",
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title: "PropConnect — Premium Properties all over India",
+    description: "Discover premium residential and commercial properties all over India. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
+    url: '/',
+  },
 };
 
 export const revalidate = 60;
@@ -90,8 +98,28 @@ export default async function HomePage() {
     price: Number(p.price),
   })) as unknown as PropertyCardData[];
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "PropConnect",
+    url: baseUrl,
+    logo: `${baseUrl}/icon.png`,
+    description: "Discover premium residential and commercial properties all over India.",
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: settings.supportPhone || "+91 98765 43210",
+      contactType: "customer service",
+      availableLanguage: ["English", "Hindi"]
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* ── Premium Hero ── */}
       <section className="relative overflow-hidden bg-slate-900">
         {/* Background Image & Overlay */}

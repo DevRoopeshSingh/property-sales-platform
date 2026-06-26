@@ -50,7 +50,6 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({
-
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -59,14 +58,38 @@ export async function generateMetadata({
   const property = await getProperty(slug);
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
   if (!property) return { title: "Property Not Found" };
+
+  const title = property.metaTitle ?? `${property.title}${settings.seoDefaultTitleSuffix || " | PropConnect"}`;
+  const description = property.metaDescription ?? (property.description.slice(0, 160) || settings.seoDefaultDescription);
+  const url = `/properties/${property.slug}`;
+  const images = property.images.length > 0
+    ? property.images.map((img) => ({ url: img.url, alt: property.title }))
+    : [{ url: '/icon.png', alt: property.title }];
+
   return {
-    title: property.metaTitle ?? `${property.title}${settings.seoDefaultTitleSuffix || " | PropConnect"}`,
-    description: property.metaDescription ?? (property.description.slice(0, 160) || settings.seoDefaultDescription),
+    title,
+    description,
     keywords: [
       `property in ${LOCALITY_LABELS[property.locality as Locality]?.toLowerCase()}`,
       property.bhk ? `${property.bhk} BHK` : "",
       PROPERTY_SUB_TYPE_LABELS[property.subType as PropertySubType]?.toLowerCase(),
     ].filter(Boolean),
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      images,
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: images.map(img => img.url),
+    },
   };
 }
 
@@ -91,17 +114,21 @@ export default async function PropertyDetailPage({
   });
   const callLink = generateCallLink(settings.supportPhone);
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const url = `${baseUrl}/properties/${property.slug}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
     name: property.title,
     description: property.description.slice(0, 300),
-    url: `${process.env.NEXT_PUBLIC_BASE_URL}/properties/${property.slug}`,
-    image: property.images.map((img) => img.url),
+    url: url,
+    image: property.images.length > 0 ? property.images.map((img) => img.url) : [`${baseUrl}/icon.png`],
     offers: {
       "@type": "Offer",
       price: Number(property.price),
       priceCurrency: "INR",
+      url: url,
     },
     address: {
       "@type": "PostalAddress",
@@ -112,11 +139,46 @@ export default async function PropertyDetailPage({
     },
   };
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Properties",
+        item: `${baseUrl}/properties`
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: LOCALITY_LABELS[property.locality],
+        item: `${baseUrl}/localities/${property.locality.toLowerCase().replace("_", "-")}`
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: property.title,
+        item: url
+      }
+    ]
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
       <div className="bg-[var(--color-surface-2)] pb-24 lg:pb-0">
@@ -175,7 +237,7 @@ export default async function PropertyDetailPage({
 
                 {/* Key Specs Strip */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-4 border-t border-b border-[var(--color-border)]">
-                  {property.bhk && property.type !== "COMMERCIAL" && property.subType !== "OFFICE" && (
+                  {property.bhk && property.type !== "COMMERCIAL" && property.subType !== "OFFICE" ? (
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <BedDouble size={16} className="text-[var(--color-brand-500)]" />
@@ -183,8 +245,8 @@ export default async function PropertyDetailPage({
                       </div>
                       <span className="text-xs text-[var(--color-text-muted)]">Configuration</span>
                     </div>
-                  )}
-                  {property.area && (
+                  ) : null}
+                  {property.area ? (
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <Maximize2 size={16} className="text-[var(--color-brand-500)]" />
@@ -192,8 +254,8 @@ export default async function PropertyDetailPage({
                       </div>
                       <span className="text-xs text-[var(--color-text-muted)]">Carpet Area</span>
                     </div>
-                  )}
-                  {property.floor && (
+                  ) : null}
+                  {property.floor ? (
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <Building2 size={16} className="text-[var(--color-brand-500)]" />
@@ -203,7 +265,7 @@ export default async function PropertyDetailPage({
                       </div>
                       <span className="text-xs text-[var(--color-text-muted)]">Floor</span>
                     </div>
-                  )}
+                  ) : null}
                   <div className="text-center">
                     <div className="flex items-center justify-center gap-1.5 mb-1">
                       <CalendarCheck size={16} className="text-[var(--color-brand-500)]" />
@@ -222,22 +284,34 @@ export default async function PropertyDetailPage({
                 <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed whitespace-pre-line">
                   {property.description}
                 </div>
+                {property.subType === "OFFICE" && property.amenities.length > 0 && (
+                  <div className="mt-6 border-t border-[var(--color-border)] pt-5">
+                    <h3 className="text-base font-bold text-[var(--color-text-primary)] mb-3">Location Advantages</h3>
+                    <ul className="list-disc pl-5 text-sm text-[var(--color-text-secondary)] space-y-1.5 marker:text-[var(--color-brand-400)]">
+                      {property.amenities.map((amenity) => (
+                        <li key={amenity}>{amenity}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               {/* Amenities / Location Advantages */}
-              <div className="card p-5 mb-5">
-                <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">
-                  {(property.type === "COMMERCIAL" || property.subType === "OFFICE") ? "Location Advantages" : "Amenities"}
-                </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {property.amenities.map((amenity) => (
-                    <div key={amenity} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                      <CheckCircle2 size={15} className="text-[var(--color-brand-500)] shrink-0" />
-                      {amenity}
-                    </div>
-                  ))}
+              {property.subType !== "OFFICE" && (
+                <div className="card p-5 mb-5">
+                  <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-4">
+                    {property.type === "COMMERCIAL" ? "Location Advantages" : "Amenities"}
+                  </h2>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {property.amenities.map((amenity) => (
+                      <div key={amenity} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
+                        <CheckCircle2 size={15} className="text-[var(--color-brand-500)] shrink-0" />
+                        {amenity}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Location */}
               <div className="card p-5 mb-5">

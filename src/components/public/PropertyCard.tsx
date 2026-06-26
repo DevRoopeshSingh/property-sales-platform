@@ -108,24 +108,24 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
 
         {/* Specs */}
         <div className="flex items-center gap-4 text-sm text-[var(--color-text-secondary)] pb-4 border-b border-[var(--color-border)]">
-          {property.bhk && property.type !== "COMMERCIAL" && property.subType !== "OFFICE" && (
+          {property.bhk && property.type !== "COMMERCIAL" && property.subType !== "OFFICE" ? (
             <div className="flex items-center gap-1">
               <BedDouble size={14} className="text-[var(--color-brand-400)]" />
               <span>{property.bhk} BHK</span>
             </div>
-          )}
-          {property.area && (
+          ) : null}
+          {property.area ? (
             <div className="flex items-center gap-1">
               <Maximize2 size={14} className="text-[var(--color-brand-400)]" />
               <span>{property.area.toLocaleString()} sq ft</span>
             </div>
-          )}
-          {property.floor && (
+          ) : null}
+          {property.floor ? (
             <div className="flex items-center gap-1">
               <Building2 size={14} className="text-[var(--color-brand-400)]" />
               <span>Floor {property.floor}</span>
             </div>
-          )}
+          ) : null}
         </div>
 
         {/* CTA */}

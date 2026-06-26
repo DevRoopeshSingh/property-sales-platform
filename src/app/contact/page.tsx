@@ -9,13 +9,53 @@ export const metadata: Metadata = {
   title: "Contact Us — PropConnect",
   description:
     "Get in touch with our property experts. Chat on WhatsApp, call us, or fill the inquiry form. Available 7 days a week for property consultations.",
+  alternates: {
+    canonical: '/contact',
+  },
+  openGraph: {
+    title: "Contact Us — PropConnect",
+    description: "Get in touch with our property experts. Chat on WhatsApp, call us, or fill the inquiry form.",
+    url: '/contact',
+  },
 };
 
 export default async function ContactPage() {
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "RealEstateAgent",
+    name: "PropConnect",
+    image: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/icon.png`,
+    telephone: settings.supportPhone || process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91 98765 43210",
+    email: settings.supportEmail || process.env.NEXT_PUBLIC_CONTACT_EMAIL || "enquiry@thepropconnect.in",
+    address: {
+      "@type": "PostalAddress",
+      addressRegion: "Maharashtra",
+      addressCountry: "IN"
+    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        opens: "09:00",
+        closes: "19:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Sunday",
+        opens: "10:00",
+        closes: "17:00"
+      }
+    ]
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <div className="hero-gradient py-14">
         <div className="container-main text-center">

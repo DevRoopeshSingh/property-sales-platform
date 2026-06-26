@@ -47,12 +47,6 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <div
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-              style={{ background: "var(--color-brand-600)" }}
-            >
-              P
-            </div>
             <span className="font-extrabold text-xl text-[var(--color-text-primary)]">
               Prop<span style={{ color: "var(--color-brand-600)" }}>Connect</span>
             </span>

@@ -129,10 +129,28 @@ export async function generateMetadata({
   if (!locality) return { title: "Locality Not Found" };
 
   const label = LOCALITY_LABELS[locality];
+  const title = `Properties in ${label} — Flats, Apartments & More | PropConnect`;
+  const description = `Find residential and commercial properties in ${label}. Browse verified flats, apartments, villas, and plots. ${LOCALITY_CONTENT[locality].priceRange}. WhatsApp us today.`;
+  const url = `/localities/${slug}`;
+
   return {
-    title: `Properties in ${label} — Flats, Apartments & More | PropConnect`,
-    description: `Find residential and commercial properties in ${label}. Browse verified flats, apartments, villas, and plots. ${LOCALITY_CONTENT[locality].priceRange}. WhatsApp us today.`,
+    title,
+    description,
     keywords: [`property in ${label.toLowerCase()}`, `flats in ${label.toLowerCase()}`, `apartments ${label.toLowerCase()}`, `buy property ${label.toLowerCase()}`],
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 
@@ -151,8 +169,52 @@ export default async function LocalityPage({
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
   const waLink = generateWhatsAppLink({ source: `locality-${slug}`, settings });
 
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const url = `${baseUrl}/localities/${slug}`;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: `Properties in ${label}`,
+    description: content.description,
+    url: url,
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: baseUrl
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Properties",
+        item: `${baseUrl}/properties`
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: label,
+        item: url
+      }
+    ]
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Hero */}
       <div className="hero-gradient py-14">
         <div className="container-main">
