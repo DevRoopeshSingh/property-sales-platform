@@ -32,15 +32,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center text-white font-bold"
-                style={{ background: "var(--color-brand-600)" }}
-              >
-                P
-              </div>
+            <Link href="/" className="flex items-center gap-2 mb-4 shrink-0">
               <span className="font-extrabold text-xl">
-                Prop<span style={{ color: "var(--color-brand-400)" }}>Connect</span>
+                Prop<span style={{ color: "var(--color-brand-600)" }}>Connect</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm mb-6 max-w-xs leading-relaxed">
