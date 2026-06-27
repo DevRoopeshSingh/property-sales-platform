@@ -17,7 +17,7 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
     // Defaults to prevent undefined controlled inputs
     siteName: initialSettings.siteName || "PropConnect",
     supportEmail: initialSettings.supportEmail || "enquiry@thepropconnect.in",
-    supportPhone: initialSettings.supportPhone || "+91 9833378400",
+    supportPhone: initialSettings.supportPhone || "+91 98333 78400",
     defaultCity: initialSettings.defaultCity || "MUMBAI",
     
     waNumber: initialSettings.waNumber || "919833378400",

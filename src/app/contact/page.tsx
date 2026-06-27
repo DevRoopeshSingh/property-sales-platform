@@ -80,10 +80,13 @@ export default async function ContactPage() {
                 <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0" style={{ background: "var(--color-brand-100)" }}>
                   <Phone size={18} className="text-[var(--color-brand-600)]" />
                 </div>
-                <div>
+                <div className="flex flex-col gap-1">
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Phone</p>
                   <a href={`tel:${settings.supportPhone || process.env.NEXT_PUBLIC_CONTACT_PHONE}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
-                    {settings.supportPhone || process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91 98765 43210"}
+                    {settings.supportPhone || process.env.NEXT_PUBLIC_CONTACT_PHONE || "+91 98333 78400"}
+                  </a>
+                  <a href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE_ALT}`} className="text-sm text-[var(--color-brand-600)] hover:underline">
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE_ALT || "+91 93216 70367"}
                   </a>
                 </div>
               </div>

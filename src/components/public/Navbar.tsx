@@ -97,13 +97,22 @@ export default function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-2">
-            <a
-              href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE}`}
-              className="btn btn-ghost text-sm"
-            >
-              <Phone size={15} />
-              {process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 98765 43210"}
-            </a>
+            <div className="flex flex-col gap-0.5 mr-2">
+              <a
+                href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE}`}
+                className="text-[13px] font-medium hover:text-[var(--color-brand-600)] transition-colors flex items-center gap-1.5"
+              >
+                <Phone size={13} />
+                {process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 98333 78400"}
+              </a>
+              <a
+                href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE_ALT}`}
+                className="text-[13px] font-medium hover:text-[var(--color-brand-600)] transition-colors flex items-center gap-1.5"
+              >
+                <Phone size={13} />
+                {process.env.NEXT_PUBLIC_CONTACT_PHONE_ALT ?? "+91 93216 70367"}
+              </a>
+            </div>
             <a
               href={generateWhatsAppLink({ source: "navbar", settings })}
               target="_blank"

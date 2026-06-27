@@ -255,15 +255,15 @@ export default async function PropertyDetailPage({
                       <span className="text-xs text-[var(--color-text-muted)]">Carpet Area</span>
                     </div>
                   ) : null}
-                  {property.floor ? (
+                  {property.totalFloors ? (
                     <div className="text-center">
                       <div className="flex items-center justify-center gap-1.5 mb-1">
                         <Building2 size={16} className="text-[var(--color-brand-500)]" />
                         <span className="font-bold text-[var(--color-text-primary)]">
-                          {property.floor}{property.totalFloors ? `/${property.totalFloors}` : ""}
+                          {property.totalFloors}
                         </span>
                       </div>
-                      <span className="text-xs text-[var(--color-text-muted)]">Floor</span>
+                      <span className="text-xs text-[var(--color-text-muted)]">Total Floors</span>
                     </div>
                   ) : null}
                   <div className="text-center">

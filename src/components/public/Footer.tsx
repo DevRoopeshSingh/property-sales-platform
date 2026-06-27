@@ -102,13 +102,22 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <Phone size={15} className="mt-0.5 shrink-0" style={{ color: "var(--color-brand-400)" }} />
-                <a
-                  href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE}`}
-                  className="text-sm transition-colors hover:text-white"
-                  style={{ color: "rgba(255,255,255,0.65)" }}
-                >
-                  {process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 98765 43210"}
-                </a>
+                <div className="flex flex-col gap-1">
+                  <a
+                    href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE}`}
+                    className="text-sm transition-colors hover:text-white"
+                    style={{ color: "rgba(255,255,255,0.65)" }}
+                  >
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE ?? "+91 98333 78400"}
+                  </a>
+                  <a
+                    href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE_ALT}`}
+                    className="text-sm transition-colors hover:text-white"
+                    style={{ color: "rgba(255,255,255,0.65)" }}
+                  >
+                    {process.env.NEXT_PUBLIC_CONTACT_PHONE_ALT ?? "+91 93216 70367"}
+                  </a>
+                </div>
               </li>
               <li className="flex items-start gap-3">
                 <Mail size={15} className="mt-0.5 shrink-0" style={{ color: "var(--color-brand-400)" }} />
