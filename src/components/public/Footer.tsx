@@ -4,13 +4,13 @@ import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 
 const LOCALITIES = [
-  { label: "Mumbai", href: "/localities/mumbai" },
-  { label: "Navi Mumbai", href: "/localities/navi-mumbai" },
-  { label: "Thane", href: "/localities/thane" },
-  { label: "Mira Road", href: "/localities/mira-road" },
-  { label: "Vasai", href: "/localities/vasai" },
-  { label: "Nalasopara", href: "/localities/nalasopara" },
-  { label: "Virar", href: "/localities/virar" },
+  { label: "Vashi", href: "/localities/vashi" },
+  { label: "Kharghar", href: "/localities/kharghar" },
+  { label: "Seawoods", href: "/localities/seawoods" },
+  { label: "Nerul", href: "/localities/nerul" },
+  { label: "CBD Belapur", href: "/localities/cbd-belapur" },
+  { label: "Panvel", href: "/localities/panvel" },
+  { label: "Airoli", href: "/localities/airoli" },
 ];
 
 const PROPERTY_TYPES = [
@@ -38,7 +38,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-slate-400 text-sm mb-6 max-w-xs leading-relaxed">
-            {settings.siteName || "PropConnect"} — Discover premium residential and commercial properties across {settings.defaultCity || "Mumbai"}. Connect directly with experts for a seamless experience.
+            {settings.siteName || "PropConnect"} — Discover premium residential and commercial properties across {settings.defaultCity || "Navi Mumbai"}. Connect directly with experts for a seamless experience.
           </p>
             <a
               href={generateWhatsAppLink({ source: "footer", settings })}
@@ -123,7 +123,9 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin size={15} className="mt-0.5 shrink-0" style={{ color: "var(--color-brand-400)" }} />
                 <span className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>
-                  Mumbai Metropolitan Region, Maharashtra, India
+                  Office No. 410, 4th Floor, Concorde Premises / Concorde Building,<br />
+                  Plot No. 66A, Sector 11, CBD Belapur,<br />
+                  Navi Mumbai, Thane, Maharashtra 400614
                 </span>
               </li>
             </ul>

@@ -19,89 +19,83 @@ const LOCALITY_CONTENT: Record<
   Locality,
   { description: string; priceRange: string; connectivity: string; highlights: string[] }
 > = {
-  VIRAR: {
-    description: "Virar is one of the fastest-growing residential destinations in the Mumbai Metropolitan Region, offering affordable housing options with excellent railway connectivity to Mumbai Central.",
-    priceRange: "₹25 Lakhs – ₹80 Lakhs",
-    connectivity: "Virar is served by the Western Railway line with fast and slow trains running frequently to Churchgate and Dadar.",
-    highlights: ["Western Railway Station", "Affordable Property Rates", "Upcoming Metro Extension", "Natural Surroundings"],
+  SEAWOODS: {
+    description: "Seawoods is a premium residential node known for its luxury high-rises, Grand Central Mall, and well-planned infrastructure.",
+    priceRange: "₹1.5 Crores – ₹4 Crores",
+    connectivity: "Connected via Seawoods-Darave railway station on the Harbour line and Palm Beach Road.",
+    highlights: ["Seawoods Grand Central Mall", "Premium High-Rises", "Palm Beach Road Access", "NRI Complex"],
   },
-  VASAI: {
-    description: "Vasai offers a perfect balance of affordable living and modern infrastructure. With rapid development and upcoming metro connectivity, it is emerging as a prime residential destination.",
-    priceRange: "₹30 Lakhs – ₹1.2 Crores",
-    connectivity: "Vasai Road station connects to both Central and Western railway lines, offering excellent access to Mumbai.",
-    highlights: ["Dual Railway Lines", "Growing Infrastructure", "Modern Townships", "Good Schools & Hospitals"],
+  KHARGHAR: {
+    description: "Kharghar is a well-planned, green node recognized as the educational hub of Navi Mumbai with large open spaces and Central Park.",
+    priceRange: "₹80 Lakhs – ₹3 Crores",
+    connectivity: "Excellent connectivity via Sion-Panvel Highway, Harbour line railway, and the upcoming Metro.",
+    highlights: ["Central Park", "Educational Institutions", "Kharghar Valley Golf Course", "Upcoming Metro"],
   },
-  NALASOPARA: {
-    description: "Nalasopara is one of the most affordable residential areas in the Mumbai region, with a large selection of new developments and improving infrastructure.",
-    priceRange: "₹20 Lakhs – ₹75 Lakhs",
-    connectivity: "Nallasopara station on the Western Railway line provides direct connectivity to Mumbai.",
-    highlights: ["Most Affordable in MMR", "Western Railway Connectivity", "New Residential Projects", "Growing Commercial Hub"],
+  TALOJA: {
+    description: "Taloja is an emerging affordable housing destination with rapid infrastructure growth and industrial presence.",
+    priceRange: "₹35 Lakhs – ₹80 Lakhs",
+    connectivity: "Connected via Taloja Panchanand railway station and Navi Mumbai Metro Line 1.",
+    highlights: ["Affordable Housing", "Metro Connectivity", "Industrial Hub", "Upcoming Projects"],
   },
-  THANE: {
-    description: "Thane has transformed into a premier urban destination with world-class infrastructure, top schools, hospitals, and malls. It offers a premium living experience with excellent connectivity.",
-    priceRange: "₹60 Lakhs – ₹3 Crores",
-    connectivity: "Thane is connected via Central Railway and the upcoming Metro Line 4 linking it directly to Wadala.",
-    highlights: ["Top Schools & Hospitals", "Lakes & Parks", "Metro Connectivity", "IT & Commercial Hubs"],
+  NERUL: {
+    description: "Known as the Queen of Navi Mumbai, Nerul boasts excellent residential complexes, educational institutes, and the iconic DY Patil Stadium.",
+    priceRange: "₹1 Crore – ₹3.5 Crores",
+    connectivity: "Served by Nerul railway station on the Harbour line and Sion-Panvel Highway.",
+    highlights: ["DY Patil Stadium", "Established Node", "Premium Residential", "Educational Hub"],
   },
-  NAVI_MUMBAI: {
-    description: "Navi Mumbai is a planned city known for wide roads, greenery, and excellent civic infrastructure. It is one of the most livable cities in Maharashtra.",
-    priceRange: "₹55 Lakhs – ₹2.5 Crores",
-    connectivity: "Navi Mumbai has Harbour Line connectivity and is set to get the new Navi Mumbai International Airport.",
-    highlights: ["Planned City", "Wide Roads & Green Spaces", "New International Airport", "Top IT Parks"],
+  VASHI: {
+    description: "Vashi is the oldest and most established commercial and residential hub of Navi Mumbai, offering excellent shopping and dining experiences.",
+    priceRange: "₹1.5 Crores – ₹5 Crores",
+    connectivity: "First node on the Sion-Panvel Highway after the bridge, connected by Vashi railway station.",
+    highlights: ["Commercial Hub", "Inorbit Mall", "Established Infrastructure", "Excellent Connectivity"],
   },
-  MIRA_ROAD: {
-    description: "Mira Road is a rapidly developing suburb with a mix of affordable and mid-range housing. Its proximity to Mira-Bhayandar Municipal Corporation areas makes it a popular choice for families.",
-    priceRange: "₹40 Lakhs – ₹1.5 Crores",
-    connectivity: "Mira Road station on the Western Railway line provides fast access to Mumbai.",
-    highlights: ["Affordable Mid-Range Housing", "Good Social Infrastructure", "Western Railway Access", "Upcoming Projects"],
+  CBD_BELAPUR: {
+    description: "CBD Belapur is the primary business district of Navi Mumbai, featuring major corporate offices alongside premium residential areas.",
+    priceRange: "₹1 Crore – ₹4 Crores",
+    connectivity: "Connected by Belapur railway station and water taxi services to Mumbai.",
+    highlights: ["Central Business District", "Water Taxi", "Corporate Offices", "Hillside Views"],
   },
-  BHAYANDAR: {
-    description: "Bhayandar is an emerging residential locality that offers affordable housing options with good connectivity and a growing social infrastructure.",
-    priceRange: "₹35 Lakhs – ₹1.2 Crores",
-    connectivity: "Bhayandar station on the Western Railway line connects easily to Mumbai and Virar.",
-    highlights: ["Affordable Housing", "Western Railway", "Sea-Facing Options", "Good Amenities"],
+  AIROLI: {
+    description: "Airoli is a major IT and knowledge corridor of Navi Mumbai with excellent connectivity to Thane and Eastern suburbs.",
+    priceRange: "₹90 Lakhs – ₹2.5 Crores",
+    connectivity: "Direct connectivity to Mulund via Airoli Bridge and served by Airoli railway station.",
+    highlights: ["IT Parks", "Knowledge Corridor", "Airoli Bridge", "Green Spaces"],
   },
-  NAIGAON: {
-    description: "Naigaon has emerged as a popular affordable housing destination, offering a peaceful environment with good connectivity to both Vasai and Mumbai.",
-    priceRange: "₹22 Lakhs – ₹70 Lakhs",
-    connectivity: "Naigaon station provides connectivity on the Western Railway line.",
-    highlights: ["Most Budget Friendly", "Peaceful Environment", "New Developments", "Good ROI Potential"],
+  GHANSOLI: {
+    description: "Ghansoli is a rapidly developing node with large IT parks, corporate parks, and modern residential developments.",
+    priceRange: "₹80 Lakhs – ₹2 Crores",
+    connectivity: "Connected via Trans-Harbour line and Thane-Belapur road.",
+    highlights: ["Reliance Corporate Park", "Developing Infrastructure", "Trans-Harbour Connectivity", "Modern Housing"],
   },
-  MUMBAI: {
-    description: "Mumbai is the financial capital of India, offering premium residential and commercial properties across its various neighborhoods from Andheri to South Mumbai.",
-    priceRange: "₹80 Lakhs – ₹10+ Crores",
-    connectivity: "Mumbai is served by the Western, Central, and Harbour railway lines, BEST buses, and a growing Metro network.",
-    highlights: ["Financial Capital", "Premium Addresses", "Metro Network", "World-Class Amenities"],
+  ULWE: {
+    description: "Ulwe is a fast-emerging node located close to the upcoming Navi Mumbai International Airport, offering great investment potential.",
+    priceRange: "₹50 Lakhs – ₹1.5 Crores",
+    connectivity: "Connected by Bamandongri and Kharkopar railway stations and close to Atal Setu (MTHL).",
+    highlights: ["Proximity to Airport", "Atal Setu Access", "High ROI Potential", "New Developments"],
   },
-  DELHI: {
-    description: "The capital city offers a unique blend of historical charm and modern living, featuring exclusive independent houses and luxury apartments.",
-    priceRange: "₹80 Lakhs – ₹5+ Crores",
-    connectivity: "Excellent connectivity via the extensive Delhi Metro network, ring roads, and national highways.",
-    highlights: ["Capital City", "Extensive Metro", "Spacious Layouts", "Green Surroundings"],
+  KAMOTHE: {
+    description: "Kamothe is a dense residential node offering affordable to mid-range housing options with good social infrastructure.",
+    priceRange: "₹60 Lakhs – ₹1.2 Crores",
+    connectivity: "Well-connected via Mansarovar and Khandeshwar railway stations and Sion-Panvel Highway.",
+    highlights: ["Mid-Range Housing", "Good Accessibility", "Established Market", "Close to Panvel"],
   },
-  BANGALORE: {
-    description: "Known as the Silicon Valley of India, Bangalore boasts premium high-rise living and lush green spaces.",
-    priceRange: "₹60 Lakhs – ₹3 Crores",
-    connectivity: "Well connected by Namma Metro, BMTC, and an expanding ring road network.",
-    highlights: ["IT Hub", "Pleasant Climate", "Premium High-Rises", "Cosmopolitan Culture"],
+  SANPADA: {
+    description: "Sanpada is a premium residential area situated between Vashi and Nerul, offering well-planned layouts and peaceful living.",
+    priceRange: "₹1.2 Crores – ₹3 Crores",
+    connectivity: "Served by Sanpada railway station and Palm Beach Road.",
+    highlights: ["Premium Layouts", "Palm Beach Road", "Peaceful Environment", "Good Schools"],
   },
-  PUNE: {
-    description: "A fast-emerging IT hub with excellent weather, offering a great balance of work and life with affordable luxury.",
+  KALAMBOLI: {
+    description: "Kalamboli is a major transportation and logistics hub, featuring affordable housing and good highway connectivity.",
+    priceRange: "₹45 Lakhs – ₹90 Lakhs",
+    connectivity: "Situated at the junction of Sion-Panvel Highway, NH4, and Mumbai-Pune Expressway.",
+    highlights: ["Highway Junction", "Logistics Hub", "Affordable Housing", "Expressway Access"],
+  },
+  PANVEL: {
+    description: "Panvel is an emerging smart city and the gateway to the Konkan region, set to benefit massively from the upcoming international airport.",
     priceRange: "₹45 Lakhs – ₹2 Crores",
-    connectivity: "Connectivity through the upcoming Pune Metro and a strong local bus network.",
-    highlights: ["Educational Hub", "Emerging IT Hub", "Great Weather", "Affordable Luxury"],
-  },
-  HYDERABAD: {
-    description: "The fastest growing metropolis with modern infrastructure, famous for its IT corridors and rich heritage.",
-    priceRange: "₹55 Lakhs – ₹2.5 Crores",
-    connectivity: "Robust connectivity via Hyderabad Metro and Outer Ring Road.",
-    highlights: ["Modern Infrastructure", "IT Corridors", "Affordable High-End Living", "Rich Heritage"],
-  },
-  CHENNAI: {
-    description: "A major cultural and economic center offering coastal living and traditional neighborhoods with modern amenities.",
-    priceRange: "₹50 Lakhs – ₹3 Crores",
-    connectivity: "Served by Chennai Metro, MRTS, and an extensive local train and bus network.",
-    highlights: ["Cultural Hub", "Coastal Living", "Automobile Hub", "Excellent Education"],
+    connectivity: "Major railway junction connecting Harbour, Central, and Outstation lines.",
+    highlights: ["Upcoming Airport", "Major Railway Junction", "Smart City Projects", "Gateway to Konkan"],
   },
 };
 

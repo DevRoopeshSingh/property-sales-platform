@@ -1,4 +1,4 @@
-import { Building2, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { signOut } from "@/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { MobileSidebarToggle } from "@/components/admin/MobileSidebarToggle";
@@ -10,9 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <aside className="w-64 bg-slate-900 text-white flex flex-col hidden md:flex">
         <div className="p-6 border-b border-slate-800">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center">
-              <Building2 size={20} color="white" />
-            </div>
+
             <span className="font-bold text-xl tracking-tight">
               Prop<span className="text-blue-400">Connect</span>
             </span>

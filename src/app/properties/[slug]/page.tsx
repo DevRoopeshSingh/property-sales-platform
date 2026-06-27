@@ -285,13 +285,11 @@ export default async function PropertyDetailPage({
                   {property.description}
                 </div>
                 {property.subType === "OFFICE" && property.amenities.length > 0 && (
-                  <div className="mt-6 border-t border-[var(--color-border)] pt-5">
-                    <h3 className="text-base font-bold text-[var(--color-text-primary)] mb-3">Location Advantages</h3>
-                    <ul className="list-disc pl-5 text-sm text-[var(--color-text-secondary)] space-y-1.5 marker:text-[var(--color-brand-400)]">
-                      {property.amenities.map((amenity) => (
-                        <li key={amenity}>{amenity}</li>
-                      ))}
-                    </ul>
+                  <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
+                    <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Location Advantages:</p>
+                    <p className="text-sm text-[var(--color-text-secondary)]">
+                      {property.amenities.join(", ")}
+                    </p>
                   </div>
                 )}
               </div>

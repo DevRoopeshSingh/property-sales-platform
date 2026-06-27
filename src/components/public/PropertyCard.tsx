@@ -52,7 +52,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {property.isDistressed && (
             <span className="badge bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider shadow-sm border border-red-700">
-              Distressed Property
+              Distress Property
             </span>
           )}
         </div>
@@ -120,10 +120,10 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
               <span>{property.area.toLocaleString()} sq ft</span>
             </div>
           ) : null}
-          {property.floor ? (
+          {property.totalFloors ? (
             <div className="flex items-center gap-1">
               <Building2 size={14} className="text-[var(--color-brand-400)]" />
-              <span>Floor {property.floor}</span>
+              <span>{property.totalFloors} Floors</span>
             </div>
           ) : null}
         </div>

@@ -133,7 +133,9 @@ export default async function ContactPage() {
                 <div>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-1">Office</p>
                   <p className="text-sm text-[var(--color-text-secondary)]">
-                    Mumbai Metropolitan Region,<br />Maharashtra, India
+                    Office No. 410, 4th Floor, Concorde Premises / Concorde Building,<br />
+                    Plot No. 66A, Sector 11, CBD Belapur,<br />
+                    Navi Mumbai, Thane, Maharashtra 400614
                   </p>
                 </div>
               </div>

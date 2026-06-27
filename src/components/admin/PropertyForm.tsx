@@ -23,7 +23,7 @@ const defaultValues: Partial<PropertyFormValues> = {
   featured: false,
   priceNegotiable: false,
   possession: "READY_TO_MOVE",
-  locality: "MUMBAI",
+  locality: "VASHI",
   isDistressed: false,
   duesPending: "",
   amenities: [],

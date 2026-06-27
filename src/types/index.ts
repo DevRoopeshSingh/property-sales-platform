@@ -29,74 +29,70 @@ export type LeadStatus =
   | "LOST";
 
 export type Locality =
-  | "MUMBAI"
-  | "NAVI_MUMBAI"
-  | "THANE"
-  | "MIRA_ROAD"
-  | "BHAYANDAR"
-  | "NAIGAON"
-  | "VASAI"
-  | "NALASOPARA"
-  | "VIRAR"
-  | "DELHI"
-  | "BANGALORE"
-  | "PUNE"
-  | "HYDERABAD"
-  | "CHENNAI";
+  | "SEAWOODS"
+  | "KHARGHAR"
+  | "TALOJA"
+  | "NERUL"
+  | "VASHI"
+  | "CBD_BELAPUR"
+  | "AIROLI"
+  | "GHANSOLI"
+  | "ULWE"
+  | "KAMOTHE"
+  | "SANPADA"
+  | "KALAMBOLI"
+  | "PANVEL";
 
 // ─────────────────────────────────────────
 // Display label maps
 // ─────────────────────────────────────────
 
 export const LOCALITY_LABELS: Record<Locality, string> = {
-  MUMBAI: "Mumbai",
-  NAVI_MUMBAI: "Navi Mumbai",
-  THANE: "Thane",
-  MIRA_ROAD: "Mira Road",
-  BHAYANDAR: "Bhayandar",
-  NAIGAON: "Naigaon",
-  VASAI: "Vasai",
-  NALASOPARA: "Nalasopara",
-  VIRAR: "Virar",
-  DELHI: "Delhi",
-  BANGALORE: "Bangalore",
-  PUNE: "Pune",
-  HYDERABAD: "Hyderabad",
-  CHENNAI: "Chennai",
+  SEAWOODS: "Seawoods",
+  KHARGHAR: "Kharghar",
+  TALOJA: "Taloja",
+  NERUL: "Nerul",
+  VASHI: "Vashi",
+  CBD_BELAPUR: "CBD Belapur",
+  AIROLI: "Airoli",
+  GHANSOLI: "Ghansoli",
+  ULWE: "Ulwe",
+  KAMOTHE: "Kamothe",
+  SANPADA: "Sanpada",
+  KALAMBOLI: "Kalamboli",
+  PANVEL: "Panvel",
 };
 
 export const LOCALITY_SLUGS: Record<Locality, string> = {
-  MUMBAI: "mumbai",
-  NAVI_MUMBAI: "navi-mumbai",
-  THANE: "thane",
-  MIRA_ROAD: "mira-road",
-  BHAYANDAR: "bhayandar",
-  NAIGAON: "naigaon",
-  VASAI: "vasai",
-  NALASOPARA: "nalasopara",
-  VIRAR: "virar",
-  DELHI: "delhi",
-  BANGALORE: "bangalore",
-  PUNE: "pune",
-  HYDERABAD: "hyderabad",
-  CHENNAI: "chennai",
+  SEAWOODS: "seawoods",
+  KHARGHAR: "kharghar",
+  TALOJA: "taloja",
+  NERUL: "nerul",
+  VASHI: "vashi",
+  CBD_BELAPUR: "cbd-belapur",
+  AIROLI: "airoli",
+  GHANSOLI: "ghansoli",
+  ULWE: "ulwe",
+  KAMOTHE: "kamothe",
+  SANPADA: "sanpada",
+  KALAMBOLI: "kalamboli",
+  PANVEL: "panvel",
 };
 
 export const SLUG_TO_LOCALITY: Record<string, Locality> = {
-  mumbai: "MUMBAI",
-  "navi-mumbai": "NAVI_MUMBAI",
-  thane: "THANE",
-  "mira-road": "MIRA_ROAD",
-  bhayandar: "BHAYANDAR",
-  naigaon: "NAIGAON",
-  vasai: "VASAI",
-  nalasopara: "NALASOPARA",
-  virar: "VIRAR",
-  delhi: "DELHI",
-  bangalore: "BANGALORE",
-  pune: "PUNE",
-  hyderabad: "HYDERABAD",
-  chennai: "CHENNAI",
+  seawoods: "SEAWOODS",
+  kharghar: "KHARGHAR",
+  taloja: "TALOJA",
+  nerul: "NERUL",
+  vashi: "VASHI",
+  "cbd-belapur": "CBD_BELAPUR",
+  airoli: "AIROLI",
+  ghansoli: "GHANSOLI",
+  ulwe: "ULWE",
+  kamothe: "KAMOTHE",
+  sanpada: "SANPADA",
+  kalamboli: "KALAMBOLI",
+  panvel: "PANVEL",
 };
 
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
@@ -169,6 +165,7 @@ export interface PropertyCardData {
   projectName?: string | null;
   builderName?: string | null;
   reraNumber?: string | null;
+  totalFloors?: number | null;
 }
 
 export interface PropertyDetail extends PropertyCardData {

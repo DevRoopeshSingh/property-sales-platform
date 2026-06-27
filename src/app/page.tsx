@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { MapPin, TrendingUp, Shield, Star, ChevronRight, CheckCircle, MessageSquare, Award } from "lucide-react";
+import { MapPin, Star, CheckCircle, Shield, ChevronRight, MessageSquare, Award } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import HeroSearchClient from "@/components/public/HeroSearchClient";
@@ -10,16 +10,16 @@ import { LOCALITY_LABELS, type Locality, PropertyCardData } from "@/types";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
-  title: "PropConnect — Premium Properties all over India",
+  title: "PropConnect — Premium Properties in Navi Mumbai",
   description:
-    "Discover premium residential and commercial properties all over India. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
-  keywords: "property in india, luxury flats, zero brokerage, verified properties, new launch projects",
+    "Discover premium residential and commercial properties in Navi Mumbai. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
+  keywords: "property in navi mumbai, luxury flats, zero brokerage, verified properties, new launch projects",
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: "PropConnect — Premium Properties all over India",
-    description: "Discover premium residential and commercial properties all over India. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
+    title: "PropConnect — Premium Properties in Navi Mumbai",
+    description: "Discover premium residential and commercial properties in Navi Mumbai. Connect instantly on WhatsApp. 100% verified listings with zero brokerage.",
     url: '/',
   },
 };
@@ -27,23 +27,23 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 const CATEGORIES = [
-  { label: "Apartments", icon: "🏢", href: "/properties?subType=APARTMENT", count: "200+" },
-  { label: "Villas", icon: "🏡", href: "/properties?subType=VILLA", count: "50+" },
-  { label: "Independent Houses", icon: "🏠", href: "/properties?subType=INDEPENDENT_HOUSE", count: "30+" },
-  { label: "Row Houses", icon: "🏘️", href: "/properties?subType=ROW_HOUSE", count: "20+" },
-  { label: "Plots", icon: "🗺️", href: "/properties?subType=PLOT", count: "40+" },
-  { label: "Offices", icon: "🏛️", href: "/properties?subType=OFFICE", count: "60+" },
-  { label: "Shops", icon: "🏪", href: "/properties?subType=SHOP", count: "45+" },
-  { label: "Showrooms", icon: "🏬", href: "/properties?subType=SHOWROOM", count: "15+" },
+  { label: "Apartments", icon: "🏢", href: "/properties?subType=APARTMENT", subType: "APARTMENT" },
+  { label: "Villas", icon: "🏡", href: "/properties?subType=VILLA", subType: "VILLA" },
+  { label: "Independent Houses", icon: "🏠", href: "/properties?subType=INDEPENDENT_HOUSE", subType: "INDEPENDENT_HOUSE" },
+  { label: "Row Houses", icon: "🏘️", href: "/properties?subType=ROW_HOUSE", subType: "ROW_HOUSE" },
+  { label: "Plots", icon: "🗺️", href: "/properties?subType=PLOT", subType: "PLOT" },
+  { label: "Offices", icon: "🏛️", href: "/properties?subType=OFFICE", subType: "OFFICE" },
+  { label: "Shops", icon: "🏪", href: "/properties?subType=SHOP", subType: "SHOP" },
+  { label: "Showrooms", icon: "🏬", href: "/properties?subType=SHOWROOM", subType: "SHOWROOM" },
 ];
 
 const LOCALITIES_SHOWCASE: { key: Locality; desc: string; priceRange: string }[] = [
-  { key: "BANGALORE", desc: "IT capital with premium high-rise living", priceRange: "₹60L–₹3Cr" },
-  { key: "DELHI", desc: "Capital city with exclusive independent houses", priceRange: "₹80L–₹5Cr" },
-  { key: "PUNE", desc: "Emerging IT hub with excellent weather", priceRange: "₹45L–₹2Cr" },
-  { key: "THANE", desc: "Prime urban destination with top amenities", priceRange: "₹60L–₹3Cr" },
-  { key: "HYDERABAD", desc: "Fastest growing metropolis with modern infra", priceRange: "₹55L–₹2.5Cr" },
-  { key: "MUMBAI", desc: "The financial capital with luxury ocean views", priceRange: "₹1.5Cr–₹10Cr+" },
+  { key: "VASHI", desc: "The commercial and residential hub of Navi Mumbai", priceRange: "₹1.5Cr–₹5Cr" },
+  { key: "KHARGHAR", desc: "Well-planned node with green spaces and educational hubs", priceRange: "₹80L–₹3Cr" },
+  { key: "SEAWOODS", desc: "Premium locality with luxury high-rises and mall access", priceRange: "₹1.5Cr–₹4Cr" },
+  { key: "NERUL", desc: "Queen of Navi Mumbai with excellent connectivity", priceRange: "₹1Cr–₹3.5Cr" },
+  { key: "CBD_BELAPUR", desc: "Major business district with premium housing", priceRange: "₹1Cr–₹4Cr" },
+  { key: "PANVEL", desc: "Emerging smart city near the upcoming airport", priceRange: "₹45L–₹2Cr" },
 ];
 
 const WHY_US = [
@@ -60,24 +60,20 @@ const WHY_US = [
   },
   {
     icon: <Award size={24} className="text-[var(--color-brand-600)]" />,
-    title: "Nationwide Specialists",
-    desc: "Hyperlocal experts covering top localities across India with deep market insights.",
+    title: "Navi Mumbai Specialists",
+    desc: "Hyperlocal experts covering top localities across Navi Mumbai with deep market insights.",
   },
 ];
 
 
 
 const TESTIMONIALS = [
-  { name: "Rahul D.", role: "First-time Buyer", content: "PropConnect made finding my first home in Bangalore incredibly easy. Their WhatsApp support was quick and they negotiated a great deal for me without any hidden fees.", rating: 5 },
+  { name: "Rahul D.", role: "First-time Buyer", content: "PropConnect made finding my first home in Kharghar incredibly easy. Their WhatsApp support was quick and they negotiated a great deal for me without any hidden fees.", rating: 5 },
   { name: "Sneha M.", role: "Investor", content: "I've bought two commercial properties through them. The fact that they deal directly with top builders and share authentic RERA verified details gives me immense peace of mind.", rating: 5 },
-  { name: "Vikram P.", role: "Upgrading Home", content: "Loved the seamless experience. Instead of dealing with 10 different brokers, I just chatted with one expert who curated the best 3BHKs in Delhi for us.", rating: 5 }
+  { name: "Vikram P.", role: "Upgrading Home", content: "Loved the seamless experience. Instead of dealing with 10 different brokers, I just chatted with one expert who curated the best 3BHKs in Vashi for us.", rating: 5 }
 ];
 
-const CLOSED_DEALS = [
-  { title: "3BHK in Prestige", location: "Bangalore", time: "2 days ago", amount: "₹1.85 Cr" },
-  { title: "Commercial Office", location: "Delhi", time: "1 week ago", amount: "₹2.4 Cr" },
-  { title: "2BHK in Lodha", location: "Pune", time: "2 weeks ago", amount: "₹82 Lakhs" },
-];
+
 
 export default async function HomePage() {
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
@@ -93,10 +89,28 @@ export default async function HomePage() {
     ],
   });
 
-  let featuredProperties = rawProperties.map(p => ({
+  const featuredProperties = rawProperties.map(p => ({
     ...p,
     price: Number(p.price),
   })) as unknown as PropertyCardData[];
+
+  const propertyCounts = await prisma.property.groupBy({
+    by: ['subType'],
+    where: { status: 'ACTIVE' },
+    _count: {
+      _all: true
+    }
+  });
+  
+  const countMap = propertyCounts.reduce((acc, curr) => {
+    acc[curr.subType] = curr._count._all;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const dynamicCategories = CATEGORIES.map(cat => ({
+    ...cat,
+    count: countMap[cat.subType] || 0
+  }));
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
   const jsonLd = {
@@ -105,7 +119,7 @@ export default async function HomePage() {
     name: "PropConnect",
     url: baseUrl,
     logo: `${baseUrl}/icon.png`,
-    description: "Discover premium residential and commercial properties all over India.",
+    description: "Discover premium residential and commercial properties in Navi Mumbai.",
     contactPoint: {
       "@type": "ContactPoint",
       telephone: settings.supportPhone || "+91 98765 43210",
@@ -133,18 +147,18 @@ export default async function HomePage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium mb-6 animate-fade-up bg-white/10 text-white backdrop-blur-md border border-white/20">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              India&apos;s Premium Property Platform
+              Navi Mumbai&apos;s Premium Property Platform
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 animate-fade-up" style={{ animationDelay: "0.1s" }}>
               Find Your Perfect Property
               <span className="block mt-1 text-blue-400">
-                 all over India
+                 in Navi Mumbai
               </span>
             </h1>
 
             <p className="text-lg text-slate-300 mb-10 max-w-xl animate-fade-up" style={{ animationDelay: "0.2s" }}>
-              Explore hand-picked, RERA-verified properties all over India. Zero brokerage on new launch projects.
+              Explore hand-picked, RERA-verified properties across Navi Mumbai. Zero brokerage on new launch projects.
             </p>
 
             {/* Advanced Search Bar */}
@@ -244,7 +258,7 @@ export default async function HomePage() {
           <div className="lg:col-span-5">
             <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Browse by Category</h2>
             <div className="grid grid-cols-2 gap-4">
-              {CATEGORIES.map((cat) => (
+              {dynamicCategories.map((cat) => (
                 <Link
                   key={cat.href}
                   href={cat.href}
@@ -262,7 +276,7 @@ export default async function HomePage() {
 
           {/* Localities */}
           <div className="lg:col-span-7">
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Popular Neighbourhoods</h2>
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Popular Navi Mumbai Localities</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {LOCALITIES_SHOWCASE.map(({ key, desc, priceRange }) => (
                 <Link
@@ -291,12 +305,10 @@ export default async function HomePage() {
 
       {/* ── Testimonials & Closed Deals ── */}
       <section className="section-pad bg-white">
-        <div className="container-main grid lg:grid-cols-2 gap-16">
-          
           {/* Testimonials */}
-          <div>
-            <p className="text-sm font-bold tracking-wider text-blue-600 mb-2 uppercase">Success Stories</p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mb-8">What our buyers say</h2>
+          <div className="max-w-3xl mx-auto">
+            <p className="text-sm font-bold tracking-wider text-blue-600 mb-2 uppercase text-center">Success Stories</p>
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-8 text-center">What our buyers say</h2>
             <div className="space-y-6">
               {TESTIMONIALS.map((t, i) => (
                 <div key={i} className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
@@ -312,39 +324,6 @@ export default async function HomePage() {
               ))}
             </div>
           </div>
-
-          {/* Closed Deals */}
-          <div>
-            <p className="text-sm font-bold tracking-wider text-blue-600 mb-2 uppercase">Market Activity</p>
-            <h2 className="text-3xl font-extrabold text-slate-900 mb-8">Recently Closed Deals</h2>
-            <div className="bg-slate-900 rounded-3xl p-8 text-white relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-8 opacity-10">
-                <TrendingUp size={120} />
-              </div>
-              <div className="space-y-6 relative z-10">
-                {CLOSED_DEALS.map((deal, i) => (
-                  <div key={i} className="flex items-center justify-between border-b border-white/10 pb-6 last:border-0 last:pb-0">
-                    <div>
-                      <h4 className="font-bold text-lg mb-1">{deal.title}</h4>
-                      <div className="flex items-center gap-3 text-sm text-slate-400">
-                        <span className="flex items-center gap-1"><MapPin size={14} />{deal.location}</span>
-                        <span className="flex items-center gap-1"><CheckCircle size={14} className="text-green-400" />{deal.time}</span>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="block text-xl font-extrabold text-green-400">{deal.amount}</span>
-                      <span className="text-xs text-slate-400">Sold Price</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <Link href="/properties" className="block mt-8 text-center text-sm font-bold text-blue-400 hover:text-white transition-colors">
-                View all available properties →
-              </Link>
-            </div>
-          </div>
-
-        </div>
       </section>
 
       {/* ── CTA Banner ── */}

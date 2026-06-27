@@ -58,20 +58,19 @@ enum LeadStatus {
 }
 
 enum Locality {
-  MUMBAI
-  NAVI_MUMBAI
-  THANE
-  MIRA_ROAD
-  BHAYANDAR
-  NAIGAON
-  VASAI
-  NALASOPARA
-  VIRAR
-  DELHI
-  BANGALORE
-  PUNE
-  HYDERABAD
-  CHENNAI
+  SEAWOODS
+  KHARGHAR
+  TALOJA
+  NERUL
+  VASHI
+  CBD_BELAPUR
+  AIROLI
+  GHANSOLI
+  ULWE
+  KAMOTHE
+  SANPADA
+  KALAMBOLI
+  PANVEL
 }
 
 // ─────────────────────────────────────────
