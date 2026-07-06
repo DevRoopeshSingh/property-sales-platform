@@ -210,9 +210,6 @@ export default async function PropertyDetailPage({
               {/* Title & Badges */}
               <div className="card p-5 mb-5">
                 <div className="flex flex-wrap gap-2 mb-3">
-                  {property.isDistressed && (
-                    <span className="badge bg-red-600 text-white border-red-700">Distressed Property</span>
-                  )}
                   <span className="badge badge-blue">{PROPERTY_SUB_TYPE_LABELS[property.subType]}</span>
                   <span className={`badge ${property.possession === "READY_TO_MOVE" ? "badge-green" : property.possession === "NEW_LAUNCH" ? "badge-blue" : "badge-amber"}`}>
                     {POSSESSION_LABELS[property.possession]}

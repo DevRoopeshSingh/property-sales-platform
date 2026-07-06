@@ -48,15 +48,6 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
         {/* Overlay gradient */}
         <div className="img-overlay" />
 
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-          {property.isDistressed && (
-            <span className="badge bg-red-600 text-white text-[10px] uppercase font-bold tracking-wider shadow-sm border border-red-700">
-              Distress Property
-            </span>
-          )}
-        </div>
-
         {/* Type badge */}
         <div className="absolute top-3 right-3">
           <span className="badge badge-slate text-xs">
