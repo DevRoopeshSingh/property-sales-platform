@@ -12,6 +12,15 @@ export const metadata: Metadata = {
   keywords: ["property in mumbai", "flats in virar", "apartments thane", "buy property mumbai"],
   authors: [{ name: "PropConnect" }],
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/icon.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
