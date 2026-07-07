@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, Loader2 } from "lucide-react";
+import { Upload, X, Loader2, Download, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { deleteImagesFromStorage, uploadImageToStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
 import { DndContext, closestCenter, DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
@@ -24,11 +24,13 @@ interface ImageUploaderProps {
 function SortableImageItem({ 
   image, 
   onSetPrimary, 
-  onRemove 
+  onRemove,
+  onDownload
 }: { 
   image: PropertyImageInput; 
   onSetPrimary: () => void; 
   onRemove: () => void;
+  onDownload: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: image.key });
   
@@ -70,13 +72,25 @@ function SortableImageItem({
               Set Primary
             </button>
           )}
-          <button
-            type="button"
-            onClick={(e) => { e.stopPropagation(); onRemove(); }}
-            className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors ml-auto"
-          >
-            <X size={14} />
-          </button>
+          
+          <div className="flex gap-2 ml-auto">
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onDownload(); }}
+              className="p-1 bg-white text-black rounded-full hover:bg-gray-200 transition-colors"
+              title="Download image"
+            >
+              <Download size={14} />
+            </button>
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onRemove(); }}
+              className="p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+              title="Remove image"
+            >
+              <X size={14} />
+            </button>
+          </div>
         </div>
       </div>
       
@@ -91,8 +105,62 @@ function SortableImageItem({
 
 export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const [isZipping, setIsZipping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // === Individual Download Handler ===
+  const handleDownloadSingle = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Network response was not ok");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = filename || "property-image.jpg";
+      document.body.appendChild(link);
+      link.click();
+      
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      console.error("Download failed:", err);
+      toast.error("Failed to download image. Try right-clicking and saving.");
+    }
+  };
+
+  // === Download All Handler ===
+  const handleDownloadAll = async () => {
+    if (value.length === 0) return;
+    setIsZipping(true);
+    
+    try {
+      const response = await fetch('/api/admin/properties/download-images', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: value })
+      });
+
+      if (!response.ok) throw new Error("Failed to generate ZIP");
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = "property-photos.zip";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to download photos as ZIP.");
+    } finally {
+      setIsZipping(false);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement> | React.DragEvent) => {
     let files: FileList | null = null;
@@ -224,6 +292,24 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
         </div>
       )}
 
+      {/* Header controls for Download All */}
+      {value.length > 0 && (
+        <div className="flex justify-between items-center bg-[var(--color-surface-2)] p-3 rounded-lg border border-[var(--color-border)]">
+          <span className="text-sm font-medium text-[var(--color-text-secondary)]">
+            {value.length} image{value.length > 1 ? 's' : ''} uploaded
+          </span>
+          <button
+            type="button"
+            onClick={handleDownloadAll}
+            disabled={isZipping}
+            className="btn btn-outline text-xs py-1.5 flex items-center gap-1.5"
+          >
+            {isZipping ? <Loader2 size={14} className="animate-spin" /> : <Archive size={14} />}
+            Download All (ZIP)
+          </button>
+        </div>
+      )}
+
       {/* Image Grid */}
       {value.length > 0 && (
         <DndContext id="dnd-image-uploader" sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
@@ -235,6 +321,7 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
                   image={image}
                   onSetPrimary={() => setPrimary(index)}
                   onRemove={() => handleRemove(index)}
+                  onDownload={() => handleDownloadSingle(image.url, image.altText || `image-${index}.jpg`)}
                 />
               ))}
             </div>
