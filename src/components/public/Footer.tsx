@@ -33,7 +33,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-2 mb-4 shrink-0">
-              <img src="/logo.png" alt="PropConnect Logo" className="h-8 w-auto object-contain bg-white rounded p-1" />
+              <img src="/logo.png" alt="PropConnect Logo" className="h-9 w-auto object-contain bg-white rounded p-1" />
               <span className="font-extrabold text-xl">
                 Prop<span style={{ color: "var(--color-brand-600)" }}>Connect</span>
               </span>
