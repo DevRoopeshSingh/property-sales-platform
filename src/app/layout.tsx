@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   keywords: ["property in mumbai", "flats in virar", "apartments thane", "buy property mumbai"],
   authors: [{ name: "PropConnect" }],
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "PropConnect",
+  },
   robots: {
     index: true,
     follow: true,
@@ -27,6 +33,10 @@ export const metadata: Metadata = {
   verification: {
     google: "R0m0UC17ICxh4cWO2XWUBycVZqN_5bkhQiZlg2eFXAc",
   },
+};
+
+export const viewport = {
+  themeColor: "#1a6fe8",
 };
 
 import LayoutWrapper from "@/components/public/LayoutWrapper";

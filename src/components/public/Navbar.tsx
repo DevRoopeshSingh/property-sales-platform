@@ -47,7 +47,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <span className="font-extrabold text-xl text-[var(--color-text-primary)]">
+            <img src="/logo.png" alt="PropConnect Logo" className="h-8 w-auto object-contain" />
+            <span className="font-extrabold text-xl text-[var(--color-text-primary)] hidden sm:block">
               Prop<span style={{ color: "var(--color-brand-600)" }}>Connect</span>
             </span>
           </Link>
