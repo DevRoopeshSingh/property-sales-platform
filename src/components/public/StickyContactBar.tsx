@@ -5,18 +5,29 @@ import Link from "next/link";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 
+import { LOCALITY_LABELS, type PropertyCardData } from "@/types";
+
 interface StickyContactBarProps {
-  propertyTitle?: string;
-  propertyId?: string;
+  property?: PropertyCardData | any;
 }
 
-export default function StickyContactBar({ propertyTitle, propertyId }: StickyContactBarProps) {
+export default function StickyContactBar({ property }: StickyContactBarProps) {
   const settings = useSettings();
+  
+  // Calculate URL on client side
+  const url = typeof window !== "undefined" && property ? `${window.location.origin}/properties/${property.slug}` : "";
+  
   const waLink = generateWhatsAppLink({
-    propertyTitle,
-    propertyId,
+    propertyTitle: property?.title,
+    propertyId: property?.id,
     source: "sticky-bar",
     settings,
+    builderName: property?.builderName,
+    locality: property?.locality ? (LOCALITY_LABELS[property.locality as keyof typeof LOCALITY_LABELS] ?? property.locality) : undefined,
+    bhk: property?.bhk,
+    area: property?.area,
+    priceLabel: property?.priceLabel,
+    url: url,
   });
   const callLink = generateCallLink(settings?.supportPhone);
 

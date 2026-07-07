@@ -25,6 +25,12 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
     propertyId: property.id,
     source: "listing-card",
     settings,
+    builderName: property.builderName,
+    locality: LOCALITY_LABELS[property.locality] ?? property.locality,
+    bhk: property.bhk,
+    area: property.area,
+    priceLabel: property.priceLabel,
+    url: typeof window !== "undefined" ? `${window.location.origin}/properties/${property.slug}` : "",
   });
 
   return (

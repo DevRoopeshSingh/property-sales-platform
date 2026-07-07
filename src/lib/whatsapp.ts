@@ -4,6 +4,14 @@ interface WhatsAppLinkParams {
   propertyId?: string;
   source?: string;
   settings?: Record<string, string>; // Add settings object
+  
+  // New fields for rich message context
+  builderName?: string | null;
+  locality?: string | null;
+  bhk?: number | null;
+  area?: number | null;
+  priceLabel?: string | null;
+  url?: string;
 }
 
 /**
@@ -15,6 +23,12 @@ export function generateWhatsAppLink({
   propertyTitle,
   propertyId,
   settings,
+  builderName,
+  locality,
+  bhk,
+  area,
+  priceLabel,
+  url,
 }: WhatsAppLinkParams = {}): string {
   const whatsappNumber =
     phone ?? settings?.waNumber ?? process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "";
@@ -23,7 +37,25 @@ export function generateWhatsAppLink({
 
   if (propertyTitle && propertyId) {
     const shortId = propertyId.slice(-6).toUpperCase();
-    message = `Hi, I'm interested in "${propertyTitle}" (ID: #${shortId}). Please share more details.`;
+    
+    // Build a rich message if we have extra data
+    if (priceLabel || locality) {
+      const projectLine = builderName ? `${propertyTitle} by ${builderName}` : propertyTitle;
+      const locationLine = locality ? `\n📍 *Location:* ${locality}` : "";
+      
+      let configParts = [];
+      if (bhk) configParts.push(`${bhk} BHK`);
+      if (area) configParts.push(`${area} sq.ft`);
+      const configLine = configParts.length > 0 ? `\n🛏 *Configuration:* ${configParts.join(" • ")}` : "";
+      
+      const priceLine = priceLabel ? `\n💰 *Price:* ${priceLabel}` : "";
+      const urlLine = url ? `\n\n🔗 Link: ${url}` : "";
+
+      message = `Hello PropConnect team, 👋\n\nI am interested in this premium property:\n🏢 *Project:* ${projectLine}${locationLine}${configLine}${priceLine}\n\nPlease share the brochure and arrange a site visit.${urlLine}\n🔖 Ref ID: #${shortId}`;
+    } else {
+      // Fallback to basic message
+      message = `Hi, I'm interested in "${propertyTitle}" (ID: #${shortId}). Please share more details.`;
+    }
   } else {
     message = settings?.waDefaultMsg ?? "Hi, I'm looking for properties. Please help me.";
   }

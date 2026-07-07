@@ -111,6 +111,12 @@ export default async function PropertyDetailPage({
     propertyId: property.id,
     source: "property-detail",
     settings,
+    builderName: property.builderName,
+    locality: LOCALITY_LABELS[property.locality] ?? property.locality,
+    bhk: property.bhk,
+    area: property.area,
+    priceLabel: property.priceLabel,
+    url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/properties/${property.slug}`,
   });
   const callLink = generateCallLink(settings.supportPhone);
 
@@ -433,8 +439,7 @@ export default async function PropertyDetailPage({
       </div>
 
       <StickyContactBar
-        propertyTitle={property.title}
-        propertyId={property.id}
+        property={property}
       />
     </>
   );
