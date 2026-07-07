@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   keywords: ["property in mumbai", "flats in virar", "apartments thane", "buy property mumbai"],
   authors: [{ name: "PropConnect" }],
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000"),
-  manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

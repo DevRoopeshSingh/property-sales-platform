@@ -2,23 +2,31 @@ import { MetadataRoute } from 'next'
  
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'PropConnect | Premium Property Sales Platform',
+    name: 'PropConnect',
     short_name: 'PropConnect',
-    description: 'Discover premium residential and commercial properties across Mumbai, Navi Mumbai, Thane, Vasai-Virar.',
-    start_url: '/',
+    description: 'Find your dream property in Mumbai, Navi Mumbai, and Thane.',
+    start_url: '/?source=pwa',
+    id: '/?source=pwa',
     display: 'standalone',
+    orientation: 'portrait',
     background_color: '#ffffff',
-    theme_color: '#0f172a',
+    theme_color: '#1a6fe8',
     icons: [
       {
-        src: '/icon.png',
+        src: '/icon-192x192.png',
         sizes: '192x192',
         type: 'image/png',
       },
       {
-        src: '/icon.png',
+        src: '/icon-512x512.png',
         sizes: '512x512',
         type: 'image/png',
+      },
+      {
+        src: '/icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
   }
