@@ -1,8 +1,8 @@
 import { LogOut } from "lucide-react";
-import { signOut } from "@/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { MobileSidebarToggle } from "@/components/admin/MobileSidebarToggle";
 import { AutoLogout } from "@/components/admin/AutoLogout";
+import { LogoutButton } from "@/components/admin/LogoutButton";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -22,20 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <AdminNav />
 
         <div className="p-4 border-t border-slate-800">
-          <form
-            action={async () => {
-              "use server";
-              await signOut({ redirectTo: "/admin/login" });
-            }}
-          >
-            <button
-              type="submit"
-              className="flex w-full items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/10 text-slate-300 hover:text-red-400 transition-colors"
-            >
-              <LogOut size={20} />
-              Sign Out
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </aside>
 
@@ -47,16 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
              <MobileSidebarToggle />
              <div className="font-bold text-lg text-slate-900">PropConnect</div>
            </div>
-           <form
-             action={async () => {
-               "use server";
-               await signOut({ redirectTo: "/admin/login" });
-             }}
-           >
-             <button type="submit" className="text-sm text-red-600 font-medium">
-               Sign Out
-             </button>
-           </form>
+           <LogoutButton isMobile={true} />
         </header>
 
         <div className="flex-1 overflow-auto p-4 md:p-8">
