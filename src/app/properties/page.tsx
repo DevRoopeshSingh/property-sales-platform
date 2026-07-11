@@ -68,12 +68,16 @@ export default async function PropertiesPage({
   const maxPrice = params.maxPrice ? Number(params.maxPrice) * 100000 : undefined;
   const sort = params.sort ?? "newest";
 
+  const validLocalities = localities.filter(l => Object.keys(LOCALITY_LABELS).includes(l)) as Locality[];
+  const validSubTypes = subTypes.filter(s => Object.keys(PROPERTY_SUB_TYPE_LABELS).includes(s)) as PropertySubType[];
+  const validPossessions = possessions.filter(p => Object.keys(POSSESSION_LABELS).includes(p)) as Possession[];
+
   const where: Prisma.PropertyWhereInput = {
     status: "ACTIVE",
-    ...(localities.length > 0 && { locality: { in: localities as Locality[] } }),
-    ...(subTypes.length > 0 && { subType: { in: subTypes as PropertySubType[] } }),
+    ...(validLocalities.length > 0 && { locality: { in: validLocalities } }),
+    ...(validSubTypes.length > 0 && { subType: { in: validSubTypes } }),
     ...(bhks.length > 0 && { bhk: { in: bhks } }),
-    ...(possessions.length > 0 && { possession: { in: possessions as Possession[] } }),
+    ...(validPossessions.length > 0 && { possession: { in: validPossessions } }),
     ...((minPrice !== undefined || maxPrice !== undefined) && {
       price: {
         ...(minPrice !== undefined && { gte: minPrice }),

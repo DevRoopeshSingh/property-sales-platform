@@ -5,6 +5,7 @@ import { Plus, Edit, Home, CheckCircle2, Clock, MapPin } from "lucide-react";
 import { DeletePropertyButton } from "@/components/admin/DeletePropertyButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PropertyFilters } from "@/components/admin/PropertyFilters";
+import { PropertyType, Locality } from "@prisma/client";
 
 export default async function PropertiesPage({
   searchParams,
@@ -16,11 +17,11 @@ export default async function PropertiesPage({
   const localityFilter = params?.locality;
 
   const whereClause: Prisma.PropertyWhereInput = {};
-  if (typeFilter) {
-    whereClause.type = typeFilter as Prisma.PropertyWhereInput["type"];
+  if (typeFilter && Object.values(PropertyType).includes(typeFilter as PropertyType)) {
+    whereClause.type = typeFilter as PropertyType;
   }
-  if (localityFilter) {
-    whereClause.locality = localityFilter as Prisma.PropertyWhereInput["locality"];
+  if (localityFilter && Object.values(Locality).includes(localityFilter as Locality)) {
+    whereClause.locality = localityFilter as Locality;
   }
   const properties = await prisma.property.findMany({
     where: whereClause,
