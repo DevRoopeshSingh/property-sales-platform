@@ -2,10 +2,12 @@ import { LogOut } from "lucide-react";
 import { signOut } from "@/auth";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { MobileSidebarToggle } from "@/components/admin/MobileSidebarToggle";
+import { AutoLogout } from "@/components/admin/AutoLogout";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-slate-50 flex">
+      <AutoLogout timeoutMinutes={15} />
       {/* Sidebar */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col hidden md:flex">
         <div className="p-6 border-b border-slate-800">
