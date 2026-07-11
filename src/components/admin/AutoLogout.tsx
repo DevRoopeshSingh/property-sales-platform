@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { signOut } from "next-auth/react";
+import { adminLogout } from "@/app/admin/logout-action";
 
 export function AutoLogout({ timeoutMinutes = 15 }: { timeoutMinutes?: number }) {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const logout = () => {
-      // Use next-auth/react's signOut to log the user out and redirect
-      signOut({ callbackUrl: "/admin/login" });
+      adminLogout();
     };
 
     const resetTimer = () => {
