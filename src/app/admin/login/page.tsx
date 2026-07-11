@@ -30,8 +30,8 @@ function LoginForm() {
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push(callbackUrl);
         router.refresh();
+        router.push(callbackUrl);
       }
     } catch {
       setError("An unexpected error occurred. Please try again.");
@@ -68,7 +68,7 @@ function LoginForm() {
             name="email"
             type="email"
             autoComplete="email"
-            placeholder="admin@thepropconnect.in"
+            placeholder="admin@propconnect.in"
             className="input"
             required
             value={email}
