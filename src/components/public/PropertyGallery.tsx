@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import ImageWithSkeleton from "@/components/ui/loaders/ImageWithSkeleton";
 
@@ -19,6 +19,32 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Safely handle body scroll lock and cleanup
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    
+    return () => {
+      document.body.style.overflow = "auto"; // Cleanup on unmount
+    };
+  }, [isOpen]);
+
+  // Keyboard navigation
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (!isOpen) return;
+    if (e.key === "Escape") setIsOpen(false);
+    if (e.key === "ArrowRight") setCurrentIndex((prev) => (prev + 1) % images.length);
+    if (e.key === "ArrowLeft") setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  }, [isOpen, images.length]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
+
   if (!images || images.length === 0) {
     return (
       <div className="card overflow-hidden mb-5">
@@ -28,17 +54,6 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
       </div>
     );
   }
-
-  const openGallery = (index: number) => {
-    setCurrentIndex(index);
-    setIsOpen(true);
-    document.body.style.overflow = "hidden";
-  };
-
-  const closeGallery = () => {
-    setIsOpen(false);
-    document.body.style.overflow = "auto";
-  };
 
   const nextImage = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -54,11 +69,12 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
     <>
       <div className="card overflow-hidden mb-5">
         <div className="relative">
-          <div className="grid grid-cols-4 grid-rows-2 gap-1.5 h-72 md:h-96">
+          {/* Desktop Grid Layout */}
+          <div className="hidden md:grid grid-cols-4 grid-rows-2 gap-1.5 h-96">
             {/* Primary (large) */}
             <div 
-              className="col-span-4 md:col-span-3 row-span-2 relative bg-[var(--color-surface-3)] cursor-pointer group"
-              onClick={() => openGallery(0)}
+              className="col-span-3 row-span-2 relative bg-[var(--color-surface-3)] cursor-pointer group"
+              onClick={() => { setCurrentIndex(0); setIsOpen(true); }}
             >
               {images[0] && (
                 <ImageWithSkeleton
@@ -67,7 +83,7 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                   priority
-                  sizes="(max-width: 768px) 100vw, 60vw"
+                  sizes="60vw"
                 />
               )}
             </div>
@@ -75,8 +91,8 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
             {images.slice(1, 3).map((img, i) => (
               <div 
                 key={img.id} 
-                className="hidden md:block relative col-span-1 row-span-1 bg-[var(--color-surface-3)] cursor-pointer group"
-                onClick={() => openGallery(i + 1)}
+                className="relative col-span-1 row-span-1 bg-[var(--color-surface-3)] cursor-pointer group"
+                onClick={() => { setCurrentIndex(i + 1); setIsOpen(true); }}
               >
                 <ImageWithSkeleton
                   src={img.url}
@@ -93,48 +109,79 @@ export default function PropertyGallery({ images, title }: PropertyGalleryProps)
               </div>
             ))}
           </div>
+
+          {/* Mobile Swipe Carousel */}
+          <div 
+            className="md:hidden flex overflow-x-auto snap-x snap-mandatory h-72 w-full"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {images.map((img, i) => (
+              <div 
+                key={img.id}
+                className="w-full shrink-0 snap-center relative h-full bg-[var(--color-surface-3)]"
+                onClick={() => { setCurrentIndex(i); setIsOpen(true); }}
+              >
+                <ImageWithSkeleton
+                  src={img.url}
+                  alt={img.altText ?? `Photo ${i + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={i === 0}
+                  sizes="100vw"
+                />
+                <div className="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-md backdrop-blur-md">
+                  {i + 1} / {images.length}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* Lightbox Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center backdrop-blur-sm">
-          {/* Close Button */}
+        <div 
+          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center backdrop-blur-sm"
+          onClick={() => setIsOpen(false)} // Click outside to close
+        >
           <button 
-            onClick={closeGallery}
-            className="absolute top-4 right-4 md:top-8 md:right-8 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+            onClick={() => setIsOpen(false)}
+            className="absolute top-4 right-4 md:top-8 md:right-8 p-2 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
+            aria-label="Close gallery"
           >
             <X size={24} />
           </button>
 
-          {/* Navigation */}
           {images.length > 1 && (
             <>
               <button 
                 onClick={prevImage}
-                className="absolute left-4 md:left-8 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+                className="absolute left-4 md:left-8 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
+                aria-label="Previous image"
               >
                 <ChevronLeft size={28} />
               </button>
               <button 
                 onClick={nextImage}
-                className="absolute right-4 md:right-8 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-10"
+                className="absolute right-4 md:right-8 p-3 bg-white/10 hover:bg-white/20 rounded-full text-white transition-colors z-50"
+                aria-label="Next image"
               >
                 <ChevronRight size={28} />
               </button>
             </>
           )}
 
-          {/* Main Image */}
-          <div className="relative w-full max-w-5xl h-[80vh] px-12 md:px-24 flex items-center justify-center">
+          <div 
+            className="relative w-full max-w-5xl h-[80vh] px-12 md:px-24 flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()} // Prevent close when clicking the image area
+          >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
               src={images[currentIndex].url} 
               alt={images[currentIndex].altText || title}
-              className="max-w-full max-h-full object-contain drop-shadow-2xl"
+              className="max-w-full max-h-full object-contain drop-shadow-2xl animate-in fade-in zoom-in-95 duration-200"
             />
             
-            {/* Counter */}
             <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium">
               {currentIndex + 1} / {images.length}
             </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { Menu, X, Phone, ChevronDown, Heart } from "lucide-react";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 
@@ -101,6 +101,14 @@ export default function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-2">
+            <div className="relative group flex items-center mr-2">
+              <Link href="/saved" className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 hover:bg-red-50 rounded-full transition-colors" aria-label="Saved Properties">
+                <Heart size={20} />
+              </Link>
+              <div className="absolute top-full mt-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-[11px] font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-sm z-50">
+                Saved Properties
+              </div>
+            </div>
             <div className="flex flex-col gap-0.5 mr-2">
               <a
                 href={`tel:${process.env.NEXT_PUBLIC_CONTACT_PHONE}`}
@@ -131,14 +139,19 @@ export default function Navbar() {
             </a>
           </div>
 
-          {/* Mobile Hamburger */}
-          <button
-            className="lg:hidden p-2 rounded-lg hover:bg-[var(--color-surface-3)] transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-          </button>
+          {/* Mobile Actions */}
+          <div className="lg:hidden flex items-center gap-1">
+            <Link href="/saved" className="p-2 text-[var(--color-text-secondary)] hover:text-red-500 transition-colors" aria-label="Saved Properties">
+              <Heart size={22} />
+            </Link>
+            <button
+              className="p-2 rounded-lg hover:bg-[var(--color-surface-3)] transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
       </div>
 

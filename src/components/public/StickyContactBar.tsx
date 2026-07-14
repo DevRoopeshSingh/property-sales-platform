@@ -1,9 +1,9 @@
 "use client";
 
 import { Phone } from "lucide-react";
-import Link from "next/link";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
+import CallbackModal from "./CallbackModal";
 
 import { LOCALITY_LABELS, type PropertyDetail } from "@/types";
 
@@ -56,13 +56,11 @@ export default function StickyContactBar({ property }: StickyContactBarProps) {
         </svg>
         WhatsApp
       </a>
-      <Link
-        href="/properties"
-        className="btn btn-primary flex-1 text-xs sm:text-sm py-2.5 shadow-[0_4px_14px_rgba(26,111,232,0.3)]"
-        aria-label="View Properties"
-      >
-        View All
-      </Link>
+      <CallbackModal 
+        propertyTitle={property?.title}
+        triggerButtonText="Callback"
+        triggerButtonClass="btn btn-primary flex-1 text-xs sm:text-sm py-2.5 shadow-[0_4px_14px_rgba(26,111,232,0.3)]"
+      />
     </div>
   );
 }

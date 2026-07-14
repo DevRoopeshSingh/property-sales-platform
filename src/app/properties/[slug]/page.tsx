@@ -8,6 +8,11 @@ import {
 } from "lucide-react";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import PropertyCard from "@/components/public/PropertyCard";
+import CallbackForm from "@/components/public/CallbackForm";
+import ShareButton from "@/components/public/ShareButton";
+import SaveButton from "@/components/public/SaveButton";
+import ExpandableDescription from "@/components/public/ExpandableDescription";
+import EmiCalculator from "@/components/public/EmiCalculator";
 import { prisma } from "@/lib/prisma";
 import { sortProperties } from "@/lib/utils";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
@@ -216,33 +221,54 @@ export default async function PropertyDetailPage({
 
               {/* Title & Badges */}
               <div className="card p-5 mb-5">
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {property.status === 'SOLD' && (
-                    <span className="badge bg-red-600 text-white border-transparent">SOLD</span>
-                  )}
-                  {property.status === 'RENTED' && (
-                    <span className="badge bg-purple-600 text-white border-transparent">RENTED</span>
-                  )}
-                  <span className="badge badge-blue">{PROPERTY_SUB_TYPE_LABELS[property.subType]}</span>
-                  <span className={`badge ${property.possession === "READY_TO_MOVE" ? "badge-green" : property.possession === "NEW_LAUNCH" ? "badge-blue" : "badge-amber"}`}>
-                    {POSSESSION_LABELS[property.possession]}
-                  </span>
-                  {property.reraNumber && (
-                    <span className="badge badge-slate">
-                      <ShieldCheck size={11} />
-                      RERA: {property.reraNumber}
-                    </span>
-                  )}
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {property.status === 'SOLD' && (
+                        <span className="badge bg-red-600 text-white border-transparent">SOLD</span>
+                      )}
+                      {property.status === 'RENTED' && (
+                        <span className="badge bg-purple-600 text-white border-transparent">RENTED</span>
+                      )}
+                      <span className="badge badge-blue">{PROPERTY_SUB_TYPE_LABELS[property.subType]}</span>
+                      <span className={`badge ${property.possession === "READY_TO_MOVE" ? "badge-green" : property.possession === "NEW_LAUNCH" ? "badge-blue" : "badge-amber"}`}>
+                        {POSSESSION_LABELS[property.possession]}
+                      </span>
+                      {property.reraNumber && (
+                        <span className="badge badge-slate">
+                          <ShieldCheck size={11} />
+                          RERA: {property.reraNumber}
+                        </span>
+                      )}
+                    </div>
+
+                    <h1 className="text-xl md:text-2xl font-extrabold text-[var(--color-text-primary)] leading-snug mb-2">
+                      {property.title}
+                    </h1>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2 shrink-0 mt-1">
+                    <SaveButton 
+                      propertyId={property.id}
+                      className="text-[var(--color-text-secondary)] hover:text-red-600 bg-white hover:bg-red-50 px-4 py-2 rounded-full border border-[var(--color-border)] hover:border-red-200 shadow-sm"
+                    />
+                    <ShareButton 
+                      title={property.title} 
+                      url={url} 
+                      className="text-[var(--color-brand-600)] hover:text-[var(--color-brand-700)] bg-white hover:bg-[var(--color-brand-50)] px-4 py-2 rounded-full border border-[var(--color-brand-200)] shadow-sm transition-all duration-200 active:scale-95"
+                    />
+                  </div>
                 </div>
 
-                <h1 className="text-xl md:text-2xl font-extrabold text-[var(--color-text-primary)] leading-snug mb-2">
-                  {property.title}
-                </h1>
-
-                <div className="flex items-center gap-1.5 text-[var(--color-text-secondary)] text-sm mb-4">
-                  <MapPin size={14} className="text-[var(--color-brand-400)] shrink-0" />
-                  {property.address}
-                  {property.landmark && ` · Near ${property.landmark}`}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[var(--color-text-secondary)] text-sm mb-4">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin size={14} className="text-[var(--color-brand-400)] shrink-0" />
+                    <span>{property.address}</span>
+                    {property.landmark && <span>· Near {property.landmark}</span>}
+                  </div>
+                  <a href="#location" className="text-[var(--color-brand-600)] font-medium hover:underline text-xs bg-[var(--color-brand-50)] px-2 py-0.5 rounded-full whitespace-nowrap">
+                    View on Map
+                  </a>
                 </div>
 
                 {/* Key Specs Strip */}
@@ -291,9 +317,7 @@ export default async function PropertyDetailPage({
               {/* Description */}
               <div className="card p-5 mb-5">
                 <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">About This Property</h2>
-                <div className="text-sm text-[var(--color-text-secondary)] leading-relaxed whitespace-pre-line">
-                  {property.description}
-                </div>
+                <ExpandableDescription text={property.description} maxLines={4} />
                 {property.subType === "OFFICE" && property.amenities.length > 0 && (
                   <div className="mt-4 pt-4 border-t border-[var(--color-border)]">
                     <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-2">Location Advantages:</p>
@@ -321,8 +345,13 @@ export default async function PropertyDetailPage({
                 </div>
               )}
 
+              {/* EMI Calculator */}
+              {property.price && Number(property.price) > 0 && (
+                <EmiCalculator propertyPrice={Number(property.price)} />
+              )}
+
               {/* Location */}
-              <div className="card p-5 mb-5">
+              <div id="location" className="card p-5 mb-5 scroll-mt-28">
                 <h2 className="text-lg font-bold text-[var(--color-text-primary)] mb-3">Location</h2>
                 <p className="text-sm text-[var(--color-text-secondary)] mb-4">
                   {property.address}
@@ -400,30 +429,11 @@ export default async function PropertyDetailPage({
                 </a>
 
                 {/* Callback Form */}
-                <div style={{ borderTop: "1px solid var(--color-border)", paddingTop: "1rem" }}>
+                <div className="hidden lg:block" style={{ borderTop: "1px solid var(--color-border)", paddingTop: "1rem", marginTop: "1rem" }}>
                   <p className="text-sm font-semibold text-[var(--color-text-primary)] mb-3">
                     📋 Request a Callback
                   </p>
-                  <form className="space-y-2.5">
-                    <input
-                      type="text"
-                      placeholder="Your Name"
-                      className="input text-sm py-2.5"
-                      required
-                    />
-                    <input
-                      type="tel"
-                      placeholder="Phone Number"
-                      className="input text-sm py-2.5"
-                      required
-                    />
-                    <button type="submit" className="btn btn-primary w-full py-2.5 text-sm">
-                      Request Callback
-                    </button>
-                  </form>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-2 text-center">
-                    We&apos;ll call you back within 30 minutes
-                  </p>
+                  <CallbackForm propertyTitle={property.title} />
                 </div>
               </div>
             </div>
