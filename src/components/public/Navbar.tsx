@@ -72,16 +72,18 @@ export default function Navbar() {
                     />
                   </button>
                   {openDropdown === link.label && (
-                    <div className="absolute top-full left-0 mt-1 w-52 bg-white border border-[var(--color-border)] rounded-xl shadow-lg py-1.5 animate-fade-in">
-                      {link.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className="block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-brand-600)] hover:bg-[var(--color-brand-50)] transition-colors"
-                        >
-                          {child.label}
-                        </Link>
-                      ))}
+                    <div className="absolute top-full left-0 pt-1.5 z-50">
+                      <div className="w-52 bg-white border border-[var(--color-border)] rounded-xl shadow-lg py-1.5 animate-fade-in">
+                        {link.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href}
+                            className="block px-4 py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-brand-600)] hover:bg-[var(--color-brand-50)] transition-colors"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
