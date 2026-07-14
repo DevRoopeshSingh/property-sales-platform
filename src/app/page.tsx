@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin, Star, CheckCircle, Shield, ChevronRight, MessageSquare, Award } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
@@ -137,10 +138,15 @@ export default async function HomePage() {
       {/* ── Premium Hero ── */}
       <section className="relative overflow-hidden bg-slate-900">
         {/* Background Image & Overlay */}
-        <div 
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80')" }}
-        />
+        <div className="absolute inset-0 z-0">
+          <Image 
+            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1920&q=80" 
+            alt="Premium Properties in Navi Mumbai" 
+            fill 
+            priority 
+            className="object-cover object-center" 
+          />
+        </div>
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-slate-900/90 via-slate-900/80 to-transparent" />
 
         <div className="container-main relative z-10 py-24 lg:py-32">
@@ -328,14 +334,15 @@ export default async function HomePage() {
 
       {/* ── CTA Banner ── */}
       <section className="py-12 lg:py-24 px-4 sm:px-6">
-        <div 
-          className="container-main relative rounded-[2rem] overflow-hidden py-20 lg:py-28 shadow-2xl"
-          style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80')",
-            backgroundSize: "cover",
-            backgroundPosition: "center"
-          }}
-        >
+        <div className="container-main relative rounded-[2rem] overflow-hidden py-20 lg:py-28 shadow-2xl">
+          <div className="absolute inset-0 z-0">
+            <Image 
+              src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80" 
+              alt="Dream property background" 
+              fill 
+              className="object-cover object-center" 
+            />
+          </div>
           {/* Dark Overlay */}
           <div className="absolute inset-0 bg-slate-900/75 sm:bg-slate-900/60" />
           

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X, Phone, ChevronDown } from "lucide-react";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
@@ -47,7 +48,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
-            <img src="/logo.png" alt="PropConnect Logo" className="h-9 w-auto object-contain" />
+            <Image src="/logo.png" alt="PropConnect Logo" width={144} height={36} className="h-9 w-auto object-contain" priority />
             <span className="font-extrabold text-xl text-[var(--color-text-primary)] hidden sm:block">
               Prop<span style={{ color: "var(--color-brand-600)" }}>Connect</span>
             </span>
