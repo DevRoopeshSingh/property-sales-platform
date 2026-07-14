@@ -23,7 +23,7 @@ export default async function OfflinePage() {
         You are offline
       </h1>
       <p className="text-slate-600 mb-8 max-w-md">
-        It looks like you've lost your internet connection. 
+        It looks like you&apos;ve lost your internet connection. 
         PropConnect needs an active connection to browse properties.
       </p>
       
@@ -41,7 +41,7 @@ export default async function OfflinePage() {
         </a>
       </div>
       <p className="text-xs text-slate-500 mt-6">
-        WhatsApp messages will send automatically when you're back online.
+        WhatsApp messages will send automatically when you&apos;re back online.
       </p>
     </div>
   );

@@ -5,10 +5,10 @@ import Link from "next/link";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 
-import { LOCALITY_LABELS, type PropertyCardData } from "@/types";
+import { LOCALITY_LABELS, type PropertyDetail } from "@/types";
 
 interface StickyContactBarProps {
-  property?: PropertyCardData | any;
+  property?: Partial<PropertyDetail>;
 }
 
 export default function StickyContactBar({ property }: StickyContactBarProps) {

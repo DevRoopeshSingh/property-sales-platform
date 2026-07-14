@@ -43,7 +43,7 @@ export function generateWhatsAppLink({
       const projectLine = builderName ? `${propertyTitle} by ${builderName}` : propertyTitle;
       const locationLine = locality ? `\n📍 *Location:* ${locality}` : "";
       
-      let configParts = [];
+      const configParts = [];
       if (bhk) configParts.push(`${bhk} BHK`);
       if (area) configParts.push(`${area} sq.ft`);
       const configLine = configParts.length > 0 ? `\n🛏 *Configuration:* ${configParts.join(" • ")}` : "";

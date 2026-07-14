@@ -1,4 +1,3 @@
-import { LogOut } from "lucide-react";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { MobileSidebarToggle } from "@/components/admin/MobileSidebarToggle";
 import { AutoLogout } from "@/components/admin/AutoLogout";

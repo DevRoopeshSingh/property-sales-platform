@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { Plus, Edit, Home, CheckCircle2, Clock, MapPin } from "lucide-react";
+import { Plus, Edit, Home, CheckCircle2, Clock, MapPin, Tag, Key, Archive } from "lucide-react";
 import { DeletePropertyButton } from "@/components/admin/DeletePropertyButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PropertyFilters } from "@/components/admin/PropertyFilters";
@@ -119,10 +119,16 @@ export default async function PropertiesPage({
                     <td className="p-4">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                         property.status === "ACTIVE" ? "bg-green-100 text-green-700" :
-                        property.status === "DRAFT" ? "bg-yellow-100 text-yellow-700" :
-                        "bg-gray-100 text-gray-700"
+                        property.status === "SOLD" ? "bg-blue-100 text-blue-700" :
+                        property.status === "RENTED" ? "bg-purple-100 text-purple-700" :
+                        property.status === "ARCHIVED" ? "bg-slate-100 text-slate-700" :
+                        "bg-yellow-100 text-yellow-700" // DRAFT default
                       }`}>
-                        {property.status === "ACTIVE" ? <CheckCircle2 size={12}/> : <Clock size={12}/>}
+                        {property.status === "ACTIVE" && <CheckCircle2 size={12}/>}
+                        {property.status === "SOLD" && <Tag size={12}/>}
+                        {property.status === "RENTED" && <Key size={12}/>}
+                        {property.status === "ARCHIVED" && <Archive size={12}/>}
+                        {property.status === "DRAFT" && <Clock size={12}/>}
                         {property.status}
                       </span>
                     </td>

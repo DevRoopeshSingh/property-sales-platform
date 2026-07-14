@@ -8,6 +8,7 @@ import HeroSearchClient from "@/components/public/HeroSearchClient";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import { LOCALITY_LABELS, type Locality, PropertyCardData } from "@/types";
+import { formatPrice, sqFtToSqMt, sortProperties } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
@@ -81,7 +82,7 @@ export default async function HomePage() {
   const waLink = generateWhatsAppLink({ source: "homepage-hero", settings });
 
   const rawProperties = await prisma.property.findMany({
-    where: { status: "ACTIVE" },
+    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } },
     take: 6,
     include: { images: { orderBy: { order: "asc" } } },
     orderBy: [
@@ -90,14 +91,14 @@ export default async function HomePage() {
     ],
   });
 
-  const featuredProperties = rawProperties.map(p => ({
+  const featuredProperties = sortProperties(rawProperties.map(p => ({
     ...p,
     price: Number(p.price),
-  })) as unknown as PropertyCardData[];
+  })) as unknown as PropertyCardData[]);
 
   const propertyCounts = await prisma.property.groupBy({
     by: ['subType'],
-    where: { status: 'ACTIVE' },
+    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } },
     _count: {
       _all: true
     }

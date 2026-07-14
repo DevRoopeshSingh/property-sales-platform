@@ -56,6 +56,7 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
     defaultValues: mappedInitialData,
   });
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const currentType = watch("type");
   const currentSubType = watch("subType");
   const isCommercial = currentType === "COMMERCIAL" || currentSubType === "OFFICE" || currentSubType === "SHOP" || currentSubType === "SHOWROOM";
@@ -153,6 +154,7 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
               <option value="DRAFT">Draft</option>
               <option value="ACTIVE">Active (Published)</option>
               <option value="SOLD">Sold</option>
+              <option value="RENTED">Rented</option>
               <option value="ARCHIVED">Archived</option>
             </select>
           </div>

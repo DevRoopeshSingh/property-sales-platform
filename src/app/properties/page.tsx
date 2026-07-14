@@ -3,6 +3,7 @@ import Link from "next/link";
 import { SlidersHorizontal, X } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
+import { sortProperties } from "@/lib/utils";
 import SortSelect from "@/components/public/SortSelect";
 import MobileFiltersDrawer from "@/components/public/MobileFiltersDrawer";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
@@ -73,7 +74,7 @@ export default async function PropertiesPage({
   const validPossessions = possessions.filter(p => Object.keys(POSSESSION_LABELS).includes(p)) as Possession[];
 
   const where: Prisma.PropertyWhereInput = {
-    status: "ACTIVE",
+    status: { in: ["ACTIVE", "SOLD", "RENTED"] },
     ...(validLocalities.length > 0 && { locality: { in: validLocalities } }),
     ...(validSubTypes.length > 0 && { subType: { in: validSubTypes } }),
     ...(bhks.length > 0 && { bhk: { in: bhks } }),
@@ -102,10 +103,10 @@ export default async function PropertiesPage({
     take: 24,
   });
 
-  const properties = rawProperties.map((p) => ({
+  const properties = sortProperties(rawProperties.map((p) => ({
     ...p,
     price: Number(p.price),
-  })) as unknown as PropertyCardData[];
+  })) as unknown as PropertyCardData[]);
 
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
   const waLink = generateWhatsAppLink({ source: "listing-empty-state", settings });

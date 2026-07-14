@@ -8,8 +8,9 @@ import {
 } from "lucide-react";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import PropertyCard from "@/components/public/PropertyCard";
-import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { prisma } from "@/lib/prisma";
+import { formatPrice, sqFtToSqMt, formatDate, sortProperties } from "@/lib/utils";
+import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import type { PropertyCardData } from "@/types";
 import {
@@ -32,18 +33,18 @@ async function getProperty(slug: string) {
 
 async function getSimilarProperties(locality: string, excludeId: string) {
   const raws = await prisma.property.findMany({
-    where: { status: "ACTIVE", locality: locality as Locality, id: { not: excludeId } },
+    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] }, locality: locality as Locality, id: { not: excludeId } },
     include: { images: { orderBy: { order: "asc" }, take: 1 } },
     take: 3,
     orderBy: { featured: "desc" },
   });
-  return raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[];
+  return sortProperties(raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[]);
 }
 
 
 export async function generateStaticParams() {
   const properties = await prisma.property.findMany({
-    where: { status: "ACTIVE" },
+    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } },
     select: { slug: true },
   });
   return properties.map((p) => ({ slug: p.slug }));

@@ -20,7 +20,7 @@ export async function adminLogout() {
     // Attempt to run NextAuth's signOut just in case it handles other state,
     // but tell it not to redirect so we can control the flow.
     await signOut({ redirect: false });
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Re-throw redirect errors — Next.js uses thrown errors to implement redirect()
     if (isRedirectError(error)) throw error;
     // Log real errors instead of silently swallowing them

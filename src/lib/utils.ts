@@ -66,3 +66,17 @@ export function getInitials(name: string): string {
     .toUpperCase()
     .slice(0, 2);
 }
+
+/**
+ * Sort properties so that 'SOLD' properties appear at the end
+ * while preserving the original order of other properties.
+ */
+export function sortProperties<T extends { status: string }>(properties: T[]): T[] {
+  return [...properties].sort((a, b) => {
+    const aSold = a.status.toUpperCase() === "SOLD";
+    const bSold = b.status.toUpperCase() === "SOLD";
+    if (aSold && !bSold) return 1;
+    if (!aSold && bSold) return -1;
+    return 0;
+  });
+}

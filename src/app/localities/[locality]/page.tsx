@@ -5,6 +5,7 @@ import { MapPin, ChevronRight } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
+import { formatPrice, sortProperties } from "@/lib/utils";
 import {
   LOCALITY_LABELS,
   SLUG_TO_LOCALITY,
@@ -102,11 +103,11 @@ const LOCALITY_CONTENT: Record<
 // Demo properties for locality pages
 async function getLocalityProperties(locality: Locality) {
   const raws = await prisma.property.findMany({
-    where: { status: "ACTIVE", locality },
+    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] }, locality },
     include: { images: { orderBy: { order: "asc" }, take: 1 } },
     orderBy: { createdAt: "desc" },
   });
-  return raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[];
+  return sortProperties(raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[]);
 }
 
 export async function generateStaticParams() {

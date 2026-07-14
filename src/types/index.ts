@@ -12,7 +12,7 @@ export type PropertySubType =
   | "OFFICE"
   | "SHOWROOM";
 
-export type PropertyStatus = "DRAFT" | "ACTIVE" | "SOLD" | "ARCHIVED";
+export type PropertyStatus = "DRAFT" | "ACTIVE" | "SOLD" | "RENTED" | "ARCHIVED";
 
 export type Possession =
   | "READY_TO_MOVE"
