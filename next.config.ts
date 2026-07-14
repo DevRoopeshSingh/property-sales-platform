@@ -40,7 +40,7 @@ const nextConfig: NextConfig = {
   // (Supabase URLs resolve to private-range IPs in some environments)
   experimental: {
     serverActions: {
-      allowedOrigins: ["localhost:3000"],
+      allowedOrigins: ["localhost:3000", "www.thepropconnect.in", "thepropconnect.in"],
     },
   },
 };

@@ -71,6 +71,7 @@ export const propertySchema = z.object({
   images: z
     .array(
       z.object({
+        id: z.string().optional(),          // DB id — present for existing images, absent for new uploads
         url: z.string().url(),
         key: z.string(),
         altText: z.string().optional().nullable(),

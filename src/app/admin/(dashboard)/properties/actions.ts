@@ -6,6 +6,39 @@ import { revalidatePath } from "next/cache";
 import { deleteImagesFromStorage } from "./storage-actions";
 import { auth } from "@/auth";
 
+/**
+ * Immediately deletes a single image from both the DB and Supabase storage.
+ * Called from the ImageUploader "Remove" button so deletions persist without
+ * requiring the user to also submit the full property form.
+ */
+export async function deletePropertyImage(imageId: string, storageKey: string) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
+  try {
+    // 1. Delete from database
+    const deleted = await prisma.propertyImage.delete({
+      where: { id: imageId },
+      select: { propertyId: true, property: { select: { slug: true } } },
+    });
+
+    // 2. Delete from Supabase storage
+    await deleteImagesFromStorage([storageKey]);
+
+    // 3. Revalidate affected pages so Next.js cache is cleared
+    revalidatePath(`/admin/properties/${deleted.propertyId}/edit`);
+    revalidatePath(`/properties/${deleted.property.slug}`);
+    revalidatePath("/admin/properties");
+    revalidatePath("/properties");
+    revalidatePath("/");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete property image:", error);
+    return { success: false, error: "Failed to delete image." };
+  }
+}
+
 // Generate a URL-friendly slug
 function generateSlug(title: string) {
   return title

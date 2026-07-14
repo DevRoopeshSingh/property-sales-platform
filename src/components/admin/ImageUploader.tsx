@@ -4,11 +4,13 @@ import { useState, useRef } from "react";
 import { Upload, X, Loader2, Download, Archive } from "lucide-react";
 import { toast } from "sonner";
 import { deleteImagesFromStorage, uploadImageToStorage } from "@/app/admin/(dashboard)/properties/storage-actions";
+import { deletePropertyImage } from "@/app/admin/(dashboard)/properties/actions";
 import { DndContext, closestCenter, DragEndEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, rectSortingStrategy, useSortable, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 export interface PropertyImageInput {
+  id?: string;           // DB record id — present for existing images, absent for new uploads
   url: string;
   key: string;
   altText?: string | null;
@@ -226,20 +228,32 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
 
   const handleRemove = async (indexToRemove: number) => {
     const imageToRemove = value[indexToRemove];
-    
-    // Delete from Supabase immediately to prevent orphaned files
-    const res = await deleteImagesFromStorage([imageToRemove.key]);
-    if (!res.success) {
-      toast.error("Failed to delete image from storage.");
+
+    if (imageToRemove.id) {
+      // Existing DB image: delete from both DB and storage in one server action.
+      // This persists the removal immediately — no form save required.
+      const res = await deletePropertyImage(imageToRemove.id, imageToRemove.key);
+      if (!res.success) {
+        toast.error(res.error || "Failed to delete image.");
+        return; // Don't update local state if server delete failed
+      }
+      toast.success("Image removed");
     } else {
-      toast.success("Image deleted");
+      // Newly uploaded image (not yet saved to DB): only remove from storage.
+      const res = await deleteImagesFromStorage([imageToRemove.key]);
+      if (!res.success) {
+        toast.error("Failed to delete image from storage.");
+        // Continue anyway — update local state so user can retry by saving
+      } else {
+        toast.success("Image removed");
+      }
     }
 
     const newImages = value.filter((_, idx) => idx !== indexToRemove);
-    
+
     // If we removed the primary image, make the first remaining image primary
     if (imageToRemove.isPrimary && newImages.length > 0) {
-      newImages[0].isPrimary = true;
+      newImages[0] = { ...newImages[0], isPrimary: true };
     }
 
     onChange(newImages);

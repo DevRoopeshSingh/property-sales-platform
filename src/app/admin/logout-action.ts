@@ -2,6 +2,7 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { signOut } from "@/auth";
 
 export async function adminLogout() {
@@ -20,13 +21,13 @@ export async function adminLogout() {
     // but tell it not to redirect so we can control the flow.
     await signOut({ redirect: false });
   } catch (error: any) {
-    // NextAuth signOut often throws NEXT_REDIRECT internally even if redirect: false is passed in some betas
-    // We catch it and ignore it so we can run our guaranteed redirect below.
-    if (error.message === "NEXT_REDIRECT") {
-      // ignore
-    }
+    // Re-throw redirect errors — Next.js uses thrown errors to implement redirect()
+    if (isRedirectError(error)) throw error;
+    // Log real errors instead of silently swallowing them
+    console.error("Logout error:", error);
   }
 
   // Forcefully redirect the user back to the login page
   redirect("/admin/login");
 }
+
