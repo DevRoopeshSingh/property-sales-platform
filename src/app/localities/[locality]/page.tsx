@@ -5,7 +5,7 @@ import { MapPin, ChevronRight } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
-import { formatPrice, sortProperties } from "@/lib/utils";
+import { sortProperties } from "@/lib/utils";
 import {
   LOCALITY_LABELS,
   SLUG_TO_LOCALITY,

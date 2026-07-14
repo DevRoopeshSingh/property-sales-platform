@@ -9,7 +9,7 @@ import {
 import StickyContactBar from "@/components/public/StickyContactBar";
 import PropertyCard from "@/components/public/PropertyCard";
 import { prisma } from "@/lib/prisma";
-import { formatPrice, sqFtToSqMt, formatDate, sortProperties } from "@/lib/utils";
+import { sortProperties } from "@/lib/utils";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import type { PropertyCardData } from "@/types";
@@ -217,6 +217,12 @@ export default async function PropertyDetailPage({
               {/* Title & Badges */}
               <div className="card p-5 mb-5">
                 <div className="flex flex-wrap gap-2 mb-3">
+                  {property.status === 'SOLD' && (
+                    <span className="badge bg-red-600 text-white border-transparent">SOLD</span>
+                  )}
+                  {property.status === 'RENTED' && (
+                    <span className="badge bg-purple-600 text-white border-transparent">RENTED</span>
+                  )}
                   <span className="badge badge-blue">{PROPERTY_SUB_TYPE_LABELS[property.subType]}</span>
                   <span className={`badge ${property.possession === "READY_TO_MOVE" ? "badge-green" : property.possession === "NEW_LAUNCH" ? "badge-blue" : "badge-amber"}`}>
                     {POSSESSION_LABELS[property.possession]}

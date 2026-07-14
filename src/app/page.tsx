@@ -8,7 +8,7 @@ import HeroSearchClient from "@/components/public/HeroSearchClient";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import { LOCALITY_LABELS, type Locality, PropertyCardData } from "@/types";
-import { formatPrice, sqFtToSqMt, sortProperties } from "@/lib/utils";
+import { sortProperties } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 
 export const metadata: Metadata = {
