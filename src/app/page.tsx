@@ -208,7 +208,7 @@ export default async function HomePage() {
                 Premium Selection
               </p>
               <h2 className="section-heading text-slate-900">Featured Projects</h2>
-              <p className="section-subheading text-slate-600 max-w-2xl">Explore our top picks across the Mumbai region. Only high-quality, verified developments from trusted builders.</p>
+              <p className="section-subheading text-slate-600 max-w-2xl">Explore our top picks across the Mumbai to Navi Mumbai region. Only high-quality, verified developments from trusted builders.</p>
             </div>
             <Link
               href="/properties?featured=true"

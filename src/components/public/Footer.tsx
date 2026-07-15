@@ -40,9 +40,6 @@ export default function Footer() {
                 Prop<span style={{ color: "var(--color-brand-600)" }}>Connect</span>
               </span>
             </Link>
-            <p className="text-slate-400 text-sm mb-6 max-w-xs leading-relaxed">
-            {settings.siteName || "PropConnect"} Discover premium residential and commercial properties across {settings.defaultCity || "Navi Mumbai"}. Connect directly with experts for a seamless experience.
-          </p>
             <a
               href={generateWhatsAppLink({ source: "footer", settings })}
               target="_blank"
