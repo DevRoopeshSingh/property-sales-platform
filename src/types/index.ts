@@ -41,7 +41,8 @@ export type Locality =
   | "KAMOTHE"
   | "SANPADA"
   | "KALAMBOLI"
-  | "PANVEL";
+  | "PANVEL"
+  | "MAHAPE";
 
 // ─────────────────────────────────────────
 // Display label maps
@@ -61,6 +62,7 @@ export const LOCALITY_LABELS: Record<Locality, string> = {
   SANPADA: "Sanpada",
   KALAMBOLI: "Kalamboli",
   PANVEL: "Panvel",
+  MAHAPE: "Mahape",
 };
 
 export const LOCALITY_SLUGS: Record<Locality, string> = {
@@ -77,6 +79,7 @@ export const LOCALITY_SLUGS: Record<Locality, string> = {
   SANPADA: "sanpada",
   KALAMBOLI: "kalamboli",
   PANVEL: "panvel",
+  MAHAPE: "mahape",
 };
 
 export const SLUG_TO_LOCALITY: Record<string, Locality> = {
@@ -93,6 +96,7 @@ export const SLUG_TO_LOCALITY: Record<string, Locality> = {
   sanpada: "SANPADA",
   kalamboli: "KALAMBOLI",
   panvel: "PANVEL",
+  mahape: "MAHAPE",
 };
 
 export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {

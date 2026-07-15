@@ -98,6 +98,12 @@ const LOCALITY_CONTENT: Record<
     connectivity: "Major railway junction connecting Harbour, Central, and Outstation lines.",
     highlights: ["Upcoming Airport", "Major Railway Junction", "Smart City Projects", "Gateway to Konkan"],
   },
+  MAHAPE: {
+    description: "Mahape is a major industrial and IT hub in Navi Mumbai, known for the Millennium Business Park and expanding residential developments.",
+    priceRange: "₹60 Lakhs – ₹1.5 Crores",
+    connectivity: "Well-connected via Thane-Belapur Road and nearby Ghansoli/Kopar Khairane railway stations.",
+    highlights: ["Millennium Business Park", "IT Hub", "Industrial Estate", "Emerging Residential"],
+  },
 };
 
 // Demo properties for locality pages

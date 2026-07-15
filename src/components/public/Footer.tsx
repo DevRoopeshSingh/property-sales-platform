@@ -12,6 +12,7 @@ const LOCALITIES = [
   { label: "CBD Belapur", href: "/localities/cbd-belapur" },
   { label: "Panvel", href: "/localities/panvel" },
   { label: "Airoli", href: "/localities/airoli" },
+  { label: "Mahape", href: "/localities/mahape" },
 ];
 
 const PROPERTY_TYPES = [

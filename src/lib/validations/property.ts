@@ -46,6 +46,7 @@ export const propertySchema = z.object({
     "SANPADA",
     "KALAMBOLI",
     "PANVEL",
+    "MAHAPE",
   ]),
   address: z.string().min(5, "Address must be at least 5 characters"),
   landmark: z.string().nullable().optional(),

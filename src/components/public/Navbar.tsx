@@ -32,6 +32,7 @@ const NAV_LINKS = [
       { label: "CBD Belapur", href: "/localities/cbd-belapur" },
       { label: "Airoli", href: "/localities/airoli" },
       { label: "Panvel", href: "/localities/panvel" },
+      { label: "Mahape", href: "/localities/mahape" },
     ],
   },
   { label: "Contact", href: "/contact" },
