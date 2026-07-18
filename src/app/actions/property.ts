@@ -22,7 +22,7 @@ export async function getPropertiesByIds(ids: string[]) {
     // We need to return them in the same format as PropertyCard expects
     return properties.map((p) => ({
       ...p,
-      price: Number(p.price),
+      price: Number(p.price), marketEstimateMin: p.marketEstimateMin ? Number(p.marketEstimateMin) : null, marketEstimateMax: p.marketEstimateMax ? Number(p.marketEstimateMax) : null,
     }));
   } catch (error) {
     console.error("Failed to fetch saved properties:", error);

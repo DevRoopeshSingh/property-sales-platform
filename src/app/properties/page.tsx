@@ -105,7 +105,7 @@ export default async function PropertiesPage({
 
   const properties = sortProperties(rawProperties.map((p) => ({
     ...p,
-    price: Number(p.price),
+    price: Number(p.price), marketEstimateMin: p.marketEstimateMin ? Number(p.marketEstimateMin) : null, marketEstimateMax: p.marketEstimateMax ? Number(p.marketEstimateMax) : null,
   })) as unknown as PropertyCardData[]);
 
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));

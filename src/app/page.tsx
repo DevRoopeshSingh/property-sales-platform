@@ -93,7 +93,7 @@ export default async function HomePage() {
 
   const featuredProperties = sortProperties(rawProperties.map(p => ({
     ...p,
-    price: Number(p.price),
+    price: Number(p.price), marketEstimateMin: p.marketEstimateMin ? Number(p.marketEstimateMin) : null, marketEstimateMax: p.marketEstimateMax ? Number(p.marketEstimateMax) : null,
   })) as unknown as PropertyCardData[]);
 
   const propertyCounts = await prisma.property.groupBy({

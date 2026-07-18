@@ -121,6 +121,18 @@ model Property {
   // Amenities stored as string array
   amenities String[]
 
+  // Market Estimate
+  marketEstimateMin    BigInt?
+  marketEstimateMax    BigInt?
+  marketEstimateActive Boolean @default(false)
+
+  // Parking Details
+  parkingCarCovered    Int @default(0)
+  parkingCarOpen       Int @default(0)
+  parkingBikeCovered   Int @default(0)
+  parkingBikeOpen      Int @default(0)
+  visitorParking       Boolean @default(false)
+
   // Media
   images PropertyImage[]
 

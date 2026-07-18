@@ -64,6 +64,18 @@ export const propertySchema = z.object({
   // Amenities
   amenities: z.array(z.string()).default([]),
 
+  // Market Estimate
+  marketEstimateMin: z.coerce.number().nullable().optional(),
+  marketEstimateMax: z.coerce.number().nullable().optional(),
+  marketEstimateActive: z.boolean().default(false),
+
+  // Parking Details
+  parkingCarCovered: z.coerce.number().default(0),
+  parkingCarOpen: z.coerce.number().default(0),
+  parkingBikeCovered: z.coerce.number().default(0),
+  parkingBikeOpen: z.coerce.number().default(0),
+  visitorParking: z.boolean().default(false),
+
   // SEO
   metaTitle: z.string().max(60).nullable().optional(),
   metaDescription: z.string().max(160).nullable().optional(),

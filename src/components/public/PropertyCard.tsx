@@ -33,6 +33,13 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
     url: typeof window !== "undefined" ? `${window.location.origin}/properties/${property.slug}` : "",
   });
 
+  const hasCoveredParking = property.parkingCarCovered !== undefined && property.parkingCarCovered > 0;
+  const isGreatValue = 
+    property.marketEstimateActive && 
+    property.marketEstimateMax && 
+    property.price <= property.marketEstimateMax;
+
+
   return (
     <article className={cn("card group relative", className)}>
       {/* Image */}
@@ -137,6 +144,20 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
               <span>{property.totalFloors} Floors</span>
             </div>
           ) : null}
+        </div>
+
+        {/* Feature Badges */}
+        <div className="flex flex-wrap gap-2 mt-3">
+          {property.parkingCarCovered !== undefined && (
+            <div className="flex items-center text-[10px] uppercase font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded">
+              🚗 {hasCoveredParking ? 'Covered Parking' : 'Open/Street Parking'}
+            </div>
+          )}
+          {isGreatValue && (
+            <div className="flex items-center text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded uppercase tracking-wider">
+              ⭐ Verified Fair Price
+            </div>
+          )}
         </div>
 
         {/* CTA */}

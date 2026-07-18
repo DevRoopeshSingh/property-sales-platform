@@ -28,6 +28,12 @@ const defaultValues: Partial<PropertyFormValues> = {
   duesPending: "",
   amenities: [],
   images: [],
+  marketEstimateActive: false,
+  parkingCarCovered: 0,
+  parkingCarOpen: 0,
+  parkingBikeCovered: 0,
+  parkingBikeOpen: 0,
+  visitorParking: false,
 };
 
 export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
@@ -40,6 +46,8 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
   const mappedInitialData = initialData ? {
     ...initialData,
     price: Number(initialData.price),
+    marketEstimateMin: initialData.marketEstimateMin ? Number(initialData.marketEstimateMin) : undefined,
+    marketEstimateMax: initialData.marketEstimateMax ? Number(initialData.marketEstimateMax) : undefined,
   } : defaultValues;
 
 
@@ -408,10 +416,88 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
           />
         </div>
 
-        {/* 5. Media & Uploads */}
+        {/* 5. Market Estimate & Parking */}
         <div className="card p-6">
           <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 border-b border-[var(--color-border)] pb-2">
-            5. Media (Images)
+            5. Market Estimate & Parking
+          </h2>
+          
+          <div className="mb-6 bg-slate-50 p-4 rounded-lg border border-gray-200">
+            <h3 className="font-semibold text-md text-gray-700 mb-4">PropConnect Verified Estimate</h3>
+            <div className="flex items-center space-x-2 mb-4">
+              <input 
+                type="checkbox" 
+                id="marketEstimateActive" 
+                {...register("marketEstimateActive")} 
+                className="w-5 h-5 rounded border-gray-300 text-[var(--color-brand-600)] focus:ring-[var(--color-brand-500)]"
+              />
+              <label htmlFor="marketEstimateActive" className="text-sm font-medium text-[var(--color-text-primary)]">
+                Display Verified Estimate on Public Listing
+              </label>
+            </div>
+            
+            {watch("marketEstimateActive") && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Min Value (₹)</label>
+                  <input 
+                    type="number" 
+                    {...register("marketEstimateMin")} 
+                    placeholder="e.g. 11500000"
+                    className="input w-full" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Max Value (₹)</label>
+                  <input 
+                    type="number" 
+                    {...register("marketEstimateMax")} 
+                    placeholder="e.g. 12500000"
+                    className="input w-full" 
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-md text-gray-700 mb-4">Parking Details</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Car (Covered)</label>
+                <input type="number" {...register("parkingCarCovered")} className="input w-full" min="0" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Car (Open)</label>
+                <input type="number" {...register("parkingCarOpen")} className="input w-full" min="0" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Bike (Covered)</label>
+                <input type="number" {...register("parkingBikeCovered")} className="input w-full" min="0" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Bike (Open)</label>
+                <input type="number" {...register("parkingBikeOpen")} className="input w-full" min="0" />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 mt-4">
+              <input 
+                type="checkbox" 
+                id="visitorParking" 
+                {...register("visitorParking")} 
+                className="w-5 h-5 rounded border-gray-300 text-[var(--color-brand-600)]"
+              />
+              <label htmlFor="visitorParking" className="text-sm font-medium text-[var(--color-text-primary)]">
+                Visitor Parking Available
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {/* 6. Media & Uploads */}
+        <div className="card p-6">
+          <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-6 border-b border-[var(--color-border)] pb-2">
+            6. Media (Images)
           </h2>
         <Controller
           name="images"

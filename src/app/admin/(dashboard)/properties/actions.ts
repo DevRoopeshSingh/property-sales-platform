@@ -93,6 +93,15 @@ export async function createProperty(data: PropertyFormValues) {
         
         amenities: validatedData.amenities,
         
+        marketEstimateMin: validatedData.marketEstimateMin ? BigInt(validatedData.marketEstimateMin) : null,
+        marketEstimateMax: validatedData.marketEstimateMax ? BigInt(validatedData.marketEstimateMax) : null,
+        marketEstimateActive: validatedData.marketEstimateActive,
+        parkingCarCovered: validatedData.parkingCarCovered,
+        parkingCarOpen: validatedData.parkingCarOpen,
+        parkingBikeCovered: validatedData.parkingBikeCovered,
+        parkingBikeOpen: validatedData.parkingBikeOpen,
+        visitorParking: validatedData.visitorParking,
+        
         metaTitle: validatedData.metaTitle,
         metaDescription: validatedData.metaDescription,
 
@@ -180,6 +189,15 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
         builderName: validatedData.builderName,
         
         amenities: validatedData.amenities,
+        
+        marketEstimateMin: validatedData.marketEstimateMin ? BigInt(validatedData.marketEstimateMin) : null,
+        marketEstimateMax: validatedData.marketEstimateMax ? BigInt(validatedData.marketEstimateMax) : null,
+        marketEstimateActive: validatedData.marketEstimateActive,
+        parkingCarCovered: validatedData.parkingCarCovered,
+        parkingCarOpen: validatedData.parkingCarOpen,
+        parkingBikeCovered: validatedData.parkingBikeCovered,
+        parkingBikeOpen: validatedData.parkingBikeOpen,
+        visitorParking: validatedData.visitorParking,
         
         metaTitle: validatedData.metaTitle,
         metaDescription: validatedData.metaDescription,

@@ -13,11 +13,13 @@ import ShareButton from "@/components/public/ShareButton";
 import SaveButton from "@/components/public/SaveButton";
 import ExpandableDescription from "@/components/public/ExpandableDescription";
 import EmiCalculator from "@/components/public/EmiCalculator";
+import PriceInsightsModule from "@/components/public/PriceInsightsModule";
+import ParkingDetails from "@/components/public/ParkingDetails";
 import { prisma } from "@/lib/prisma";
 import { sortProperties } from "@/lib/utils";
 import { generateWhatsAppLink, generateCallLink } from "@/lib/whatsapp";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
-import type { PropertyCardData } from "@/types";
+import type { PropertyCardData, PropertyDetail } from "@/types";
 import {
   LOCALITY_LABELS,
   PROPERTY_SUB_TYPE_LABELS,
@@ -33,7 +35,12 @@ async function getProperty(slug: string) {
     include: { images: { orderBy: { order: "asc" } } },
   });
   if (!raw) return null;
-  return { ...raw, price: Number(raw.price) };
+  return { 
+    ...raw, 
+    price: Number(raw.price),
+    marketEstimateMin: raw.marketEstimateMin ? Number(raw.marketEstimateMin) : null,
+    marketEstimateMax: raw.marketEstimateMax ? Number(raw.marketEstimateMax) : null,
+  };
 }
 
 async function getSimilarProperties(locality: string, excludeId: string) {
@@ -313,6 +320,12 @@ export default async function PropertyDetailPage({
                   </div>
                 </div>
               </div>
+
+              {/* Price Insights Module */}
+              <PriceInsightsModule property={property as PropertyDetail} />
+
+              {/* Parking Details Module */}
+              <ParkingDetails property={property as PropertyDetail} />
 
               {/* Description */}
               <div className="card p-5 mb-5">

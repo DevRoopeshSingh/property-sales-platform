@@ -170,6 +170,18 @@ export interface PropertyCardData {
   builderName?: string | null;
   reraNumber?: string | null;
   totalFloors?: number | null;
+
+  // Market Estimate
+  marketEstimateMin?: number | null;
+  marketEstimateMax?: number | null;
+  marketEstimateActive?: boolean;
+
+  // Parking
+  parkingCarCovered?: number;
+  parkingCarOpen?: number;
+  parkingBikeCovered?: number;
+  parkingBikeOpen?: number;
+  visitorParking?: boolean;
 }
 
 export interface PropertyDetail extends PropertyCardData {
@@ -226,6 +238,8 @@ export interface PropertyFilters {
   page?: number;
   limit?: number;
   sortBy?: "newest" | "price_asc" | "price_desc" | "featured";
+  pricedBelowEstimate?: boolean;
+  requireCoveredParking?: boolean;
 }
 
 // ─────────────────────────────────────────
