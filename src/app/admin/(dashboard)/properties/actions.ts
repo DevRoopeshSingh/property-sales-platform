@@ -256,3 +256,87 @@ export async function deleteProperty(id: string) {
     return { success: false, error: "Failed to delete property." };
   }
 }
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function bulkImportProperties(properties: any[]) {
+  const session = await auth();
+  if (!session) return { success: false, error: "Unauthorized" };
+
+  let importedCount = 0;
+
+  try {
+    // Process each row sequentially or in parallel? Let's do sequentially to avoid overload or race conditions
+    for (const data of properties) {
+      const validatedData = propertySchema.parse(data);
+
+      // To handle duplicates properly, let's find if a property with the same title, locality, and type already exists
+      const existing = await prisma.property.findFirst({
+        where: { 
+          title: validatedData.title,
+          locality: validatedData.locality,
+          type: validatedData.type
+        }
+      });
+
+      if (existing) {
+        // Upsert - Update existing
+        await prisma.property.update({
+          where: { id: existing.id },
+          data: {
+            description: validatedData.description,
+            type: validatedData.type,
+            subType: validatedData.subType,
+            status: validatedData.status,
+            price: BigInt(validatedData.price),
+            priceLabel: validatedData.priceLabel,
+            priceNegotiable: validatedData.priceNegotiable,
+            bhk: validatedData.bhk,
+            area: validatedData.area,
+            carpetArea: validatedData.carpetArea,
+            floor: validatedData.floor,
+            totalFloors: validatedData.totalFloors,
+            locality: validatedData.locality,
+            address: validatedData.address,
+            possession: validatedData.possession,
+            amenities: validatedData.amenities,
+            // Images are skipped in bulk import updates to not overwrite existing manual uploads
+          }
+        });
+      } else {
+        // Create new
+        const slug = generateSlug(validatedData.title);
+        await prisma.property.create({
+          data: {
+            title: validatedData.title,
+            slug,
+            description: validatedData.description,
+            type: validatedData.type,
+            subType: validatedData.subType,
+            status: validatedData.status,
+            price: BigInt(validatedData.price),
+            priceLabel: validatedData.priceLabel,
+            priceNegotiable: validatedData.priceNegotiable,
+            bhk: validatedData.bhk,
+            area: validatedData.area,
+            carpetArea: validatedData.carpetArea,
+            floor: validatedData.floor,
+            totalFloors: validatedData.totalFloors,
+            locality: validatedData.locality,
+            address: validatedData.address,
+            possession: validatedData.possession,
+            amenities: validatedData.amenities,
+          }
+        });
+      }
+      importedCount++;
+    }
+
+    revalidatePath("/admin/properties");
+    revalidatePath("/properties");
+    revalidatePath("/");
+
+    return { success: true, count: importedCount };
+  } catch (error) {
+    console.error("Failed to bulk import properties:", error);
+    return { success: false, error: "Failed to process bulk import. Check data format." };
+  }
+}

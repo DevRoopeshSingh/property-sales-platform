@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
-import { Plus, Edit, Home, CheckCircle2, Clock, MapPin, Tag, Key, Archive } from "lucide-react";
+import { Plus, Edit, Home, CheckCircle2, Clock, MapPin, Tag, Key, Archive, Download } from "lucide-react";
 import { DeletePropertyButton } from "@/components/admin/DeletePropertyButton";
+import { PropertyImportButton } from "@/components/admin/PropertyImportButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { PropertyFilters } from "@/components/admin/PropertyFilters";
 import { PropertyType, Locality } from "@prisma/client";
@@ -41,10 +42,21 @@ export default async function PropertiesPage({
           <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Properties</h1>
           <p className="text-[var(--color-text-secondary)] mt-1">Manage your platform&apos;s real estate listings.</p>
         </div>
-        <Link href="/admin/properties/new" className="btn btn-primary flex items-center gap-2">
-          <Plus size={18} />
-          Add Property
-        </Link>
+        <div className="flex items-center gap-3">
+          <a href="/api/admin/properties/template" className="btn btn-secondary flex items-center gap-2" download="properties_template.xlsx">
+            <Download size={18} />
+            Template
+          </a>
+          <a href="/api/admin/properties/export" className="btn btn-secondary flex items-center gap-2" download="properties_export.xlsx">
+            <Download size={18} />
+            Export
+          </a>
+          <PropertyImportButton />
+          <Link href="/admin/properties/new" className="btn btn-primary flex items-center gap-2">
+            <Plus size={18} />
+            Add Property
+          </Link>
+        </div>
       </div>
 
       <PropertyFilters />
