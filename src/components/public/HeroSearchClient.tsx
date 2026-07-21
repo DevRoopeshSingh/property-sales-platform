@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, Building2 } from "lucide-react";
-import { LOCALITY_LABELS } from "@/types";
 
 const PROPERTY_SUB_TYPES = [
   { value: "APARTMENT", label: "Apartment" },
@@ -14,7 +13,7 @@ const PROPERTY_SUB_TYPES = [
   { value: "SHOP", label: "Shop" },
 ];
 
-export default function HeroSearchClient() {
+export default function HeroSearchClient({ locations = [] }: { locations?: { id: string, name: string, slug: string }[] }) {
   const router = useRouter();
   const [locality, setLocality] = useState("");
   const [subType, setSubType] = useState("");
@@ -40,8 +39,8 @@ export default function HeroSearchClient() {
           className="w-full bg-transparent py-3.5 pl-11 pr-4 text-slate-700 font-medium focus:outline-none appearance-none cursor-pointer"
         >
           <option value="">All Locations</option>
-          {Object.entries(LOCALITY_LABELS).map(([key, label]) => (
-            <option key={key} value={key}>{label}</option>
+          {locations.map((loc) => (
+            <option key={loc.id} value={loc.slug}>{loc.name}</option>
           ))}
         </select>
       </div>

@@ -4,17 +4,6 @@ import { Phone, Mail, MapPin } from "lucide-react";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 
-const LOCALITIES = [
-  { label: "Vashi", href: "/localities/vashi" },
-  { label: "Kharghar", href: "/localities/kharghar" },
-  { label: "Seawoods", href: "/localities/seawoods" },
-  { label: "Nerul", href: "/localities/nerul" },
-  { label: "CBD Belapur", href: "/localities/cbd-belapur" },
-  { label: "Panvel", href: "/localities/panvel" },
-  { label: "Airoli", href: "/localities/airoli" },
-  { label: "Mahape", href: "/localities/mahape" },
-];
-
 const PROPERTY_TYPES = [
   { label: "Apartments", href: "/properties?subType=APARTMENT" },
   { label: "Villas", href: "/properties?subType=VILLA" },
@@ -24,7 +13,14 @@ const PROPERTY_TYPES = [
   { label: "Shops", href: "/properties?subType=SHOP" },
 ];
 
-export default function Footer() {
+interface LocationData {
+  id: string;
+  name: string;
+  slug: string;
+  _count?: { properties: number };
+}
+
+export default function Footer({ topLocations = [] }: { topLocations?: LocationData[] }) {
   const settings = useSettings();
 
   return (
@@ -80,14 +76,14 @@ export default function Footer() {
               Localities
             </h3>
             <ul className="space-y-2.5">
-              {LOCALITIES.map((item) => (
-                <li key={item.href}>
+              {topLocations.map((item) => (
+                <li key={item.id}>
                   <Link
-                    href={item.href}
+                    href={`/properties?locality=${item.slug}`}
                     className="text-sm transition-colors hover:text-white"
                     style={{ color: "rgba(255,255,255,0.65)" }}
                   >
-                    {item.label}
+                    {item.name}
                   </Link>
                 </li>
               ))}

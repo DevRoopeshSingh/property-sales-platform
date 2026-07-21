@@ -61,3 +61,31 @@ export async function submitLeadAction(data: LeadFormValues) {
     return { success: false, error: "Failed to submit inquiry. Please try again or contact us via WhatsApp." };
   }
 }
+
+export async function createManualLead(data: { name: string; phone: string; email?: string; message?: string; source: "WHATSAPP" | "CALL" | "FORM" }) {
+  try {
+    await requireRole(ROLE_GROUPS.LEAD_MANAGERS);
+    
+    if (!data.name || !data.phone || !data.source) {
+      return { success: false, error: "Name, phone, and source are required" };
+    }
+
+    const lead = await prisma.lead.create({
+      data: {
+        name: data.name,
+        phone: data.phone,
+        email: data.email || null,
+        message: data.message || null,
+        source: data.source,
+        status: "NEW",
+      },
+    });
+    
+    revalidatePath("/admin/leads");
+    revalidatePath("/admin/dashboard");
+    return { success: true, leadId: lead.id };
+  } catch (error) {
+    console.error("Error creating manual lead:", error);
+    return { success: false, error: "Failed to create lead" };
+  }
+}

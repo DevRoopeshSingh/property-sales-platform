@@ -52,6 +52,7 @@ import NavigationProgressBar from "@/components/ui/loaders/NavigationProgressBar
 import { Toaster } from "sonner";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { prisma } from "@/lib/prisma";
 
 export default async function RootLayout({
   children,
@@ -60,6 +61,20 @@ export default async function RootLayout({
 }>) {
   // Fetch global settings once per request to pass into context
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
+
+  // Fetch top 8 active locations for the footer
+  const topLocations = await prisma.locationNode.findMany({
+    where: { properties: { some: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } } } },
+    include: {
+      _count: {
+        select: { properties: { where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } } } },
+      },
+    },
+    orderBy: {
+      properties: { _count: 'desc' },
+    },
+    take: 8,
+  }).catch(() => []);
 
   return (
     <html lang="en" data-scroll-behavior="smooth">
@@ -84,7 +99,7 @@ export default async function RootLayout({
         <SettingsProvider settings={settings}>
           <NavigationProgressBar />
           <Toaster richColors position="top-center" />
-          <LayoutWrapper>
+          <LayoutWrapper topLocations={topLocations}>
             <main>{children}</main>
           </LayoutWrapper>
         </SettingsProvider>

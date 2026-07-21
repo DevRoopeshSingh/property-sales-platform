@@ -7,7 +7,7 @@ import StickyContactBar from "@/components/public/StickyContactBar";
 import HeroSearchClient from "@/components/public/HeroSearchClient";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
-import { LOCALITY_LABELS, type Locality, PropertyCardData } from "@/types";
+import { PropertyCardData } from "@/types";
 import { sortProperties } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 
@@ -37,15 +37,6 @@ const CATEGORIES = [
   { label: "Offices", icon: "🏛️", href: "/properties?subType=OFFICE", subType: "OFFICE" },
   { label: "Shops", icon: "🏪", href: "/properties?subType=SHOP", subType: "SHOP" },
   { label: "Showrooms", icon: "🏬", href: "/properties?subType=SHOWROOM", subType: "SHOWROOM" },
-];
-
-const LOCALITIES_SHOWCASE: { key: Locality; desc: string; priceRange: string }[] = [
-  { key: "VASHI", desc: "The commercial and residential hub of Navi Mumbai", priceRange: "₹1.5Cr–₹5Cr" },
-  { key: "KHARGHAR", desc: "Well-planned node with green spaces and educational hubs", priceRange: "₹80L–₹3Cr" },
-  { key: "SEAWOODS", desc: "Premium locality with luxury high-rises and mall access", priceRange: "₹1.5Cr–₹4Cr" },
-  { key: "NERUL", desc: "Queen of Navi Mumbai with excellent connectivity", priceRange: "₹1Cr–₹3.5Cr" },
-  { key: "CBD_BELAPUR", desc: "Major business district with premium housing", priceRange: "₹1Cr–₹4Cr" },
-  { key: "PANVEL", desc: "Emerging smart city near the upcoming airport", priceRange: "₹45L–₹2Cr" },
 ];
 
 const WHY_US = [
@@ -80,6 +71,23 @@ const TESTIMONIALS = [
 export default async function HomePage() {
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
   const waLink = generateWhatsAppLink({ source: "homepage-hero", settings });
+
+  const activeLocations = await prisma.locationNode.findMany({
+    where: { properties: { some: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } } } },
+    select: { id: true, name: true, slug: true },
+    orderBy: { name: "asc" },
+  });
+
+  const topLocations = await prisma.locationNode.findMany({
+    where: { properties: { some: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } } } },
+    include: {
+      _count: {
+        select: { properties: { where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } } } },
+      },
+    },
+    orderBy: { properties: { _count: 'desc' } },
+    take: 6,
+  });
 
   const rawProperties = await prisma.property.findMany({
     where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } },
@@ -170,7 +178,7 @@ export default async function HomePage() {
 
             {/* Advanced Search Bar */}
             <div className="mb-8 animate-fade-up" style={{ animationDelay: "0.3s" }}>
-              <HeroSearchClient />
+              <HeroSearchClient locations={activeLocations} />
             </div>
 
             {/* CTA Buttons */}
@@ -283,12 +291,12 @@ export default async function HomePage() {
 
           {/* Localities */}
           <div className="lg:col-span-7">
-            <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Popular Navi Mumbai Localities</h2>
+            <h2 className="text-2xl font-extrabold text-slate-900 mb-6">Popular Locations</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {LOCALITIES_SHOWCASE.map(({ key, desc, priceRange }) => (
+              {topLocations.map((loc) => (
                 <Link
-                  key={key}
-                  href={`/localities/${key.toLowerCase().replace("_", "-")}`}
+                  key={loc.id}
+                  href={`/properties?locality=${loc.slug}`}
                   className="bg-white p-5 rounded-xl border border-slate-200 flex items-start gap-4 hover:border-blue-300 hover:shadow-md group transition-all"
                 >
                   <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0 bg-blue-50">
@@ -296,10 +304,10 @@ export default async function HomePage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-bold text-slate-900 group-hover:text-blue-700 mb-1">
-                      {LOCALITY_LABELS[key]}
+                      {loc.name}
                     </div>
-                    <div className="text-xs text-slate-500 mb-2 leading-relaxed">{desc}</div>
-                    <div className="text-xs font-bold text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded-md">{priceRange}</div>
+                    <div className="text-xs text-slate-500 mb-2 leading-relaxed">View premium properties in {loc.name}</div>
+                    <div className="text-xs font-bold text-blue-600 bg-blue-50 inline-block px-2 py-1 rounded-md">{loc._count.properties} Active Properties</div>
                   </div>
                   <ChevronRight size={18} className="text-slate-300 group-hover:text-blue-600 mt-1 shrink-0 transition-colors" />
                 </Link>

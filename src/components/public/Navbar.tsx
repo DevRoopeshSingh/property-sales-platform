@@ -7,41 +7,44 @@ import { Menu, X, Phone, ChevronDown, Heart } from "lucide-react";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 
-const NAV_LINKS = [
-  { label: "Properties", href: "/properties" },
-  {
-    label: "Property Type",
-    children: [
-      { label: "Apartments", href: "/properties?subType=APARTMENT" },
-      { label: "Villas", href: "/properties?subType=VILLA" },
-      { label: "Independent Houses", href: "/properties?subType=INDEPENDENT_HOUSE" },
-      { label: "Row Houses", href: "/properties?subType=ROW_HOUSE" },
-      { label: "Plots", href: "/properties?subType=PLOT" },
-      { label: "Shops", href: "/properties?subType=SHOP" },
-      { label: "Offices", href: "/properties?subType=OFFICE" },
-      { label: "Showrooms", href: "/properties?subType=SHOWROOM" },
-    ],
-  },
-  {
-    label: "Localities",
-    children: [
-      { label: "Vashi", href: "/localities/vashi" },
-      { label: "Kharghar", href: "/localities/kharghar" },
-      { label: "Seawoods", href: "/localities/seawoods" },
-      { label: "Nerul", href: "/localities/nerul" },
-      { label: "CBD Belapur", href: "/localities/cbd-belapur" },
-      { label: "Airoli", href: "/localities/airoli" },
-      { label: "Panvel", href: "/localities/panvel" },
-      { label: "Mahape", href: "/localities/mahape" },
-    ],
-  },
-  { label: "Contact", href: "/contact" },
-];
 
-export default function Navbar() {
+
+interface LocationData {
+  id: string;
+  name: string;
+  slug: string;
+  _count?: { properties: number };
+}
+
+export default function Navbar({ topLocations = [] }: { topLocations?: LocationData[] }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const settings = useSettings();
+
+  const dynamicNavLinks = [
+    { label: "Properties", href: "/properties" },
+    {
+      label: "Property Type",
+      children: [
+        { label: "Apartments", href: "/properties?subType=APARTMENT" },
+        { label: "Villas", href: "/properties?subType=VILLA" },
+        { label: "Independent Houses", href: "/properties?subType=INDEPENDENT_HOUSE" },
+        { label: "Row Houses", href: "/properties?subType=ROW_HOUSE" },
+        { label: "Plots", href: "/properties?subType=PLOT" },
+        { label: "Shops", href: "/properties?subType=SHOP" },
+        { label: "Offices", href: "/properties?subType=OFFICE" },
+        { label: "Showrooms", href: "/properties?subType=SHOWROOM" },
+      ],
+    },
+    {
+      label: "Locations",
+      children: topLocations.map(loc => ({
+        label: loc.name,
+        href: `/properties?locality=${loc.slug}`
+      }))
+    },
+    { label: "Contact", href: "/contact" },
+  ];
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-[var(--color-border)] shadow-sm">
@@ -57,7 +60,7 @@ export default function Navbar() {
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
-            {NAV_LINKS.map((link) =>
+            {dynamicNavLinks.map((link) =>
               link.children ? (
                 <div
                   key={link.label}
@@ -160,7 +163,7 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="lg:hidden bg-white border-t border-[var(--color-border)] animate-fade-in">
           <nav className="container-main py-4 flex flex-col gap-1">
-            {NAV_LINKS.map((link) =>
+            {dynamicNavLinks.map((link) =>
               link.children ? (
                 <div key={link.label}>
                   <p className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)]">

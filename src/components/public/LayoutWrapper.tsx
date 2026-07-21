@@ -5,7 +5,14 @@ import Navbar from "./Navbar";
 import Footer from "./Footer";
 import AnnouncementBar from "./AnnouncementBar";
 
-export default function LayoutWrapper({ children }: { children: React.ReactNode }) {
+interface LocationData {
+  id: string;
+  name: string;
+  slug: string;
+  _count?: { properties: number };
+}
+
+export default function LayoutWrapper({ children, topLocations = [] }: { children: React.ReactNode, topLocations?: LocationData[] }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith("/admin");
 
@@ -14,11 +21,11 @@ export default function LayoutWrapper({ children }: { children: React.ReactNode 
       {!isAdmin && (
         <>
           <AnnouncementBar />
-          <Navbar />
+          <Navbar topLocations={topLocations} />
         </>
       )}
       {children}
-      {!isAdmin && <Footer />}
+      {!isAdmin && <Footer topLocations={topLocations} />}
     </>
   );
 }

@@ -38,6 +38,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
   });
 
   const hasCoveredParking = property.parkingCarCovered !== undefined && property.parkingCarCovered > 0;
+  const hasOpenParking = property.parkingCarOpen !== undefined && property.parkingCarOpen > 0;
   const isGreatValue = 
     property.marketEstimateActive && 
     property.marketEstimateMax && 
@@ -152,9 +153,9 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
 
         {/* Feature Badges */}
         <div className="flex flex-wrap gap-2 mt-3">
-          {property.parkingCarCovered !== undefined && (
+          {(hasCoveredParking || hasOpenParking) && (
             <div className="flex items-center text-[10px] uppercase font-semibold text-gray-600 bg-gray-100 px-2 py-1 rounded">
-              🚗 {hasCoveredParking ? 'Covered Parking' : 'Open/Street Parking'}
+              🚗 {hasCoveredParking ? 'Covered Parking' : 'Open Parking'}
             </div>
           )}
           {isGreatValue && (
