@@ -116,12 +116,19 @@ export default async function PropertiesPage({
 
   const getCachedProperties = unstable_cache(
     async (w: Prisma.PropertyWhereInput, o: Prisma.PropertyOrderByWithRelationInput) => {
-      return prisma.property.findMany({
+      const result = await prisma.property.findMany({
         where: w,
         orderBy: o,
         include: { images: { orderBy: { order: "asc" } }, locationNode: true },
         take: 24,
       });
+      // Convert BigInts to Numbers before unstable_cache serializes to JSON
+      return result.map(p => ({
+        ...p,
+        price: Number(p.price),
+        marketEstimateMin: p.marketEstimateMin ? Number(p.marketEstimateMin) : null,
+        marketEstimateMax: p.marketEstimateMax ? Number(p.marketEstimateMax) : null,
+      }));
     },
     ["properties-search"],
     { revalidate: 60, tags: ["properties"] }
@@ -129,10 +136,7 @@ export default async function PropertiesPage({
 
   const rawProperties = await getCachedProperties(where, orderBy);
 
-  const properties = sortProperties(rawProperties.map((p) => ({
-    ...p,
-    price: Number(p.price), marketEstimateMin: p.marketEstimateMin ? Number(p.marketEstimateMin) : null, marketEstimateMax: p.marketEstimateMax ? Number(p.marketEstimateMax) : null,
-  })) as unknown as PropertyCardData[]);
+  const properties = sortProperties(rawProperties as unknown as PropertyCardData[]);
 
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
   const waLink = generateWhatsAppLink({ source: "listing-empty-state", settings });
