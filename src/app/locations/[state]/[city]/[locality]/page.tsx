@@ -6,18 +6,14 @@ import PropertyCard from "@/components/public/PropertyCard";
 import StickyContactBar from "@/components/public/StickyContactBar";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { sortProperties } from "@/lib/utils";
-import {
-  LOCALITY_LABELS,
-  SLUG_TO_LOCALITY,
-  type Locality,
-} from "@/types";
 import { prisma } from "@/lib/prisma";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
-import type { PropertyCardData } from "@/types";
+import type { PropertyCardData, Locality } from "@/types";
+import { LOCALITY_LABELS } from "@/types";
 
-// Locality-specific SEO content
+// Temporary fallback for legacy Navi Mumbai content
 const LOCALITY_CONTENT: Record<
-  Locality,
+  string,
   { description: string; priceRange: string; connectivity: string; highlights: string[] }
 > = {
   SEAWOODS: {
@@ -106,51 +102,68 @@ const LOCALITY_CONTENT: Record<
   },
 };
 
-// Demo properties for locality pages
-async function getLocalityProperties(locality: Locality) {
+async function getLocationNode(stateSlug: string, citySlug: string, localitySlug: string) {
+  const node = await prisma.locationNode.findFirst({
+    where: { 
+      slug: localitySlug,
+      city: {
+        slug: citySlug,
+        state: {
+          slug: stateSlug
+        }
+      }
+    },
+    include: {
+      city: {
+        include: {
+          state: true
+        }
+      }
+    }
+  });
+  return node;
+}
+
+async function getLocalityProperties(locationId: string) {
   const raws = await prisma.property.findMany({
-    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] }, locality },
-    include: { images: { orderBy: { order: "asc" }, take: 1 } },
+    where: { 
+      status: { in: ["ACTIVE", "SOLD", "RENTED"] }, 
+      locationId
+    },
+    include: { images: { orderBy: { order: "asc" }, take: 1 }, locationNode: true, city: { include: { state: true } } },
     orderBy: { createdAt: "desc" },
   });
   return sortProperties(raws.map((p) => ({ ...p, price: Number(p.price) })) as unknown as PropertyCardData[]);
 }
 
-export async function generateStaticParams() {
-  return Object.keys(SLUG_TO_LOCALITY).map((slug) => ({ locality: slug }));
-}
-
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ locality: string }>;
+  params: Promise<{ state: string; city: string; locality: string }>;
 }): Promise<Metadata> {
-  const { locality: slug } = await params;
-  const locality = SLUG_TO_LOCALITY[slug];
-  if (!locality) return { title: "Locality Not Found" };
-
-  const label = LOCALITY_LABELS[locality];
-  const title = `Properties in ${label} — Flats, Apartments & More | PropConnect`;
-  const description = `Find residential and commercial properties in ${label}. Browse verified flats, apartments, villas, and plots. ${LOCALITY_CONTENT[locality].priceRange}. WhatsApp us today.`;
-  const url = `/localities/${slug}`;
-
-  let canonicalUrl = `/localities/${slug}`;
+  const { state, city, locality } = await params;
+  const node = await getLocationNode(state, city, locality);
   
-  // Resolve to new Pan-India URL if it exists
-  const node = await prisma.locationNode.findFirst({
-    where: { slug },
-    include: { city: { include: { state: true } } },
-  });
-  if (node) {
-    canonicalUrl = `/locations/${node.city.state.slug}/${node.city.slug}/${node.slug}`;
-  }
+  if (!node) return { title: "Location Not Found" };
+
+  const label = node.name;
+  const title = `Properties in ${label}, ${node.city.name} — Flats & Apartments | PropConnect`;
+  
+  const legacyKey = label.toUpperCase().replace(/ /g, '_');
+  const legacyContent = LOCALITY_CONTENT[legacyKey];
+  
+  const description = legacyContent 
+    ? `Find residential and commercial properties in ${label}, ${node.city.name}. Browse verified flats, apartments, villas, and plots. ${legacyContent.priceRange}. WhatsApp us today.`
+    : `Find the best residential and commercial properties in ${label}, ${node.city.name}. Browse verified flats, apartments, and more on PropConnect.`;
+    
+  const url = `/locations/${state}/${city}/${locality}`;
 
   return {
     title,
     description,
     keywords: [`property in ${label.toLowerCase()}`, `flats in ${label.toLowerCase()}`, `apartments ${label.toLowerCase()}`, `buy property ${label.toLowerCase()}`],
     alternates: {
-      canonical: canonicalUrl,
+      canonical: url,
     },
     openGraph: {
       title,
@@ -166,28 +179,35 @@ export async function generateMetadata({
   };
 }
 
-export default async function LocalityPage({
+export default async function LocationDirectoryPage({
   params,
 }: {
-  params: Promise<{ locality: string }>;
+  params: Promise<{ state: string; city: string; locality: string }>;
 }) {
-  const { locality: slug } = await params;
-  const localityKey = SLUG_TO_LOCALITY[slug];
-  if (!localityKey) notFound();
+  const { state, city, locality } = await params;
+  const node = await getLocationNode(state, city, locality);
+  if (!node) notFound();
 
-  const label = LOCALITY_LABELS[localityKey];
-  const content = LOCALITY_CONTENT[localityKey];
-  const properties = await getLocalityProperties(localityKey);
+  const label = node.name;
+  const legacyKey = label.toUpperCase().replace(/ /g, '_');
+  const content = LOCALITY_CONTENT[legacyKey] || {
+    description: `Discover top properties in ${label}, ${node.city.name}. Whether you are looking for an apartment, villa, or commercial space, find the best options here.`,
+    priceRange: "Various options available",
+    connectivity: `Well connected within ${node.city.name}.`,
+    highlights: ["Great Location", "Growing Area", "Investment Potential"]
+  };
+  
+  const properties = await getLocalityProperties(node.id);
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
-  const waLink = generateWhatsAppLink({ source: `locality-${slug}`, settings });
+  const waLink = generateWhatsAppLink({ source: `location-${node.slug}`, settings });
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-  const url = `${baseUrl}/localities/${slug}`;
+  const url = `${baseUrl}/locations/${state}/${city}/${locality}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `Properties in ${label}`,
+    name: `Properties in ${label}, ${node.city.name}`,
     description: content.description,
     url: url,
   };
@@ -211,6 +231,18 @@ export default async function LocalityPage({
       {
         "@type": "ListItem",
         position: 3,
+        name: node.city.state.name,
+        item: `${baseUrl}/properties?state=${state}`
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: node.city.name,
+        item: `${baseUrl}/properties?city=${city}`
+      },
+      {
+        "@type": "ListItem",
+        position: 5,
         name: label,
         item: url
       }
@@ -227,99 +259,105 @@ export default async function LocalityPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
-      {/* Hero */}
-      <div className="hero-gradient py-14">
-        <div className="container-main">
-          <nav className="text-sm mb-4 flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.65)" }}>
-            <Link href="/" className="hover:text-white">Home</Link>
-            <ChevronRight size={13} />
-            <Link href="/properties" className="hover:text-white">Properties</Link>
-            <ChevronRight size={13} />
-            <span className="text-white">{label}</span>
-          </nav>
-          <div className="flex items-start gap-4 mb-4">
-            <div
-              className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-              style={{ background: "rgba(255,255,255,0.15)", backdropFilter: "blur(8px)" }}
-            >
-              <MapPin size={22} color="white" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
-                Properties in {label}
-              </h1>
-              <p className="text-base mt-2" style={{ color: "rgba(255,255,255,0.75)" }}>
-                {content.priceRange} · Verified Listings
-              </p>
+
+      <div className="bg-[var(--color-surface-2)] min-h-[100dvh]">
+        {/* Breadcrumb */}
+        <div className="bg-white border-b border-[var(--color-border)]">
+          <div className="container-main py-3">
+            <nav className="text-sm text-[var(--color-text-muted)] flex items-center gap-1.5 flex-wrap">
+              <Link href="/" className="hover:text-[var(--color-brand-600)]">Home</Link>
+              <ChevronRight size={13} />
+              <Link href="/properties" className="hover:text-[var(--color-brand-600)]">Properties</Link>
+              <ChevronRight size={13} />
+              <span className="text-[var(--color-text-secondary)] truncate">{node.city.name}</span>
+              <ChevronRight size={13} />
+              <span className="text-[var(--color-text-secondary)] font-medium truncate">{label}</span>
+            </nav>
+          </div>
+        </div>
+
+        {/* Hero Section */}
+        <div className="bg-white border-b border-[var(--color-border)] pb-8 pt-6">
+          <div className="container-main">
+            <h1 className="text-3xl font-extrabold text-[var(--color-text-primary)] mb-3">
+              Properties in {label}, {node.city.name}
+            </h1>
+            <p className="text-[var(--color-text-secondary)] max-w-3xl leading-relaxed">
+              {content.description}
+            </p>
+            
+            <div className="flex flex-wrap gap-x-8 gap-y-4 mt-6 pt-6 border-t border-[var(--color-border)]">
+              {content.priceRange && (
+                <div>
+                  <div className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1">Avg Price Range</div>
+                  <div className="font-medium text-[var(--color-text-primary)]">{content.priceRange}</div>
+                </div>
+              )}
+              {content.connectivity && (
+                <div>
+                  <div className="text-xs font-bold text-[var(--color-text-muted)] uppercase tracking-wider mb-1">Connectivity</div>
+                  <div className="font-medium text-[var(--color-text-primary)]">{content.connectivity}</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="container-main py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Properties Grid */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-[var(--color-text-primary)]">
-                Available Properties ({properties.length})
-              </h2>
-              <Link
-                href={`/properties?locality=${localityKey}`}
-                className="text-sm font-semibold text-[var(--color-brand-600)] hover:underline"
-              >
-                View all →
-              </Link>
-            </div>
-            <div className="property-grid lg:[grid-template-columns:repeat(2,1fr)]">
-              {properties.map((p) => (
-                <PropertyCard key={p.id} property={p} />
-              ))}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-5">
-            {/* About Locality */}
-            <div className="card p-5">
-              <h2 className="font-bold text-[var(--color-text-primary)] mb-3">About {label}</h2>
-              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed mb-4">
-                {content.description}
-              </p>
-              <div className="space-y-2">
-                {content.highlights.map((h) => (
-                  <div key={h} className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)]">
-                    <span className="w-5 h-5 rounded-full bg-[var(--color-brand-100)] flex items-center justify-center shrink-0">
-                      <span className="text-[var(--color-brand-600)] text-xs">✓</span>
-                    </span>
-                    {h}
-                  </div>
-                ))}
+        {/* Content */}
+        <div className="container-main py-8">
+          <div className="flex gap-8 flex-col lg:flex-row">
+            {/* Left: Main Properties */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-bold text-[var(--color-text-primary)]">
+                  {properties.length} Properties Found
+                </h2>
+                <Link href={`/properties?locality=${node.slug}`} className="text-sm font-medium text-[var(--color-brand-600)] hover:underline">
+                  Filter & Sort &rarr;
+                </Link>
               </div>
+
+              {properties.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {properties.map((property) => (
+                    <PropertyCard key={property.id} property={property} />
+                  ))}
+                </div>
+              ) : (
+                <div className="card p-12 text-center">
+                  <div className="w-16 h-16 bg-[var(--color-brand-50)] text-[var(--color-brand-600)] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <MapPin size={24} />
+                  </div>
+                  <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">
+                    No properties found
+                  </h3>
+                  <p className="text-[var(--color-text-secondary)] max-w-md mx-auto mb-6">
+                    We couldn&apos;t find any active properties in {label} right now. Check back later or contact us.
+                  </p>
+                  <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+                    Contact Us
+                  </a>
+                </div>
+              )}
             </div>
 
-            {/* Connectivity */}
-            <div className="card p-5">
-              <h3 className="font-bold text-[var(--color-text-primary)] mb-2">🚆 Connectivity</h3>
-              <p className="text-sm text-[var(--color-text-secondary)] leading-relaxed">{content.connectivity}</p>
-            </div>
-
-            {/* WhatsApp CTA */}
-            <div className="card p-5 text-center" style={{ background: "var(--color-brand-50)", border: "1.5px solid var(--color-brand-200)" }}>
-              <p className="font-bold text-[var(--color-brand-800)] mb-1">
-                Looking for a property in {label}?
-              </p>
-              <p className="text-sm text-[var(--color-brand-700)] mb-4">
-                Our experts know {label} inside out. Chat with us for personalized recommendations.
-              </p>
-              <a
-                href={waLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-whatsapp w-full"
-              >
-                💬 WhatsApp for {label} Properties
-              </a>
+            {/* Right Sidebar */}
+            <div className="w-full lg:w-80 shrink-0 space-y-6">
+              <div className="card p-5">
+                <h3 className="font-bold text-[var(--color-text-primary)] mb-4">Locality Highlights</h3>
+                <ul className="space-y-3">
+                  {content.highlights.map((highlight, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5">
+                      <span className="w-5 h-5 rounded-full bg-[var(--color-brand-100)] text-[var(--color-brand-600)] flex items-center justify-center shrink-0 mt-0.5">
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                          <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </span>
+                      <span className="text-sm text-[var(--color-text-secondary)]">{highlight}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </div>

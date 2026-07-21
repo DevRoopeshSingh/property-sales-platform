@@ -5,6 +5,7 @@ import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
 import { revalidatePath } from "next/cache";
 import { deleteImagesFromStorage } from "./storage-actions";
 import { auth } from "@/auth";
+import { SLUG_TO_LOCALITY } from "@/types";
 
 /**
  * Immediately deletes a single image from both the DB and Supabase storage.
@@ -56,6 +57,9 @@ export async function createProperty(data: PropertyFormValues) {
 
     const slug = generateSlug(validatedData.title);
 
+        const locationNode = await prisma.locationNode.findUnique({ where: { id: validatedData.locationId } });
+    const legacyLocalityEnum = locationNode && SLUG_TO_LOCALITY[locationNode.slug] ? SLUG_TO_LOCALITY[locationNode.slug] : null;
+
     const property = await prisma.property.create({
       data: {
         title: validatedData.title,
@@ -78,7 +82,10 @@ export async function createProperty(data: PropertyFormValues) {
         floor: validatedData.floor,
         totalFloors: validatedData.totalFloors,
         
-        locality: validatedData.locality,
+        stateId: validatedData.stateId,
+        cityId: validatedData.cityId,
+        locationId: validatedData.locationId,
+        locality: legacyLocalityEnum,
         address: validatedData.address,
         landmark: validatedData.landmark,
         latitude: validatedData.latitude,
@@ -153,6 +160,9 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
       where: { propertyId: id },
     });
 
+    const locationNode = await prisma.locationNode.findUnique({ where: { id: validatedData.locationId } });
+    const legacyLocalityEnum = locationNode && SLUG_TO_LOCALITY[locationNode.slug] ? SLUG_TO_LOCALITY[locationNode.slug] : null;
+
     const property = await prisma.property.update({
       where: { id },
       data: {
@@ -175,7 +185,10 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
         floor: validatedData.floor,
         totalFloors: validatedData.totalFloors,
         
-        locality: validatedData.locality,
+        stateId: validatedData.stateId,
+        cityId: validatedData.cityId,
+        locationId: validatedData.locationId,
+        locality: legacyLocalityEnum,
         address: validatedData.address,
         landmark: validatedData.landmark,
         latitude: validatedData.latitude,

@@ -31,7 +31,7 @@ export const propertySchema = z.object({
   floor: z.coerce.number().nullable().optional(),
   totalFloors: z.coerce.number().nullable().optional(),
 
-  // Location
+  // Location (Legacy enum, optional now)
   locality: z.enum([
     "SEAWOODS",
     "KHARGHAR",
@@ -47,7 +47,12 @@ export const propertySchema = z.object({
     "KALAMBOLI",
     "PANVEL",
     "MAHAPE",
-  ]),
+  ]).nullable().optional(),
+  
+  // New Relational Location Fields
+  stateId: z.string().min(1, "State is required"),
+  cityId: z.string().min(1, "City is required"),
+  locationId: z.string().min(1, "Locality is required"),
   address: z.string().min(5, "Address must be at least 5 characters"),
   landmark: z.string().nullable().optional(),
   latitude: z.coerce.number().nullable().optional(),

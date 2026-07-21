@@ -20,13 +20,17 @@ interface PropertyCardProps {
 export default function PropertyCard({ property, className }: PropertyCardProps) {
   const primaryImage = property.images.find((img) => img.isPrimary) ?? property.images[0];
   const settings = useSettings();
+  const locationName = property.locality && LOCALITY_LABELS[property.locality as keyof typeof LOCALITY_LABELS]
+    ? LOCALITY_LABELS[property.locality as keyof typeof LOCALITY_LABELS]
+    : (property.locationNode?.name || "Unknown");
+
   const whatsappLink = generateWhatsAppLink({
     propertyTitle: property.title,
     propertyId: property.id,
     source: "listing-card",
     settings,
     builderName: property.builderName,
-    locality: LOCALITY_LABELS[property.locality] ?? property.locality,
+    locality: locationName,
     bhk: property.bhk,
     area: property.area,
     priceLabel: property.priceLabel,
@@ -121,7 +125,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
         {/* Location */}
         <div className="flex items-center gap-1.5 text-sm text-[var(--color-text-secondary)] mb-3">
           <MapPin size={13} className="shrink-0 text-[var(--color-brand-400)]" />
-          <span className="truncate">{LOCALITY_LABELS[property.locality]}</span>
+          <span className="truncate">{locationName}</span>
         </div>
 
         {/* Specs */}

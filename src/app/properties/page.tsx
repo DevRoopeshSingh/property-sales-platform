@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
 };
 
-const LOCALITIES_FILTER = Object.entries(LOCALITY_LABELS) as [Locality, string][];
+// dynamic localities replaced static LOCALITIES_FILTER
 const SUB_TYPES_FILTER = Object.entries(PROPERTY_SUB_TYPE_LABELS) as [PropertySubType, string][];
 const BHK_OPTIONS = [1, 2, 3, 4];
 const POSSESSION_FILTER = Object.entries(POSSESSION_LABELS) as [Possession, string][];
@@ -62,6 +62,20 @@ export default async function PropertiesPage({
 }) {
   const params = await searchParams;
 
+  const activeLocations = await prisma.locationNode.findMany({
+    where: { properties: { some: { status: { in: ["ACTIVE", "SOLD", "RENTED"] } } } },
+    select: { id: true, name: true, slug: true },
+    orderBy: { name: "asc" },
+  });
+  
+  // legacy mapping
+  const localMap = new Map(activeLocations.map(l => [l.slug, l]));
+  activeLocations.forEach(l => localMap.set(l.id, l));
+  activeLocations.forEach(l => {
+    const legacyKey = l.name.toUpperCase().replace(/ /g, '_');
+    localMap.set(legacyKey, l);
+  });
+
   const localities = toArray(params.locality);
   const subTypes = toArray(params.subType);
   const bhks = toArray(params.bhk).map(Number).filter(Boolean);
@@ -70,13 +84,16 @@ export default async function PropertiesPage({
   const maxPrice = params.maxPrice ? Number(params.maxPrice) * 100000 : undefined;
   const sort = params.sort ?? "newest";
 
-  const validLocalities = localities.filter(l => Object.keys(LOCALITY_LABELS).includes(l)) as Locality[];
+  const validLocalities = localities
+    .map(l => localMap.get(l)?.id)
+    .filter(Boolean) as string[];
+
   const validSubTypes = subTypes.filter(s => Object.keys(PROPERTY_SUB_TYPE_LABELS).includes(s)) as PropertySubType[];
   const validPossessions = possessions.filter(p => Object.keys(POSSESSION_LABELS).includes(p)) as Possession[];
 
   const where: Prisma.PropertyWhereInput = {
     status: { in: ["ACTIVE", "SOLD", "RENTED"] },
-    ...(validLocalities.length > 0 && { locality: { in: validLocalities } }),
+    ...(validLocalities.length > 0 && { locationId: { in: validLocalities } }),
     ...(validSubTypes.length > 0 && { subType: { in: validSubTypes } }),
     ...(bhks.length > 0 && { bhk: { in: bhks } }),
     ...(validPossessions.length > 0 && { possession: { in: validPossessions } }),
@@ -102,7 +119,7 @@ export default async function PropertiesPage({
       return prisma.property.findMany({
         where: w,
         orderBy: o,
-        include: { images: { orderBy: { order: "asc" } } },
+        include: { images: { orderBy: { order: "asc" } }, locationNode: true },
         take: 24,
       });
     },
@@ -191,28 +208,28 @@ export default async function PropertiesPage({
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
                     Locality
                   </h3>
-                  <div className="space-y-2">
-                    {LOCALITIES_FILTER.map(([key, label]) => (
+                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                    {activeLocations.map((loc) => (
                       <Link
-                        key={key}
-                        href={buildUrl("locality", key)}
+                        key={loc.id}
+                        href={buildUrl("locality", loc.slug)}
                         className="flex items-center gap-2.5 cursor-pointer group"
                       >
                         <span
                           className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                            localities.includes(key)
+                            localities.includes(loc.slug) || localities.includes(loc.id) || localities.includes(loc.name.toUpperCase().replace(/ /g, '_'))
                               ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
                               : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
                           }`}
                         >
-                          {localities.includes(key) && (
+                          {(localities.includes(loc.slug) || localities.includes(loc.id) || localities.includes(loc.name.toUpperCase().replace(/ /g, '_'))) && (
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                               <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           )}
                         </span>
-                        <span className={`text-sm transition-colors ${localities.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
-                          {label}
+                        <span className={`text-sm transition-colors ${localities.includes(loc.slug) || localities.includes(loc.id) || localities.includes(loc.name.toUpperCase().replace(/ /g, '_')) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
+                          {loc.name}
                         </span>
                       </Link>
                     ))}
@@ -341,28 +358,28 @@ export default async function PropertiesPage({
                   <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)] mb-3">
                     Locality
                   </h3>
-                  <div className="space-y-2">
-                    {LOCALITIES_FILTER.map(([key, label]) => (
+                  <div className="space-y-2 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                    {activeLocations.map((loc) => (
                       <Link
-                        key={key}
-                        href={buildUrl("locality", key)}
+                        key={loc.id}
+                        href={buildUrl("locality", loc.slug)}
                         className="flex items-center gap-2.5 cursor-pointer group"
                       >
                         <span
                           className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
-                            localities.includes(key)
+                            localities.includes(loc.slug) || localities.includes(loc.id) || localities.includes(loc.name.toUpperCase().replace(/ /g, '_'))
                               ? "bg-[var(--color-brand-600)] border-[var(--color-brand-600)]"
                               : "border-[var(--color-border)] group-hover:border-[var(--color-brand-400)]"
                           }`}
                         >
-                          {localities.includes(key) && (
+                          {(localities.includes(loc.slug) || localities.includes(loc.id) || localities.includes(loc.name.toUpperCase().replace(/ /g, '_'))) && (
                             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
                               <path d="M1.5 5L4 7.5L8.5 2.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                           )}
                         </span>
-                        <span className={`text-sm transition-colors ${localities.includes(key) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
-                          {label}
+                        <span className={`text-sm transition-colors ${localities.includes(loc.slug) || localities.includes(loc.id) || localities.includes(loc.name.toUpperCase().replace(/ /g, '_')) ? "text-[var(--color-brand-700)] font-medium" : "text-[var(--color-text-secondary)] group-hover:text-[var(--color-text-primary)]"}`}>
+                          {loc.name}
                         </span>
                       </Link>
                     ))}

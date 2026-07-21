@@ -11,9 +11,23 @@ import { LOCALITY_LABELS } from "@/types";
 import { createProperty, updateProperty } from "@/app/admin/(dashboard)/properties/actions";
 import { ImageUploader } from "./ImageUploader";
 
-interface PropertyFormProps {
+export type LocationTree = {
+  id: string;
+  name: string;
+  cities: {
+    id: string;
+    name: string;
+    localities: {
+      id: string;
+      name: string;
+    }[];
+  }[];
+}[];
+
+export interface PropertyFormProps {
   initialData?: Record<string, unknown>; // The property data if editing
   propertyId?: string;
+  locationTree: LocationTree;
 }
 
 const defaultValues: Partial<PropertyFormValues> = {
@@ -23,7 +37,9 @@ const defaultValues: Partial<PropertyFormValues> = {
   featured: false,
   priceNegotiable: false,
   possession: "READY_TO_MOVE",
-  locality: "VASHI",
+  stateId: "",
+  cityId: "",
+  locationId: "",
   isDistressed: false,
   duesPending: "",
   amenities: [],
@@ -36,7 +52,7 @@ const defaultValues: Partial<PropertyFormValues> = {
   visitorParking: false,
 };
 
-export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
+export function PropertyForm({ initialData, propertyId, locationTree }: PropertyFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
@@ -68,6 +84,12 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
   const currentType = watch("type");
   const currentSubType = watch("subType");
   const isCommercial = currentType === "COMMERCIAL" || currentSubType === "OFFICE" || currentSubType === "SHOP" || currentSubType === "SHOWROOM";
+
+  const currentStateId = watch("stateId");
+  const currentCityId = watch("cityId");
+
+  const availableCities = locationTree.find(s => s.id === currentStateId)?.cities || [];
+  const availableLocalities = availableCities.find(c => c.id === currentCityId)?.localities || [];
 
 
   const onSubmit = async (data: PropertyFormValues) => {
@@ -303,12 +325,36 @@ export function PropertyForm({ initialData, propertyId }: PropertyFormProps) {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Locality *</label>
-            <select {...register("locality")} className="input w-full">
-              {Object.entries(LOCALITY_LABELS).map(([key, label]) => (
-                <option key={key} value={key}>{label}</option>
+            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">State *</label>
+            <select {...register("stateId")} className="input w-full">
+              <option value="">Select State</option>
+              {locationTree.map((state) => (
+                <option key={state.id} value={state.id}>{state.name}</option>
               ))}
             </select>
+            {errors.stateId && <p className="text-red-500 text-xs mt-1">{errors.stateId.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">City *</label>
+            <select {...register("cityId")} className="input w-full" disabled={!currentStateId}>
+              <option value="">Select City</option>
+              {availableCities.map((city) => (
+                <option key={city.id} value={city.id}>{city.name}</option>
+              ))}
+            </select>
+            {errors.cityId && <p className="text-red-500 text-xs mt-1">{errors.cityId.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Locality *</label>
+            <select {...register("locationId")} className="input w-full" disabled={!currentCityId}>
+              <option value="">Select Locality</option>
+              {availableLocalities.map((loc) => (
+                <option key={loc.id} value={loc.id}>{loc.name}</option>
+              ))}
+            </select>
+            {errors.locationId && <p className="text-red-500 text-xs mt-1">{errors.locationId.message}</p>}
           </div>
 
           <div>

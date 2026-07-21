@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Home, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Home, Users, Settings, MapPin } from "lucide-react";
 
 const navItems = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/properties", label: "Properties", icon: Home },
   { href: "/admin/leads", label: "Leads", icon: Users },
   { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin/locations", label: "Locations", icon: MapPin },
 ];
 
 export function AdminNav({ isMinimized = false }: { isMinimized?: boolean }) {

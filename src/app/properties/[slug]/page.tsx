@@ -32,7 +32,11 @@ import {
 async function getProperty(slug: string) {
   const raw = await prisma.property.findUnique({
     where: { slug },
-    include: { images: { orderBy: { order: "asc" } } },
+    include: { 
+      images: { orderBy: { order: "asc" } },
+      locationNode: true,
+      city: { include: { state: true } }
+    },
   });
   if (!raw) return null;
   return { 
@@ -43,9 +47,10 @@ async function getProperty(slug: string) {
   };
 }
 
-async function getSimilarProperties(locality: string, excludeId: string) {
+async function getSimilarProperties(locality: string | null, locationId: string | null, excludeId: string) {
+  const localityCondition = locationId ? { locationId } : (locality ? { locality: locality as Locality } : {});
   const raws = await prisma.property.findMany({
-    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] }, locality: locality as Locality, id: { not: excludeId } },
+    where: { status: { in: ["ACTIVE", "SOLD", "RENTED"] }, id: { not: excludeId }, ...localityCondition },
     include: { images: { orderBy: { order: "asc" }, take: 1 } },
     take: 3,
     orderBy: { featured: "desc" },
@@ -79,11 +84,15 @@ export async function generateMetadata({
     ? property.images.map((img) => ({ url: img.url, alt: property.title }))
     : [{ url: '/icon.png', alt: property.title }];
 
+  const locationName = property.locality && LOCALITY_LABELS[property.locality as Locality] 
+    ? LOCALITY_LABELS[property.locality as Locality] 
+    : (property.locationNode?.name || "Unknown");
+
   return {
     title,
     description,
     keywords: [
-      `property in ${LOCALITY_LABELS[property.locality as Locality]?.toLowerCase()}`,
+      `property in ${locationName.toLowerCase()}`,
       property.bhk ? `${property.bhk} BHK` : "",
       PROPERTY_SUB_TYPE_LABELS[property.subType as PropertySubType]?.toLowerCase(),
     ].filter(Boolean),
@@ -116,7 +125,13 @@ export default async function PropertyDetailPage({
   const property = await getProperty(slug);
   if (!property) notFound();
 
-  const similarProperties = await getSimilarProperties(property.locality, property.id);
+  const locationName = property.locality && LOCALITY_LABELS[property.locality as Locality] 
+    ? LOCALITY_LABELS[property.locality as Locality] 
+    : (property.locationNode?.name || "Unknown");
+    
+  const locationSlug = property.locationNode?.slug || (property.locality ? property.locality.toLowerCase().replace("_", "-") : "unknown");
+
+  const similarProperties = await getSimilarProperties(property.locality, property.locationId, property.id);
   const settings = await getPublicSettings().catch(() => ({} as Record<string, string>));
 
   const waLink = generateWhatsAppLink({
@@ -125,7 +140,7 @@ export default async function PropertyDetailPage({
     source: "property-detail",
     settings,
     builderName: property.builderName,
-    locality: LOCALITY_LABELS[property.locality] ?? property.locality,
+    locality: locationName,
     bhk: property.bhk,
     area: property.area,
     priceLabel: property.priceLabel,
@@ -151,7 +166,7 @@ export default async function PropertyDetailPage({
     },
     address: {
       "@type": "PostalAddress",
-      addressLocality: LOCALITY_LABELS[property.locality],
+      addressLocality: locationName,
       addressRegion: "Maharashtra",
       addressCountry: "IN",
       streetAddress: property.address,
@@ -177,8 +192,8 @@ export default async function PropertyDetailPage({
       {
         "@type": "ListItem",
         position: 3,
-        name: LOCALITY_LABELS[property.locality],
-        item: `${baseUrl}/localities/${property.locality.toLowerCase().replace("_", "-")}`
+        name: locationName,
+        item: `${baseUrl}/localities/${locationSlug}`
       },
       {
         "@type": "ListItem",
@@ -209,8 +224,8 @@ export default async function PropertyDetailPage({
               <ChevronRight size={13} />
               <Link href="/properties" className="hover:text-[var(--color-brand-600)]">Properties</Link>
               <ChevronRight size={13} />
-              <Link href={`/localities/${property.locality.toLowerCase().replace("_", "-")}`} className="hover:text-[var(--color-brand-600)]">
-                {LOCALITY_LABELS[property.locality]}
+              <Link href={`/localities/${locationSlug}`} className="hover:text-[var(--color-brand-600)]">
+                {locationName}
               </Link>
               <ChevronRight size={13} />
               <span className="text-[var(--color-text-secondary)] truncate max-w-xs">{property.title}</span>

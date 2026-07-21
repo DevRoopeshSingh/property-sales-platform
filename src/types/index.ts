@@ -161,7 +161,11 @@ export interface PropertyCardData {
   bhk: number | null;
   area: number | null;
   floor: number | null;
-  locality: Locality;
+  locality: Locality | null;
+  locationNode?: {
+    name: string;
+    slug: string;
+  } | null;
   address: string;
   possession: Possession;
   images: PropertyImage[];

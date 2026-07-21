@@ -1,6 +1,9 @@
 import { PropertyForm } from "@/components/admin/PropertyForm";
+import { getLocationTree } from "@/lib/data/locations";
 
-export default function NewPropertyPage() {
+export default async function NewPropertyPage() {
+  const locationTree = await getLocationTree();
+
   return (
     <div className="space-y-6">
       <div>
@@ -8,7 +11,7 @@ export default function NewPropertyPage() {
         <p className="text-[var(--color-text-secondary)] mt-1">Create a new property listing.</p>
       </div>
 
-      <PropertyForm />
+      <PropertyForm locationTree={locationTree} />
     </div>
   );
 }

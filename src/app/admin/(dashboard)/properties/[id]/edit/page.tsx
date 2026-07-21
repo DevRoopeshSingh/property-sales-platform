@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { PropertyForm } from "@/components/admin/PropertyForm";
+import { getLocationTree } from "@/lib/data/locations";
 
 interface EditPropertyPageProps {
   params: Promise<{ id: string }>;
@@ -26,16 +27,19 @@ export default async function EditPropertyPage({ params }: EditPropertyPageProps
   const safeProperty = {
     ...property,
     price: property.price.toString(),
+    locationId: property.locationId || "",
   };
+
+  const locationTree = await getLocationTree();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)]">Edit Property</h1>
-        <p className="text-[var(--color-text-secondary)] mt-1">Update property listing details.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">Edit Property</h1>
+        <p className="text-[var(--color-text-secondary)] mt-1">Update property information.</p>
       </div>
 
-      <PropertyForm initialData={safeProperty} propertyId={property.id} />
+      <PropertyForm initialData={safeProperty} propertyId={property.id} locationTree={locationTree} />
     </div>
   );
 }

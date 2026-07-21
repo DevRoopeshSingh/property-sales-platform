@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -80,15 +80,15 @@ enum Locality {
 // ─────────────────────────────────────────
 
 model Property {
-  id          String          @id @default(cuid())
-  title       String
-  slug        String          @unique
-  description String          @db.Text
-  type        PropertyType
-  subType     PropertySubType
-  status      PropertyStatus  @default(DRAFT)
-  featured    Boolean         @default(false)
-  isDistressed Boolean        @default(false)
+  id           String          @id @default(cuid())
+  title        String
+  slug         String          @unique
+  description  String          @db.Text
+  type         PropertyType
+  subType      PropertySubType
+  status       PropertyStatus  @default(DRAFT)
+  featured     Boolean         @default(false)
+  isDistressed Boolean         @default(false)
   duesPending  String?
 
   // Pricing
@@ -97,19 +97,27 @@ model Property {
   priceNegotiable Boolean @default(false)
 
   // Specs
-  bhk        Int?
-  area       Int?
-  carpetArea Int?
-  floor      Int?
+  bhk         Int?
+  area        Int?
+  carpetArea  Int?
+  floor       Int?
   totalFloors Int?
 
   // Location
-  locality      Locality
+  locality      Locality?
   address       String
   landmark      String?
   latitude      Float?
   longitude     Float?
   googleMapsUrl String?
+
+  // Pan-India Relational Locations
+  locationId   String?
+  locationNode LocationNode? @relation(fields: [locationId], references: [id])
+  cityId       String?
+  city         City?         @relation(fields: [cityId], references: [id])
+  stateId      String?
+  state        State?        @relation(fields: [stateId], references: [id])
 
   // Details
   possession     Possession
@@ -127,11 +135,11 @@ model Property {
   marketEstimateActive Boolean @default(false)
 
   // Parking Details
-  parkingCarCovered    Int @default(0)
-  parkingCarOpen       Int @default(0)
-  parkingBikeCovered   Int @default(0)
-  parkingBikeOpen      Int @default(0)
-  visitorParking       Boolean @default(false)
+  parkingCarCovered  Int     @default(0)
+  parkingCarOpen     Int     @default(0)
+  parkingBikeCovered Int     @default(0)
+  parkingBikeOpen    Int     @default(0)
+  visitorParking     Boolean @default(false)
 
   // Media
   images PropertyImage[]
@@ -168,11 +176,11 @@ model PropertyImage {
 }
 
 model Lead {
-  id    String @id @default(cuid())
-  name  String
-  phone String
-  email String?
-  message String? @db.Text
+  id      String     @id @default(cuid())
+  name    String
+  phone   String
+  email   String?
+  message String?    @db.Text
   source  LeadSource
   status  LeadStatus @default(NEW)
 
@@ -189,7 +197,7 @@ model Lead {
   userAgent   String?
 
   // Admin notes
-  adminNotes   String?  @db.Text
+  adminNotes   String?   @db.Text
   followUpDate DateTime?
   contactedAt  DateTime?
 
@@ -213,4 +221,43 @@ model Setting {
   key       String   @id
   value     String   @db.Text
   updatedAt DateTime @updatedAt
+}
+
+model State {
+  id         String     @id @default(cuid())
+  name       String     @unique
+  slug       String     @unique
+  cities     City[]
+  properties Property[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model City {
+  id         String         @id @default(cuid())
+  name       String
+  slug       String
+  stateId    String
+  state      State          @relation(fields: [stateId], references: [id], onDelete: Restrict)
+  localities LocationNode[]
+  properties Property[]
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([slug, stateId])
+  @@unique([name, stateId])
+}
+
+model LocationNode {
+  id         String     @id @default(cuid())
+  name       String
+  slug       String
+  cityId     String
+  city       City       @relation(fields: [cityId], references: [id], onDelete: Restrict)
+  properties Property[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([slug, cityId])
+  @@unique([name, cityId])
 }
