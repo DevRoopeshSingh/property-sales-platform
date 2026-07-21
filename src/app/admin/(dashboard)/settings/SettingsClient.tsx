@@ -194,28 +194,99 @@ export default function SettingsClient({ initialSettings }: { initialSettings: R
           )}
 
           {activeTab === "seo" && (
-            <div className="p-6 sm:p-8 space-y-8 animate-fade-in">
+            <div className="p-6 sm:p-8 space-y-10 animate-fade-in">
               <div>
-                <h2 className="text-lg font-bold text-slate-900 mb-1">SEO Defaults</h2>
-                <p className="text-slate-500 text-sm">Global search engine optimization fallbacks.</p>
+                <h2 className="text-xl font-bold text-slate-900 mb-1">SEO Defaults</h2>
+                <p className="text-slate-500 text-sm">Global search engine optimization fallbacks and social sharing defaults.</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Global Title Suffix</label>
-                  <input type="text" className="input" value={settings.seoDefaultTitleSuffix} onChange={(e) => handleChange("seoDefaultTitleSuffix", e.target.value)} />
-                  <p className="text-xs text-slate-500 mt-1">E.g., &quot; | PropConnect Mumbai&quot; - appended to all page titles automatically.</p>
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Default Meta Description</label>
-                  <textarea rows={3} className="input resize-none" value={settings.seoDefaultDescription} onChange={(e) => handleChange("seoDefaultDescription", e.target.value)}></textarea>
-                  <p className="text-xs text-slate-500 mt-1">Used if a specific property does not have its own meta description.</p>
-                </div>
-              </div>
+
+              <SettingSection title="Basic SEO" description="Standard meta tags used across the platform.">
+                <SettingField label="Site Name" description="The global name of your website.">
+                  <input type="text" className="input" value={settings.seoSiteName || ""} onChange={(e) => handleChange("seoSiteName", e.target.value)} placeholder="e.g., PropConnect" />
+                </SettingField>
+                <SettingField label="Global Title Suffix" description="Appended to all page titles automatically.">
+                  <input type="text" className="input" value={settings.seoDefaultTitleSuffix || ""} onChange={(e) => handleChange("seoDefaultTitleSuffix", e.target.value)} />
+                </SettingField>
+                <SettingField label="Default Meta Description" description="Fallback description used if a specific page lacks one." fullWidth>
+                  <textarea rows={2} className="input resize-none" value={settings.seoDefaultDescription || ""} onChange={(e) => handleChange("seoDefaultDescription", e.target.value)}></textarea>
+                </SettingField>
+              </SettingSection>
+
+              <SettingSection title="Canonical & Robots" description="Search engine crawling and indexing instructions.">
+                <SettingField label="Canonical Base URL" description="Base domain for canonical links.">
+                  <input type="url" className="input" value={settings.seoCanonicalBase || ""} onChange={(e) => handleChange("seoCanonicalBase", e.target.value)} placeholder="https://thepropconnect.in" />
+                </SettingField>
+                <SettingField label="Robots Default" description="Default crawling rules for bots.">
+                  <select className="input" value={settings.seoRobotsDefault || "index, follow"} onChange={(e) => handleChange("seoRobotsDefault", e.target.value)}>
+                    <option value="index, follow">Index, Follow</option>
+                    <option value="noindex, follow">No Index, Follow</option>
+                    <option value="noindex, nofollow">No Index, No Follow</option>
+                  </select>
+                </SettingField>
+              </SettingSection>
+
+              <SettingSection title="Open Graph (Facebook/LinkedIn)" description="Defaults for social media link previews.">
+                <SettingField label="Default OG Title">
+                  <input type="text" className="input" value={settings.seoOgTitle || ""} onChange={(e) => handleChange("seoOgTitle", e.target.value)} placeholder="PropConnect - Premium Real Estate" />
+                </SettingField>
+                <SettingField label="Default OG Image URL">
+                  <input type="url" className="input" value={settings.seoOgImage || ""} onChange={(e) => handleChange("seoOgImage", e.target.value)} placeholder="https://..." />
+                </SettingField>
+                <SettingField label="Default OG Description" fullWidth>
+                  <textarea rows={2} className="input resize-none" value={settings.seoOgDescription || ""} onChange={(e) => handleChange("seoOgDescription", e.target.value)}></textarea>
+                </SettingField>
+              </SettingSection>
+
+              <SettingSection title="Twitter Cards" description="Defaults for Twitter link sharing.">
+                <SettingField label="Twitter Title">
+                  <input type="text" className="input" value={settings.seoTwitterTitle || ""} onChange={(e) => handleChange("seoTwitterTitle", e.target.value)} placeholder="PropConnect" />
+                </SettingField>
+                <SettingField label="Twitter Image URL">
+                  <input type="url" className="input" value={settings.seoTwitterImage || ""} onChange={(e) => handleChange("seoTwitterImage", e.target.value)} placeholder="https://..." />
+                </SettingField>
+                <SettingField label="Twitter Description" fullWidth>
+                  <textarea rows={2} className="input resize-none" value={settings.seoTwitterDescription || ""} onChange={(e) => handleChange("seoTwitterDescription", e.target.value)}></textarea>
+                </SettingField>
+              </SettingSection>
             </div>
           )}
 
         </div>
       </div>
+    </div>
+  );
+}
+
+function SettingSection({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-4">
+      <div className="border-b border-slate-200 pb-2">
+        <h3 className="text-base font-semibold text-slate-800">{title}</h3>
+        <p className="text-sm text-slate-500">{description}</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function SettingField({ 
+  label, 
+  description, 
+  children, 
+  fullWidth = false 
+}: { 
+  label: string; 
+  description?: string; 
+  children: React.ReactNode; 
+  fullWidth?: boolean;
+}) {
+  return (
+    <div className={fullWidth ? "md:col-span-2" : ""}>
+      <label className="block text-sm font-medium text-slate-700 mb-1.5">{label}</label>
+      {children}
+      {description && <p className="text-xs text-slate-500 mt-1">{description}</p>}
     </div>
   );
 }
