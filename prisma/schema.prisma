@@ -75,6 +75,26 @@ enum Locality {
   MAHAPE
 }
 
+enum AdminRole {
+  SUPER_ADMIN
+  IT_ADMIN
+  IT_SUPPORT
+  SALES_MANAGER
+  SALES_EXECUTIVE
+  MARKETING
+  OPERATIONS
+  ACCOUNTS
+  SUPPORT
+  VIEWER
+}
+
+enum AuditEventType {
+  DATA_MUTATION
+  AUTH_EVENT
+  ACCOUNT_EVENT
+  SYSTEM_EVENT
+}
+
 // ─────────────────────────────────────────
 // MODELS
 // ─────────────────────────────────────────
@@ -210,11 +230,47 @@ model Lead {
 }
 
 model AdminUser {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  password  String
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  name                String?
+  password            String
+  role                AdminRole @default(VIEWER)
+  isActive            Boolean   @default(true)
+  forcePasswordChange Boolean   @default(false)
+  lastLoginAt         DateTime?
+  createdById         String?
+  updatedById         String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now()) @updatedAt
+
+  // Relations for audit logs
+  auditLogsAsActor  AuditLog[] @relation("AuditActor")
+  auditLogsAsTarget AuditLog[] @relation("AuditTarget")
+}
+
+model AuditLog {
+  id        String         @id @default(cuid())
+  eventType AuditEventType
+  action    String
+  tableName String?
+  recordId  String?
+  oldData   Json?
+  newData   Json?
+  ipAddress String?
+  userAgent String?
+
+  actorId      String?
+  actor        AdminUser? @relation("AuditActor", fields: [actorId], references: [id])
+  targetUserId String?
+  targetUser   AdminUser? @relation("AuditTarget", fields: [targetUserId], references: [id])
+
   createdAt DateTime @default(now())
+
+  @@index([eventType])
+  @@index([action])
+  @@index([tableName, recordId])
+  @@index([actorId])
+  @@index([createdAt])
 }
 
 model Setting {

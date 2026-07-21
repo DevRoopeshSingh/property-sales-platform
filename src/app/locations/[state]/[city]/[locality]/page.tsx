@@ -8,8 +8,8 @@ import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { sortProperties } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
 import { getPublicSettings } from "@/app/admin/(dashboard)/settings/actions";
-import type { PropertyCardData, Locality } from "@/types";
-import { LOCALITY_LABELS } from "@/types";
+import type { PropertyCardData } from "@/types";
+
 
 // Temporary fallback for legacy Navi Mumbai content
 const LOCALITY_CONTENT: Record<

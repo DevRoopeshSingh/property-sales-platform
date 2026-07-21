@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
 import { revalidatePath } from "next/cache";
 import { deleteImagesFromStorage } from "./storage-actions";
-import { auth } from "@/auth";
+import { requireRole, ROLE_GROUPS } from "@/lib/permissions";
 import { SLUG_TO_LOCALITY } from "@/types";
 
 /**
@@ -13,10 +13,8 @@ import { SLUG_TO_LOCALITY } from "@/types";
  * requiring the user to also submit the full property form.
  */
 export async function deletePropertyImage(imageId: string, storageKey: string) {
-  const session = await auth();
-  if (!session) return { success: false, error: "Unauthorized" };
-
   try {
+    await requireRole(ROLE_GROUPS.PROPERTY_MANAGERS);
     // 1. Delete from database
     const deleted = await prisma.propertyImage.delete({
       where: { id: imageId },
@@ -49,10 +47,8 @@ function generateSlug(title: string) {
 }
 
 export async function createProperty(data: PropertyFormValues) {
-  const session = await auth();
-  if (!session) return { success: false, error: "Unauthorized" };
-
   try {
+    await requireRole(ROLE_GROUPS.PROPERTY_MANAGERS);
     const validatedData = propertySchema.parse(data);
 
     const slug = generateSlug(validatedData.title);
@@ -136,10 +132,8 @@ export async function createProperty(data: PropertyFormValues) {
 }
 
 export async function updateProperty(id: string, data: PropertyFormValues) {
-  const session = await auth();
-  if (!session) return { success: false, error: "Unauthorized" };
-
   try {
+    await requireRole(ROLE_GROUPS.PROPERTY_MANAGERS);
     const validatedData = propertySchema.parse(data);
 
     // Find existing images to compare
@@ -241,10 +235,8 @@ export async function updateProperty(id: string, data: PropertyFormValues) {
 }
 
 export async function deleteProperty(id: string) {
-  const session = await auth();
-  if (!session) return { success: false, error: "Unauthorized" };
-
   try {
+    await requireRole(ROLE_GROUPS.PROPERTY_MANAGERS);
     // Find existing images to delete from storage
     const existingImages = await prisma.propertyImage.findMany({
       where: { propertyId: id }
@@ -271,12 +263,9 @@ export async function deleteProperty(id: string) {
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function bulkImportProperties(properties: any[]) {
-  const session = await auth();
-  if (!session) return { success: false, error: "Unauthorized" };
-
-  let importedCount = 0;
-
   try {
+    await requireRole(ROLE_GROUPS.PROPERTY_MANAGERS);
+    let importedCount = 0;
     // Process each row sequentially or in parallel? Let's do sequentially to avoid overload or race conditions
     for (const data of properties) {
       const validatedData = propertySchema.parse(data);

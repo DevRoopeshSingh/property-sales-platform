@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { AdminNav } from "./AdminNav";
 import { LogoutButton } from "./LogoutButton";
+import { AdminRole } from "@prisma/client";
 
 interface AdminSidebarProps {
   isMinimized: boolean;
   setIsMinimized: (val: boolean) => void;
   isMobileOpen: boolean;
   setIsMobileOpen: (val: boolean) => void;
+  userRole?: AdminRole;
 }
 
 export function AdminSidebar({
@@ -18,6 +20,7 @@ export function AdminSidebar({
   setIsMinimized,
   isMobileOpen,
   setIsMobileOpen,
+  userRole,
 }: AdminSidebarProps) {
   const pathname = usePathname();
 
@@ -70,7 +73,7 @@ export function AdminSidebar({
 
       {/* Navigation Area - Scrollable */}
       <div className="flex-1 overflow-y-auto py-4">
-        <AdminNav isMinimized={isMinimized} />
+        <AdminNav isMinimized={isMinimized} userRole={userRole} />
       </div>
 
       {/* Footer Area - Pinned */}

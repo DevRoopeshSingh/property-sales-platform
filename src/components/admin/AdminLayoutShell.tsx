@@ -5,7 +5,9 @@ import { AdminSidebar } from "./AdminSidebar";
 import { AdminHeader } from "./AdminHeader";
 import { AutoLogout } from "./AutoLogout";
 
-export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
+import { AdminRole } from "@prisma/client";
+
+export function AdminLayoutShell({ children, userRole }: { children: React.ReactNode, userRole?: AdminRole }) {
   const [isMinimized, setIsMinimized] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -56,6 +58,7 @@ export function AdminLayoutShell({ children }: { children: React.ReactNode }) {
         setIsMinimized={setIsMinimized}
         isMobileOpen={isMobileOpen}
         setIsMobileOpen={setIsMobileOpen}
+        userRole={userRole}
       />
 
       {/* Main Content Area */}

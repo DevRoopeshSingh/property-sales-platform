@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { propertySchema, PropertyFormValues } from "@/lib/validations/property";
-import { LOCALITY_LABELS } from "@/types";
 import { createProperty, updateProperty } from "@/app/admin/(dashboard)/properties/actions";
 import { ImageUploader } from "./ImageUploader";
 
@@ -73,6 +72,7 @@ export function PropertyForm({ initialData, propertyId, locationTree }: Property
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<PropertyFormValues>({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -83,6 +83,19 @@ export function PropertyForm({ initialData, propertyId, locationTree }: Property
   // eslint-disable-next-line react-hooks/incompatible-library
   const currentType = watch("type");
   const currentSubType = watch("subType");
+  
+  useEffect(() => {
+    if (currentType === "RESIDENTIAL") {
+      if (["SHOP", "OFFICE", "SHOWROOM"].includes(currentSubType)) {
+        setValue("subType", "APARTMENT");
+      }
+    } else if (currentType === "COMMERCIAL") {
+      if (["APARTMENT", "VILLA", "INDEPENDENT_HOUSE", "ROW_HOUSE", "PLOT"].includes(currentSubType)) {
+        setValue("subType", "OFFICE");
+      }
+    }
+  }, [currentType, currentSubType, setValue]);
+
   const isCommercial = currentType === "COMMERCIAL" || currentSubType === "OFFICE" || currentSubType === "SHOP" || currentSubType === "SHOWROOM";
 
   const currentStateId = watch("stateId");
@@ -163,18 +176,22 @@ export function PropertyForm({ initialData, propertyId, locationTree }: Property
           <div>
             <label className="block text-sm font-medium mb-1.5 text-[var(--color-text-primary)]">Sub Type *</label>
             <select {...register("subType")} className="input w-full">
-              <optgroup label="Residential">
-                <option value="APARTMENT">Apartment</option>
-                <option value="VILLA">Villa</option>
-                <option value="INDEPENDENT_HOUSE">Independent House</option>
-                <option value="ROW_HOUSE">Row House</option>
-                <option value="PLOT">Plot</option>
-              </optgroup>
-              <optgroup label="Commercial">
-                <option value="SHOP">Shop</option>
-                <option value="OFFICE">Office</option>
-                <option value="SHOWROOM">Showroom</option>
-              </optgroup>
+              {currentType === "RESIDENTIAL" && (
+                <optgroup label="Residential">
+                  <option value="APARTMENT">Apartment</option>
+                  <option value="VILLA">Villa</option>
+                  <option value="INDEPENDENT_HOUSE">Independent House</option>
+                  <option value="ROW_HOUSE">Row House</option>
+                  <option value="PLOT">Plot</option>
+                </optgroup>
+              )}
+              {currentType === "COMMERCIAL" && (
+                <optgroup label="Commercial">
+                  <option value="SHOP">Shop</option>
+                  <option value="OFFICE">Office</option>
+                  <option value="SHOWROOM">Showroom</option>
+                </optgroup>
+              )}
             </select>
           </div>
 
@@ -198,18 +215,6 @@ export function PropertyForm({ initialData, propertyId, locationTree }: Property
               />
               <label htmlFor="featured" className="text-sm font-medium text-[var(--color-text-primary)]">
                 Feature this property on the homepage
-              </label>
-            </div>
-
-            <div className="flex items-center space-x-2 mt-7">
-              <input 
-                type="checkbox" 
-                id="isDistressed" 
-                {...register("isDistressed")} 
-                className="w-5 h-5 rounded border-gray-300 text-red-600 focus:ring-red-500"
-              />
-              <label htmlFor="isDistressed" className="text-sm font-medium text-red-600">
-                Mark as Distressed Property
               </label>
             </div>
           </div>

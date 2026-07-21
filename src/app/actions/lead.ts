@@ -3,16 +3,15 @@
 import { prisma } from "@/lib/prisma";
 import { leadFormSchema, type LeadFormValues } from "@/lib/validations/lead";
 import { revalidatePath } from "next/cache";
-import { auth } from "@/auth";
+import { requireRole, ROLE_GROUPS } from "@/lib/permissions";
 
 export async function updateLeadStatus(leadId: string, status: string) {
-  const session = await auth();
-  if (!session) return { success: false, error: "Unauthorized" };
+  try {
+    await requireRole(ROLE_GROUPS.LEAD_MANAGERS);
 
   const validStatuses = ["NEW", "CONTACTED", "SITE_VISIT_SCHEDULED", "CONVERTED", "LOST"];
   if (!validStatuses.includes(status)) return { success: false, error: "Invalid status" };
-
-  try {
+    
     await prisma.lead.update({
       where: { id: leadId },
       data: { status: status as "NEW" | "CONTACTED" | "SITE_VISIT_SCHEDULED" | "CONVERTED" | "LOST" },

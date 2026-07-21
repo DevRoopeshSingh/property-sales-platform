@@ -39,11 +39,17 @@ export const {
         if (!isPasswordValid) {
           return null;
         }
+        
+        if (!admin.isActive) {
+          return null; // Deny login if account is inactive
+        }
 
         return {
           id: admin.id,
           email: admin.email,
           name: admin.name,
+          role: admin.role,
+          isActive: admin.isActive,
         };
       },
     }),

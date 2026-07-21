@@ -3,6 +3,7 @@ import { Users, Phone, Calendar } from "lucide-react";
 import LeadActions from "@/components/admin/LeadActions";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { getSettings } from "@/app/admin/(dashboard)/settings/actions";
+import { requireRole, ROLE_GROUPS } from "@/lib/permissions";
 
 const STATUS_COLORS: Record<string, string> = {
   NEW: "bg-blue-100 text-blue-700",
@@ -19,6 +20,8 @@ const SOURCE_LABELS: Record<string, string> = {
 };
 
 export default async function LeadsPage() {
+  await requireRole(ROLE_GROUPS.LEAD_MANAGERS);
+
   const leads = await prisma.lead.findMany({
     include: { property: { select: { title: true, slug: true } } },
     orderBy: { createdAt: "desc" },

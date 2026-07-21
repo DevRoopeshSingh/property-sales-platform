@@ -1,13 +1,12 @@
 "use server";
 
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { requireRole, ROLE_GROUPS } from "@/lib/permissions";
+import { revalidatePath } from "next/cache";
 import { unstable_cache } from "next/cache";
 
 export async function getSettings() {
-  const session = await auth();
-  if (!session) throw new Error("Unauthorized");
+  await requireRole(ROLE_GROUPS.CONFIG_MANAGERS);
 
   return getPublicSettings();
 }
@@ -27,8 +26,7 @@ export const getPublicSettings = unstable_cache(
 );
 
 export async function saveSettings(data: Record<string, string>) {
-  const session = await auth();
-  if (!session) throw new Error("Unauthorized");
+  await requireRole(ROLE_GROUPS.CONFIG_MANAGERS);
 
   try {
     // Upsert all settings in a transaction
