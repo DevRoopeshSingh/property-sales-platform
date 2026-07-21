@@ -2,7 +2,8 @@
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 
 export async function getSettings() {
   const session = await auth();
@@ -11,15 +12,19 @@ export async function getSettings() {
   return getPublicSettings();
 }
 
-export async function getPublicSettings() {
-  const settings = await prisma.setting.findMany();
-  
-  // Convert array of {key, value} to a key-value object
-  return settings.reduce((acc, curr) => {
-    acc[curr.key] = curr.value;
-    return acc;
-  }, {} as Record<string, string>);
-}
+export const getPublicSettings = unstable_cache(
+  async () => {
+    const settings = await prisma.setting.findMany();
+    
+    // Convert array of {key, value} to a key-value object
+    return settings.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
+  },
+  ["global-settings"], // Cache Key
+  { tags: ["settings"] } // Cache Tag for revalidation
+);
 
 export async function saveSettings(data: Record<string, string>) {
   const session = await auth();
@@ -40,6 +45,8 @@ export async function saveSettings(data: Record<string, string>) {
     // Revalidate the entire admin layout to ensure any settings used globally are updated
     revalidatePath("/admin", "layout");
     
+    // Revalidate the public site layout to grab fresh settings
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Failed to save settings:", error);

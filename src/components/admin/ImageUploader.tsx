@@ -139,16 +139,35 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
     setIsZipping(true);
     
     try {
-      const response = await fetch('/api/admin/properties/download-images', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ images: value })
-      });
+      const JSZip = (await import('jszip')).default;
+      const zip = new JSZip();
 
-      if (!response.ok) throw new Error("Failed to generate ZIP");
+      // Fetch all images concurrently
+      await Promise.all(
+        value.map(async (img, index) => {
+          try {
+            const response = await fetch(img.url);
+            if (!response.ok) return;
 
-      const blob = await response.blob();
-      const objectUrl = URL.createObjectURL(blob);
+            const arrayBuffer = await response.arrayBuffer();
+            // Generate a safe filename
+            let ext = img.url.split(".").pop()?.split("?")[0] || "jpg";
+            if (ext.length > 4) ext = "jpg"; // fallback if URL lacks extension
+            
+            const filename = img.altText 
+              ? `${img.altText.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${ext}`
+              : `property-image-${index + 1}.${ext}`;
+
+            // Add to zip archive
+            zip.file(filename, arrayBuffer);
+          } catch (err) {
+            console.error(`Failed to fetch image ${img.url}`, err);
+          }
+        })
+      );
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const objectUrl = URL.createObjectURL(zipBlob);
       const link = document.createElement("a");
       link.href = objectUrl;
       link.download = "property-photos.zip";
@@ -156,9 +175,11 @@ export function ImageUploader({ value = [], onChange, maxImages = 10 }: ImageUpl
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(objectUrl);
+      
+      toast.success("Images downloaded successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to download photos as ZIP.");
+      console.error("ZIP Generation Error:", err);
+      toast.error("Failed to generate ZIP archive.");
     } finally {
       setIsZipping(false);
     }

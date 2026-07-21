@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_cache } from "next/cache";
 import Link from "next/link";
 import { SlidersHorizontal, X } from "lucide-react";
 import PropertyCard from "@/components/public/PropertyCard";
@@ -96,12 +97,20 @@ export default async function PropertiesPage({
       ? { featured: "desc" }
       : { createdAt: "desc" };
 
-  const rawProperties = await prisma.property.findMany({
-    where,
-    orderBy,
-    include: { images: { orderBy: { order: "asc" } } },
-    take: 24,
-  });
+  const getCachedProperties = unstable_cache(
+    async (w: Prisma.PropertyWhereInput, o: Prisma.PropertyOrderByWithRelationInput) => {
+      return prisma.property.findMany({
+        where: w,
+        orderBy: o,
+        include: { images: { orderBy: { order: "asc" } } },
+        take: 24,
+      });
+    },
+    ["properties-search"],
+    { revalidate: 60, tags: ["properties"] }
+  );
+
+  const rawProperties = await getCachedProperties(where, orderBy);
 
   const properties = sortProperties(rawProperties.map((p) => ({
     ...p,
