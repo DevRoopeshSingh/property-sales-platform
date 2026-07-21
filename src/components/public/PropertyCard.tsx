@@ -3,7 +3,7 @@
 import Link from "next/link";
 import ImageWithSkeleton from "@/components/ui/loaders/ImageWithSkeleton";
 import { MapPin, Maximize2, BedDouble, Building2, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice } from "@/lib/utils";
 import { generateWhatsAppLink } from "@/lib/whatsapp";
 import { useSettings } from "@/contexts/SettingsContext";
 import {
@@ -158,9 +158,9 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
               🚗 {hasCoveredParking ? 'Covered Parking' : 'Open Parking'}
             </div>
           )}
-          {isGreatValue && (
+          {isGreatValue && property.marketEstimateMax && (
             <div className="flex items-center text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded uppercase tracking-wider">
-              ⭐ Market Value
+              Market Value: {property.priceLabel} {property.marketEstimateMin ? `${formatPrice(property.marketEstimateMin)} - ` : ""}{formatPrice(property.marketEstimateMax)}
             </div>
           )}
         </div>
