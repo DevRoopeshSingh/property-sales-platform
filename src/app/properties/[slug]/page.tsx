@@ -200,7 +200,7 @@ export default async function PropertyDetailPage({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
 
-      <div className="bg-[var(--color-surface-2)] pb-24 lg:pb-0">
+      <div className="bg-[var(--color-surface-2)]">
         {/* Breadcrumb */}
         <div className="bg-white border-b border-[var(--color-border)]">
           <div className="container-main py-3">

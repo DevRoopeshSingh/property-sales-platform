@@ -403,6 +403,7 @@ body {
 .admin-sidebar {
   width: 260px;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-text-primary);
   color: white;
   flex-shrink: 0;
@@ -415,6 +416,7 @@ body {
 .admin-main {
   margin-left: 260px;
   min-height: 100vh;
+  min-height: 100dvh;
   background: var(--color-surface-2);
 }
 @media (max-width: 1023px) {

@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import { adminLogout } from "@/app/admin/logout-action";
 import { useTransition } from "react";
 
-export function LogoutButton({ isMobile = false }: { isMobile?: boolean }) {
+export function LogoutButton({ isMobile = false, isMinimized = false }: { isMobile?: boolean; isMinimized?: boolean }) {
   const [isPending, startTransition] = useTransition();
 
   const handleSignOut = () => {
@@ -29,10 +29,13 @@ export function LogoutButton({ isMobile = false }: { isMobile?: boolean }) {
     <button
       onClick={handleSignOut}
       disabled={isPending}
-      className="flex w-full items-center gap-3 px-4 py-3 rounded-lg hover:bg-red-500/10 text-slate-300 hover:text-red-400 transition-colors disabled:opacity-50"
+      title={isMinimized ? "Sign Out" : undefined}
+      className={`flex w-full items-center rounded-lg hover:bg-red-500/10 text-slate-300 hover:text-red-400 transition-colors disabled:opacity-50 ${
+        isMinimized ? "justify-center px-0 py-3" : "gap-3 px-4 py-3"
+      }`}
     >
-      <LogOut size={20} />
-      {isPending ? "Signing out..." : "Sign Out"}
+      <LogOut size={20} className="shrink-0" />
+      {!isMinimized && <span>{isPending ? "Signing out..." : "Sign Out"}</span>}
     </button>
   );
 }

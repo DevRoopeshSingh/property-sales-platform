@@ -143,7 +143,7 @@ export default async function PropertiesPage({
 
   return (
     <>
-      <div className="bg-[var(--color-surface-2)] min-h-screen">
+      <div className="bg-[var(--color-surface-2)] min-h-[100dvh]">
         {/* Page Header */}
         <div className="bg-white border-b border-[var(--color-border)]">
           <div className="container-main py-6">

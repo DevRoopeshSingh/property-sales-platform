@@ -28,7 +28,7 @@ export default function Footer() {
   const settings = useSettings();
 
   return (
-    <footer style={{ background: "var(--color-text-primary)", color: "white" }}>
+    <footer style={{ background: "var(--color-text-primary)", color: "white" }} className="pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
       {/* Main Footer */}
       <div className="container-main py-12 lg:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">

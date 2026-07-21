@@ -11,11 +11,11 @@ const navItems = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
-export function AdminNav() {
+export function AdminNav({ isMinimized = false }: { isMinimized?: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav className="flex-1 py-6 px-4 space-y-2">
+    <nav className="flex-1 py-4 px-3 space-y-2">
       {navItems.map(({ href, label, icon: Icon }) => {
         const isActive = pathname === href || pathname.startsWith(href + "/");
         
@@ -23,14 +23,17 @@ export function AdminNav() {
           <Link 
             key={href} 
             href={href} 
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
+            title={isMinimized ? label : undefined}
+            className={`flex items-center rounded-lg transition-colors ${
+              isMinimized ? "justify-center px-0 py-3" : "gap-3 px-4 py-3"
+            } ${
               isActive 
                 ? "bg-blue-600/10 text-blue-400 font-medium" 
                 : "hover:bg-slate-800 text-slate-300 hover:text-white"
             }`}
           >
-            <Icon size={20} />
-            {label}
+            <Icon size={20} className="shrink-0" />
+            {!isMinimized && <span>{label}</span>}
           </Link>
         );
       })}
