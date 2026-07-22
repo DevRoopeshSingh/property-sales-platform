@@ -160,7 +160,7 @@ export default function PropertyCard({ property, className }: PropertyCardProps)
           )}
           {isGreatValue && property.marketEstimateMax && (
             <div className="flex items-center text-[10px] font-bold text-green-700 bg-green-50 border border-green-200 px-2 py-1 rounded uppercase tracking-wider">
-              Market Value: {property.priceLabel} {property.marketEstimateMin ? `${formatPrice(property.marketEstimateMin)} - ` : ""}{formatPrice(property.marketEstimateMax)}
+              Market Value: {property.marketEstimateMin ? `${formatPrice(property.marketEstimateMin)} - ` : ""}{formatPrice(property.marketEstimateMax)}
             </div>
           )}
         </div>
